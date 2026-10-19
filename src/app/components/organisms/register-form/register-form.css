@@ -1,0 +1,37 @@
+.register-form { display: flex; flex-direction: column; gap: 20px; }
+
+.register-form__title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.register-form__fields { display: flex; flex-direction: column; gap: 14px; }
+
+.register-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.register-form__error {
+  font-size: 13px;
+  color: var(--color-danger);
+  background: var(--color-danger-light);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+}
+
+.register-form__footer {
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.register-form__link {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0;
+}
+.register-form__link:hover { text-decoration: underline; }

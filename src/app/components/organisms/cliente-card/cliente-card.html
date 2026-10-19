@@ -1,0 +1,14 @@
+<div class="cliente-card">
+  <div class="cliente-card__header">
+    <app-avatar [name]="cliente.nombre" />
+    <div class="cliente-card__info">
+      <span class="cliente-card__nombre">{{ cliente.nombre }}</span>
+      <span class="cliente-card__email">{{ cliente.email }}</span>
+      <span class="cliente-card__tel">{{ cliente.telefono }}</span>
+    </div>
+  </div>
+  <div class="cliente-card__actions">
+    <app-button label="EDITAR" variant="secondary" (click)="editar.emit(cliente)" />
+    <app-button label="ELIMINAR" variant="danger" (click)="eliminar.emit(cliente.idCliente)" />
+  </div>
+</div>

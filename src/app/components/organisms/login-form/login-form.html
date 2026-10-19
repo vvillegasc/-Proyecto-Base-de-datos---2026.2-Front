@@ -1,0 +1,38 @@
+<div class="login-form">
+  <h2 class="login-form__title">Iniciar Sesión</h2>
+
+  <div class="login-form__fields">
+    <app-form-field
+      id="email"
+      label="Correo electrónico"
+      type="email"
+      placeholder="correo@ejemplo.com"
+      [value]="email"
+      (valueChange)="email = $event"
+    />
+    <app-form-field
+      id="password"
+      label="Contraseña"
+      type="password"
+      placeholder="mínimo 6 caracteres"
+      [value]="password"
+      (valueChange)="password = $event"
+    />
+  </div>
+
+  @if (error) {
+    <p class="login-form__error">{{ error }}</p>
+  }
+
+  <app-button
+    label="INICIAR SESIÓN"
+    type="submit"
+    [fullWidth]="true"
+    (click)="onSubmit()"
+  />
+
+  <p class="login-form__footer">
+    ¿No tienes cuenta?
+    <button class="login-form__link" (click)="goToRegister.emit()">Regístrate aquí</button>
+  </p>
+</div>

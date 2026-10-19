@@ -1,0 +1,58 @@
+.pedidos-recientes {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  padding: 20px;
+}
+
+.pedidos-recientes__title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-text-secondary);
+  margin: 0 0 16px 0;
+}
+
+.pedidos-recientes__empty {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.pedidos-recientes__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pedidos-recientes__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.pedidos-recientes__item:last-child {
+  border-bottom: none;
+}
+
+.pedidos-recientes__info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 150px;
+}
+
+.pedidos-recientes__numero {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.pedidos-recientes__mesa {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}

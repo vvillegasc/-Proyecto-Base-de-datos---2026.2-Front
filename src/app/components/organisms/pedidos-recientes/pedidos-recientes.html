@@ -1,0 +1,19 @@
+<div class="pedidos-recientes">
+  <h3 class="pedidos-recientes__title">Pedidos Recientes</h3>
+
+  @if (pedidos.length === 0) {
+    <p class="pedidos-recientes__empty">Sin pedidos recientes.</p>
+  } @else {
+    <ul class="pedidos-recientes__list">
+      @for (pedido of pedidos; track pedido.idPedido) {
+        <li class="pedidos-recientes__item">
+          <div class="pedidos-recientes__info">
+            <span class="pedidos-recientes__numero">Pedido #{{ pedido.idPedido }}</span>
+            <span class="pedidos-recientes__mesa">Mesa {{ pedido.mesa.numero }}</span>
+          </div>
+          <app-badge [label]="estadoLabel(pedido.estado)" [variant]="badgeVariant(pedido.estado)" />
+        </li>
+      }
+    </ul>
+  }
+</div>

@@ -1,0 +1,56 @@
+<div class="register-form">
+  <h2 class="register-form__title">Crear Cuenta</h2>
+
+  <div class="register-form__fields">
+    <app-form-field
+      id="nombre"
+      label="Nombre completo"
+      type="text"
+      placeholder="Ana García"
+      [value]="nombre"
+      (valueChange)="nombre = $event"
+    />
+    <app-form-field
+      id="email"
+      label="Correo electrónico"
+      type="email"
+      placeholder="correo@ejemplo.com"
+      [value]="email"
+      (valueChange)="email = $event"
+    />
+    <div class="register-form__row">
+      <app-form-field
+        id="password"
+        label="Contraseña"
+        type="password"
+        placeholder="mínimo 6 car."
+        [value]="password"
+        (valueChange)="password = $event"
+      />
+      <app-form-field
+        id="confirmar"
+        label="Confirmar"
+        type="password"
+        placeholder="repite"
+        [value]="confirmar"
+        (valueChange)="confirmar = $event"
+      />
+    </div>
+  </div>
+
+  @if (error) {
+    <p class="register-form__error">{{ error }}</p>
+  }
+
+  <app-button
+    label="CREAR CUENTA"
+    type="submit"
+    [fullWidth]="true"
+    (click)="onSubmit()"
+  />
+
+  <p class="register-form__footer">
+    ¿Ya tienes cuenta?
+    <button class="register-form__link" (click)="goToLogin.emit()">Inicia sesión</button>
+  </p>
+</div>

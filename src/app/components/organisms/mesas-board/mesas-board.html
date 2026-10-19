@@ -1,0 +1,16 @@
+<div class="mesas-board">
+  <h3 class="mesas-board__title">Estado de Mesas</h3>
+
+  @if (mesas.length === 0) {
+    <p class="mesas-board__empty">Sin mesas registradas.</p>
+  } @else {
+    <div class="mesas-board__grid">
+      @for (mesa of mesas; track mesa.idMesa) {
+        <div class="mesas-board__card" [class.mesas-board__card--ocupada]="isOcupada(mesa)">
+          <span class="mesas-board__numero">M{{ mesa.numero }}</span>
+          <span class="mesas-board__estado">{{ isOcupada(mesa) ? 'OCUP' : 'LIBRE' }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>

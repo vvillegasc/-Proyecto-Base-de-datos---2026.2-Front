@@ -1,0 +1,23 @@
+<div class="producto-card">
+  <div class="producto-card__img">
+    @if (producto.imagenUrl) {
+      <img [src]="producto.imagenUrl" [alt]="producto.nombre" />
+    } @else {
+      <span class="producto-card__no-img">Sin imagen</span>
+    }
+  </div>
+
+  <div class="producto-card__body">
+    <div class="producto-card__header">
+      <span class="producto-card__nombre">{{ producto.nombre }}</span>
+      <app-badge [label]="badgeLabel" [variant]="badgeVariant" />
+    </div>
+    <span class="producto-card__categoria">{{ producto.categoria }}</span>
+    <span class="producto-card__precio">{{ formatPrice(producto.precio) }}</span>
+  </div>
+
+  <div class="producto-card__actions">
+    <app-button label="EDITAR" variant="secondary" (click)="editar.emit(producto)" />
+    <app-button label="ELIMINAR" variant="danger" (click)="eliminar.emit(producto.idProducto)" />
+  </div>
+</div>

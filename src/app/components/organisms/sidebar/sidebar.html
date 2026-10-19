@@ -1,0 +1,29 @@
+<nav class="sidebar">
+  <div class="sidebar__brand">
+    <span class="sidebar__logo">MesaYa</span>
+    <span class="sidebar__sub">GESTIÓN DE RESTAURANTE</span>
+  </div>
+
+  <ul class="sidebar__nav">
+    @for (item of navItems; track item.path) {
+      <li>
+        <a [routerLink]="item.path" routerLinkActive="sidebar__link--active" class="sidebar__link">
+          <span>{{ item.label }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+
+  <div class="sidebar__footer">
+    @if (usuario) {
+      <div class="sidebar__user">
+        <div class="sidebar__user-avatar">{{ usuario.nombre[0]?.toUpperCase() }}</div>
+        <div class="sidebar__user-info">
+          <span class="sidebar__user-name">{{ usuario.nombre }}</span>
+          <span class="sidebar__user-role">Administrador</span>
+        </div>
+      </div>
+    }
+    <button class="sidebar__logout" (click)="cerrarSesion()">Cerrar sesión</button>
+  </div>
+</nav>

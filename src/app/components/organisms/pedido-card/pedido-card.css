@@ -1,0 +1,73 @@
+.pedido-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.pedido-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pedido-card__meta { display: flex; flex-direction: column; gap: 2px; }
+
+.pedido-card__id {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.pedido-card__mesa {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.pedido-card__items {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.pedido-card__item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+
+.pedido-card__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-top: 1px solid var(--color-border);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.pedido-card__total-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.pedido-card__actions {
+  padding: 12px 14px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pedido-card__secondary { display: flex; gap: 8px; }

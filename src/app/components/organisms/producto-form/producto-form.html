@@ -1,0 +1,62 @@
+<div class="producto-form">
+  <app-form-field
+    label="Nombre"
+    id="pNombre"
+    [value]="form.nombre"
+    (valueChange)="form.nombre = $event"
+  />
+
+  <app-form-field
+    label="Descripción"
+    id="pDesc"
+    [value]="form.descripcion"
+    (valueChange)="form.descripcion = $event"
+  />
+
+  <div class="producto-form__row">
+    <app-form-field
+      label="Precio"
+      id="pPrecio"
+      type="number"
+      [value]="form.precio"
+      (valueChange)="form.precio = +$event"
+    />
+    <app-form-field
+      label="Stock"
+      id="pStock"
+      type="number"
+      [value]="form.stock"
+      (valueChange)="form.stock = +$event"
+    />
+  </div>
+
+  <div class="producto-form__field">
+    <label class="producto-form__label" for="pCat">Categoría</label>
+    <select id="pCat" class="producto-form__select" [(ngModel)]="form.categoria">
+      <option value="" disabled>Seleccionar categoría...</option>
+      @for (cat of categorias; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
+    </select>
+  </div>
+
+  <app-form-field
+    label="URL Imagen"
+    id="pImg"
+    [value]="form.imagenUrl"
+    (valueChange)="form.imagenUrl = $event"
+  />
+
+  <div class="producto-form__check">
+    <label class="producto-form__check-label">
+      <input type="checkbox" [(ngModel)]="form.disponible" />
+      Disponible
+    </label>
+  </div>
+
+  <app-button
+    [label]="editando ? 'ACTUALIZAR' : 'CREAR PRODUCTO'"
+    [fullWidth]="true"
+    (click)="guardar.emit()"
+  />
+</div>
