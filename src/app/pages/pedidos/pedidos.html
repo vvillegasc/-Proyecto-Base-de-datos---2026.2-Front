@@ -1,0 +1,108 @@
+<app-dashboard-layout>
+  <div class="page">
+    <div class="page__header">
+      <div>
+        <h1 class="page__title">Pedidos</h1>
+        <span class="page__breadcrumb">Savana / Pedidos</span>
+      </div>
+      <app-button label="+ NUEVO PEDIDO" (click)="abrirCrear()" />
+    </div>
+
+    <div class="page__toolbar">
+      <p class="page__count">Pedidos ({{ pedidosFiltrados.length }} registros)</p>
+      <app-tab-filter [tabs]="tabs" [active]="tabActivo()" (tabChange)="tabActivo.set($event)" />
+    </div>
+
+    <div class="page__grid">
+      @for (p of pedidosFiltrados; track p.idPedido) {
+        <app-pedido-card
+          [pedido]="p"
+          (avanzar)="avanzar($event)"
+          (eliminar)="eliminar($event)"
+          (verDetalle)="verDetalle($event)"
+        />
+      } @empty {
+        <p class="page__empty">No hay pedidos registrados.</p>
+      }
+    </div>
+  </div>
+</app-dashboard-layout>
+
+<app-modal
+  title="Nuevo Pedido"
+  [visible]="modalVisible()"
+  (close)="modalVisible.set(false)"
+>
+  <div class="modal-form">
+    <div class="modal-form__field">
+      <label class="modal-form__label">Mesa</label>
+      <select class="modal-form__select" [value]="numeroMesa" (change)="numeroMesa = +$any($event.target).value">
+        <option [value]="0">Selecciona una mesa...</option>
+        @for (m of mesas; track m.numeroMesa) {
+          <option [value]="m.numeroMesa">Mesa {{ m.numeroMesa }} ({{ m.capacidad }} personas)</option>
+        }
+      </select>
+    </div>
+
+    <div class="modal-form__field">
+      <label class="modal-form__label">Cliente</label>
+      <select class="modal-form__select" [value]="idCliente" (change)="idCliente = +$any($event.target).value">
+        <option [value]="0">Selecciona un cliente...</option>
+        @for (c of clientes; track c.idCliente) {
+          <option [value]="c.idCliente">{{ c.nombres }} {{ c.apellidos }}</option>
+        }
+      </select>
+    </div>
+
+    <app-form-field label="Observaciones" id="pObs" [value]="observaciones" (valueChange)="observaciones = $event" />
+
+    <div class="modal-form__detalles">
+      <div class="modal-form__detalles-header">
+        <span class="modal-form__label">Productos</span>
+        <button class="modal-form__add" (click)="agregarDetalle()">+ Agregar</button>
+      </div>
+      @for (d of detalles; track $index) {
+        <div class="modal-form__detalle-row">
+          <select class="modal-form__select" [value]="d.idProducto" (change)="d.idProducto = +$any($event.target).value">
+            <option [value]="0" disabled>Seleccionar producto...</option>
+            @for (p of productos; track p.idProducto) {
+              <option [value]="p.idProducto">{{ p.nombre }} — ${{ p.precio }}</option>
+            }
+          </select>
+          <app-form-field label="" id="dCant{{$index}}" type="number" placeholder="Cant." [value]="d.cantidad" (valueChange)="d.cantidad = +$event" />
+          <button class="modal-form__remove" (click)="quitarDetalle($index)">✕</button>
+        </div>
+      }
+    </div>
+
+    <app-button label="CREAR PEDIDO" [fullWidth]="true" (click)="guardar()" />
+  </div>
+</app-modal>
+
+<app-modal
+  title="Detalle del Pedido"
+  [visible]="detalleVisible()"
+  (close)="detalleVisible.set(false)"
+>
+  @if (pedidoDetalle()) {
+    <div class="detalle">
+      <div class="detalle__row"><span>Mesa</span><span>{{ pedidoDetalle()!.numeroMesa }}</span></div>
+      <div class="detalle__row"><span>Cliente</span><span>{{ pedidoDetalle()!.nombreCliente || 'Sin cliente' }}</span></div>
+      <div class="detalle__row"><span>Atendido por</span><span>{{ pedidoDetalle()!.nombreUsuario }}</span></div>
+      <div class="detalle__row"><span>Estado</span><span>{{ pedidoDetalle()!.estado }}</span></div>
+      <div class="detalle__row"><span>Observaciones</span><span>{{ pedidoDetalle()!.observaciones || '—' }}</span></div>
+      <hr class="detalle__divider" />
+      @for (d of pedidoDetalle()!.detalles; track d.idDetallePedido) {
+        <div class="detalle__row">
+          <span>{{ d.nombreProducto }} x{{ d.cantidad }}</span>
+          <span>{{ formatPrice(d.subtotal) }}</span>
+        </div>
+      }
+      <hr class="detalle__divider" />
+      <div class="detalle__row detalle__row--total">
+        <span>Total</span>
+        <strong>{{ formatPrice(pedidoDetalle()!.subtotal) }}</strong>
+      </div>
+    </div>
+  }
+</app-modal>

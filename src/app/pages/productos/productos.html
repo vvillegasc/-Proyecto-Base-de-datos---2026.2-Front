@@ -1,0 +1,45 @@
+<app-dashboard-layout>
+  <div class="page">
+    <div class="page__header">
+      <div>
+        <h1 class="page__title">Productos</h1>
+        <span class="page__breadcrumb">Savana / Productos</span>
+      </div>
+      <app-button label="+ NUEVO PRODUCTO" (click)="abrirCrear()" />
+    </div>
+
+    <app-tab-filter [tabs]="tabs" [active]="categoriaActiva()" (tabChange)="cambiarCategoria($event)" />
+
+    <app-search-bar
+      placeholder="Buscar por nombre..."
+      [value]="busqueda()"
+      (valueChange)="busqueda.set($event)"
+    />
+
+    <p class="page__count">Productos ({{ productosFiltrados.length }} registros)</p>
+
+    <div class="page__grid">
+      @for (p of productosFiltrados; track p.idProducto) {
+        <app-producto-card
+          [producto]="p"
+          (editar)="abrirEditar($event)"
+          (eliminar)="eliminar($event)"
+        />
+      } @empty {
+        <p class="page__empty">No hay productos registrados.</p>
+      }
+    </div>
+  </div>
+</app-dashboard-layout>
+
+<app-modal
+  [title]="editando() ? 'Editar Producto' : 'Nuevo Producto'"
+  [visible]="modalVisible()"
+  (close)="modalVisible.set(false)"
+>
+  <app-producto-form
+    [form]="form"
+    [editando]="!!editando()"
+    (guardar)="guardar()"
+  />
+</app-modal>

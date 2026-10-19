@@ -1,0 +1,20 @@
+<app-dashboard-layout>
+  <div class="dashboard-page">
+    <div class="dashboard-page__header">
+      <h1 class="dashboard-page__title">Panel de Control</h1>
+      <span class="dashboard-page__breadcrumb">Savana / Dashboard</span>
+    </div>
+
+    <div class="dashboard-page__stats">
+      <app-stat-card label="Productos activos" [value]="resumen.productosActivos" />
+      <app-stat-card label="Mesas disponibles" [value]="mesasDisponiblesLabel" />
+      <app-stat-card label="Pedidos activos" [value]="resumen.pedidosActivos" />
+      <app-stat-card label="Pedidos entregados hoy" [value]="resumen.pedidosEntregadosHoy" />
+    </div>
+
+    <div class="dashboard-page__bottom">
+      <app-pedidos-recientes [pedidos]="pedidosRecientes" />
+      <app-mesas-board [mesas]="mesas" />
+    </div>
+  </div>
+</app-dashboard-layout>

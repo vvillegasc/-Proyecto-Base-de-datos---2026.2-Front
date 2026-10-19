@@ -1,0 +1,44 @@
+<app-dashboard-layout>
+  <div class="page">
+    <div class="page__header">
+      <div>
+        <h1 class="page__title">Mesas</h1>
+        <span class="page__breadcrumb">Savana / Mesas</span>
+      </div>
+      <app-button label="+ NUEVA MESA" (click)="abrirCrear()" />
+    </div>
+
+    <div class="page__toolbar">
+      <p class="page__count">Mesas ({{ mesasFiltradas.length }} registros)</p>
+      <app-tab-filter [tabs]="tabs" [active]="tabActivo()" (tabChange)="tabActivo.set($event)" />
+    </div>
+
+    <div class="page__grid">
+      @for (m of mesasFiltradas; track m.numeroMesa) {
+        <app-mesa-card [mesa]="m" (editar)="abrirEditar($event)" (eliminar)="eliminar($event)" />
+      } @empty {
+        <p class="page__empty">No hay mesas registradas.</p>
+      }
+    </div>
+  </div>
+</app-dashboard-layout>
+
+<app-modal
+  [title]="editando() ? 'Editar Mesa' : 'Nueva Mesa'"
+  [visible]="modalVisible()"
+  (close)="modalVisible.set(false)"
+>
+  <div class="modal-form">
+    <app-form-field label="Número de mesa" id="mNum" type="number" [value]="form.numeroMesa" (valueChange)="form.numeroMesa = +$event" />
+    <app-form-field label="Capacidad" id="mCap" type="number" [value]="form.capacidad" (valueChange)="form.capacidad = +$event" />
+    <div class="modal-form__field">
+      <label class="modal-form__label">Estado</label>
+      <select class="modal-form__select" [value]="form.estado" (change)="form.estado = $any($event.target).value">
+        @for (e of estados; track e) {
+          <option [value]="e">{{ e }}</option>
+        }
+      </select>
+    </div>
+    <app-button label="GUARDAR" [fullWidth]="true" (click)="guardar()" />
+  </div>
+</app-modal>
