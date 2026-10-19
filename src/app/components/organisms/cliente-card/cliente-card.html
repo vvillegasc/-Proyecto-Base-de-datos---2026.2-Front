@@ -1,9 +1,9 @@
 <div class="cliente-card">
   <div class="cliente-card__header">
-    <app-avatar [name]="cliente.nombre" />
+    <app-avatar [name]="cliente.nombres + ' ' + cliente.apellidos" />
     <div class="cliente-card__info">
-      <span class="cliente-card__nombre">{{ cliente.nombre }}</span>
-      <span class="cliente-card__email">{{ cliente.email }}</span>
+      <span class="cliente-card__nombre">{{ cliente.nombres }} {{ cliente.apellidos }}</span>
+      <span class="cliente-card__email">{{ cliente.correo }}</span>
       <span class="cliente-card__tel">{{ cliente.telefono }}</span>
     </div>
   </div>

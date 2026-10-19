@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PedidoResponseDTO } from '../../../models/model';
+import { EstadoPedido, PedidoResponseDTO } from '../../../models/model';
 import { Badge } from '../../atoms/badge/badge';
 
 @Component({
@@ -12,17 +12,16 @@ import { Badge } from '../../atoms/badge/badge';
 export class PedidosRecientes {
   @Input() pedidos: PedidoResponseDTO[] = [];
 
-  badgeVariant(estado: string): 'warning' | 'info' | 'success' | 'neutral' {
-    if (estado === 'CREADA') return 'neutral';
+  badgeVariant(estado: EstadoPedido): 'warning' | 'info' | 'success' | 'danger' | 'neutral' {
+    if (estado === 'PENDIENTE') return 'neutral';
     if (estado === 'EN_PREPARACION') return 'warning';
-    if (estado === 'ENTREGADA') return 'success';
+    if (estado === 'ENTREGADO') return 'success';
+    if (estado === 'CANCELADO') return 'danger';
     return 'neutral';
   }
 
-  estadoLabel(estado: string): string {
-    if (estado === 'CREADA') return 'CREADA';
+  estadoLabel(estado: EstadoPedido): string {
     if (estado === 'EN_PREPARACION') return 'EN PREP.';
-    if (estado === 'ENTREGADA') return 'ENTREGADA';
     return estado;
   }
 }

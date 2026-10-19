@@ -9,7 +9,7 @@
         <li class="pedidos-recientes__item">
           <div class="pedidos-recientes__info">
             <span class="pedidos-recientes__numero">Pedido #{{ pedido.idPedido }}</span>
-            <span class="pedidos-recientes__mesa">Mesa {{ pedido.mesa.numero }}</span>
+            <span class="pedidos-recientes__mesa">Mesa {{ pedido.numeroMesa }}</span>
           </div>
           <app-badge [label]="estadoLabel(pedido.estado)" [variant]="badgeVariant(pedido.estado)" />
         </li>

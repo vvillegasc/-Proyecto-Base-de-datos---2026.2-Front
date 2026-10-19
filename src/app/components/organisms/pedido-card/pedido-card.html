@@ -2,8 +2,8 @@
   <div class="pedido-card__header">
     <div class="pedido-card__meta">
       <span class="pedido-card__id">Pedido #{{ pedido.idPedido }}</span>
-      <span class="pedido-card__mesa">Mesa {{ pedido.mesa.numero }}
-        @if (pedido.cliente) { · {{ pedido.cliente.nombre }} }
+      <span class="pedido-card__mesa">Mesa {{ pedido.numeroMesa }}
+        @if (pedido.nombreCliente) { · {{ pedido.nombreCliente }} }
         @else { · Sin cliente }
       </span>
     </div>
@@ -11,7 +11,7 @@
   </div>
 
   <div class="pedido-card__items">
-    @for (d of pedido.detalles; track d.idDetalle) {
+    @for (d of pedido.detalles; track d.idDetallePedido) {
       <div class="pedido-card__item">
         <span>{{ d.nombreProducto }} x{{ d.cantidad }}</span>
         <span>{{ formatPrice(d.subtotal) }}</span>
@@ -21,16 +21,16 @@
 
   <div class="pedido-card__total">
     <span>Total</span>
-    <span class="pedido-card__total-value">{{ formatPrice(pedido.total) }}</span>
+    <span class="pedido-card__total-value">{{ formatPrice(pedido.subtotal) }}</span>
   </div>
 
   <div class="pedido-card__actions">
-    @if (pedido.estado !== 'ENTREGADA') {
+    @if (botonAvanzar) {
       <app-button [label]="botonAvanzar" variant="primary" (click)="avanzar.emit(pedido.idPedido)" />
     }
     <div class="pedido-card__secondary">
       <app-button label="VER DETALLE" variant="ghost" (click)="verDetalle.emit(pedido)" />
-      @if (pedido.estado === 'CREADA') {
+      @if (pedido.estado === 'PENDIENTE') {
         <app-button label="ELIM." variant="danger" (click)="eliminar.emit(pedido.idPedido)" />
       }
     </div>

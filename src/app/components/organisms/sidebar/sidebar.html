@@ -17,13 +17,13 @@
   <div class="sidebar__footer">
     @if (usuario) {
       <div class="sidebar__user">
-        <div class="sidebar__user-avatar">{{ usuario.nombre[0]?.toUpperCase() }}</div>
+        <div class="sidebar__user-avatar">{{ usuario.nombres[0]?.toUpperCase() }}</div>
         <div class="sidebar__user-info">
-          <span class="sidebar__user-name">{{ usuario.nombre }}</span>
-          <span class="sidebar__user-role">Administrador</span>
+          <span class="sidebar__user-name">{{ usuario.nombres }}</span>
+          <span class="sidebar__user-role">{{ usuario.rol }}</span>
         </div>
       </div>
     }
-    <button class="sidebar__logout" (click)="cerrarSesion()">Cerrar sesión</button>
+    <button class="sidebar__logout" routerLink="/login">Cerrar sesión</button>
   </div>
 </nav>

@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { SessionService } from '../../../services/session.service';
-import { Router } from '@angular/router';
+import { UsuarioResponseDTO } from '../../../models/model';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,17 +17,8 @@ export class Sidebar {
     { label: 'Pedidos', path: '/pedidos' },
   ];
 
-  constructor(
-    private sessionService: SessionService,
-    private router: Router,
-  ) {}
-
-  get usuario() {
-    return this.sessionService.usuario();
-  }
-
-  cerrarSesion(): void {
-    this.sessionService.cerrarSesion();
-    this.router.navigate(['/login']);
-  }
+  readonly usuario: Pick<UsuarioResponseDTO, 'nombres' | 'rol'> = {
+    nombres: 'Administrador',
+    rol: 'ADMINISTRADOR',
+  };
 }

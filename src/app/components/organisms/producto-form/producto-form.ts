@@ -15,5 +15,5 @@ export class ProductoForm {
   @Input() editando = false;
   @Output() guardar = new EventEmitter<void>();
 
-  readonly categorias = ['Entrada', 'Plato Fuerte', 'Postre', 'Bebida'];
+  readonly categorias = ['Bebidas Calientes', 'Bebidas Frías', 'Repostería y Panadería', 'Almuerzos Ligeros'];
 }

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Badge } from '../../atoms/badge/badge';
 import { Button } from '../../atoms/button/button';
-import { PedidoResponseDTO } from '../../../models/model';
+import { EstadoPedido, PedidoResponseDTO } from '../../../models/model';
 
 @Component({
   selector: 'app-pedido-card',
@@ -15,28 +15,32 @@ export class PedidoCard {
   @Output() eliminar = new EventEmitter<number>();
   @Output() verDetalle = new EventEmitter<PedidoResponseDTO>();
 
-  get estadoBadgeVariant() {
-    const map: Record<string, 'warning' | 'info' | 'success'> = {
-      CREADA: 'warning',
+  get estadoBadgeVariant(): 'warning' | 'info' | 'success' | 'danger' | 'neutral' {
+    const map: Record<EstadoPedido, 'warning' | 'info' | 'success' | 'danger' | 'neutral'> = {
+      PENDIENTE: 'warning',
       EN_PREPARACION: 'info',
-      ENTREGADA: 'success',
+      ENTREGADO: 'success',
+      PAGADO: 'neutral',
+      CANCELADO: 'danger',
     };
-    return map[this.pedido.estado] ?? 'neutral';
+    return map[this.pedido.estado];
   }
 
-  get estadoLabel() {
-    const map: Record<string, string> = {
-      CREADA: 'CREADA',
+  get estadoLabel(): string {
+    const map: Record<EstadoPedido, string> = {
+      PENDIENTE: 'PENDIENTE',
       EN_PREPARACION: 'EN PREP.',
-      ENTREGADA: 'ENTREGADA',
+      ENTREGADO: 'ENTREGADO',
+      PAGADO: 'PAGADO',
+      CANCELADO: 'CANCELADO',
     };
-    return map[this.pedido.estado] ?? this.pedido.estado;
+    return map[this.pedido.estado];
   }
 
-  get botonAvanzar() {
-    const map: Record<string, string> = {
-      CREADA: 'PASAR A EN PREPARACIÓN',
-      EN_PREPARACION: 'PASAR A ENTREGADA',
+  get botonAvanzar(): string {
+    const map: Partial<Record<EstadoPedido, string>> = {
+      PENDIENTE: 'PASAR A EN PREPARACIÓN',
+      EN_PREPARACION: 'PASAR A ENTREGADO',
     };
     return map[this.pedido.estado] ?? '';
   }

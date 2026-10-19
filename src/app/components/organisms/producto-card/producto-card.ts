@@ -15,11 +15,11 @@ export class ProductoCard {
   @Output() eliminar = new EventEmitter<number>();
 
   get badgeVariant() {
-    return this.producto.disponible ? 'success' : 'danger';
+    return this.producto.disponibilidad ? 'success' : 'danger';
   }
 
   get badgeLabel() {
-    return this.producto.disponible ? 'ACTIVO' : 'INACTIVO';
+    return this.producto.disponibilidad ? 'ACTIVO' : 'INACTIVO';
   }
 
   formatPrice(value: number): string {

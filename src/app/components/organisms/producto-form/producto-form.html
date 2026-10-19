@@ -9,7 +9,7 @@
   <app-form-field
     label="Descripción"
     id="pDesc"
-    [value]="form.descripcion"
+    [value]="form.descripcion ?? ''"
     (valueChange)="form.descripcion = $event"
   />
 
@@ -32,7 +32,7 @@
 
   <div class="producto-form__field">
     <label class="producto-form__label" for="pCat">Categoría</label>
-    <select id="pCat" class="producto-form__select" [(ngModel)]="form.categoria">
+    <select id="pCat" class="producto-form__select" [(ngModel)]="form.nombreCategoria">
       <option value="" disabled>Seleccionar categoría...</option>
       @for (cat of categorias; track cat) {
         <option [value]="cat">{{ cat }}</option>
@@ -49,7 +49,7 @@
 
   <div class="producto-form__check">
     <label class="producto-form__check-label">
-      <input type="checkbox" [(ngModel)]="form.disponible" />
+      <input type="checkbox" [(ngModel)]="form.disponibilidad" />
       Disponible
     </label>
   </div>

@@ -13,16 +13,16 @@ export class LoginForm {
   @Output() submitForm = new EventEmitter<LoginRequestDTO>();
   @Output() goToRegister = new EventEmitter<void>();
 
-  email = '';
-  password = '';
+  correo = '';
+  contrasena = '';
   error = '';
 
   onSubmit(): void {
-    if (!this.email || !this.password) {
+    if (!this.correo || !this.contrasena) {
       this.error = 'Completa todos los campos.';
       return;
     }
     this.error = '';
-    this.submitForm.emit({ email: this.email, password: this.password });
+    this.submitForm.emit({ correo: this.correo, contrasena: this.contrasena });
   }
 }

@@ -12,7 +12,7 @@
       <span class="producto-card__nombre">{{ producto.nombre }}</span>
       <app-badge [label]="badgeLabel" [variant]="badgeVariant" />
     </div>
-    <span class="producto-card__categoria">{{ producto.categoria }}</span>
+    <span class="producto-card__categoria">{{ producto.nombreCategoria }}</span>
     <span class="producto-card__precio">{{ formatPrice(producto.precio) }}</span>
   </div>
 

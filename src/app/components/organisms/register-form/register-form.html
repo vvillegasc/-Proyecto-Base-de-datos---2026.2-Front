@@ -2,21 +2,31 @@
   <h2 class="register-form__title">Crear Cuenta</h2>
 
   <div class="register-form__fields">
-    <app-form-field
-      id="nombre"
-      label="Nombre completo"
-      type="text"
-      placeholder="Ana García"
-      [value]="nombre"
-      (valueChange)="nombre = $event"
-    />
+    <div class="register-form__row">
+      <app-form-field
+        id="nombres"
+        label="Nombres"
+        type="text"
+        placeholder="Ana"
+        [value]="nombres"
+        (valueChange)="nombres = $event"
+      />
+      <app-form-field
+        id="apellidos"
+        label="Apellidos"
+        type="text"
+        placeholder="García"
+        [value]="apellidos"
+        (valueChange)="apellidos = $event"
+      />
+    </div>
     <app-form-field
       id="email"
       label="Correo electrónico"
       type="email"
       placeholder="correo@ejemplo.com"
-      [value]="email"
-      (valueChange)="email = $event"
+      [value]="correo"
+      (valueChange)="correo = $event"
     />
     <div class="register-form__row">
       <app-form-field
@@ -24,8 +34,8 @@
         label="Contraseña"
         type="password"
         placeholder="mínimo 6 car."
-        [value]="password"
-        (valueChange)="password = $event"
+        [value]="contrasena"
+        (valueChange)="contrasena = $event"
       />
       <app-form-field
         id="confirmar"
