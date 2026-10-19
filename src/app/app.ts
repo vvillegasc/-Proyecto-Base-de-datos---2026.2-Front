@@ -1,12 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Toast } from './components/organisms/toast/toast';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, Toast],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
-export class App {
-  protected readonly title = signal('savana-web');
-}
+export class App {}
