@@ -1,0 +1,13 @@
+<div class="field">
+  <label [for]="id" class="field__label">{{ label }}</label>
+  <app-input-field
+    [id]="id"
+    [type]="type"
+    [placeholder]="placeholder"
+    [value]="value"
+    (valueChange)="valueChange.emit($event)"
+  />
+  @if (error) {
+    <span class="field__error">{{ error }}</span>
+  }
+</div>
