@@ -32,8 +32,8 @@
   (close)="modalVisible.set(false)"
 >
   <div class="modal-form">
-    <app-form-field label="Nombres" id="cNombres" [value]="form.nombres" (valueChange)="form.nombres = $event" />
-    <app-form-field label="Apellidos" id="cApellidos" [value]="form.apellidos" (valueChange)="form.apellidos = $event" />
+    <app-form-field label="Nombre" id="cNombres" [value]="form.nombre" (valueChange)="form.nombre = $event" />
+    <app-form-field label="Apellido" id="cApellidos" [value]="form.apellido" (valueChange)="form.apellido = $event" />
     <app-form-field label="Correo electrónico" id="cCorreo" type="email" [value]="form.correo" (valueChange)="form.correo = $event" />
     <app-form-field label="Teléfono" id="cTel" [value]="form.telefono" (valueChange)="form.telefono = $event" />
     <app-button label="GUARDAR" [fullWidth]="true" (click)="guardar()" />

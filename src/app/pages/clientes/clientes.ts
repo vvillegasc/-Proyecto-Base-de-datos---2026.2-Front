@@ -20,25 +20,25 @@ export class Clientes {
   modalVisible = signal(false);
   editando = signal<ClienteResponseDTO | null>(null);
 
-  form: ClienteRequestDTO = { nombres: '', apellidos: '', correo: '', telefono: '' };
+  form: ClienteRequestDTO = { nombre: '', apellido: '', correo: '', telefono: '' };
 
   get clientesFiltrados(): ClienteResponseDTO[] {
     const q = this.busqueda().toLowerCase();
     if (!q) return this.clientes;
     return this.clientes.filter(c =>
-      `${c.nombres} ${c.apellidos} ${c.correo}`.toLowerCase().includes(q),
+      `${c.nombre} ${c.apellido} ${c.correo}`.toLowerCase().includes(q),
     );
   }
 
   abrirCrear(): void {
     this.editando.set(null);
-    this.form = { nombres: '', apellidos: '', correo: '', telefono: '' };
+    this.form = { nombre: '', apellido: '', correo: '', telefono: '' };
     this.modalVisible.set(true);
   }
 
   abrirEditar(c: ClienteResponseDTO): void {
     this.editando.set(c);
-    this.form = { nombres: c.nombres, apellidos: c.apellidos, correo: c.correo, telefono: c.telefono };
+    this.form = { nombre: c.nombre, apellido: c.apellido, correo: c.correo, telefono: c.telefono };
     this.modalVisible.set(true);
   }
 

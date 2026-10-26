@@ -1,4 +1,4 @@
-export type RolUsuario = 'ADMINISTRADOR' | 'EMPLEADO';
+export type RolUsuario = 'ADMINISTRADOR' | 'MESERO';
 export type EstadoUsuario = 'ACTIVO' | 'INACTIVO';
 export type EstadoCategoria = 'ACTIVA' | 'INACTIVA';
 export type EstadoMesa = 'DISPONIBLE' | 'OCUPADA' | 'RESERVADA' | 'EN_MANTENIMIENTO';
@@ -51,19 +51,18 @@ export interface ActualizarEstadoUsuarioRequest {
 }
 
 export interface ClienteRequestDTO {
-  nombres: string;
-  apellidos: string;
+  nombre: string;
+  apellido: string;
   correo: string;
   telefono: string;
 }
 
 export interface ClienteResponseDTO {
   idCliente: number;
-  nombres: string;
-  apellidos: string;
+  nombre: string;
+  apellido: string;
   correo: string;
   telefono: string;
-  fechaRegistro: string;
 }
 
 export interface EliminarClienteResponse {
@@ -126,7 +125,7 @@ export interface DetallePedidoRequestDTO {
 }
 
 export interface DetallePedidoResponseDTO {
-  idDetallePedido: number;
+  idDetallePedido: string;
   idProducto: number;
   nombreProducto: string;
   cantidad: number;
@@ -161,9 +160,10 @@ export interface ActualizarEstadoPedidoRequestDTO {
 }
 
 export interface ReservaRequestDTO {
+  idReserva?: number;
   idCliente?: number;
-  nombres?: string;
-  apellidos?: string;
+  nombre?: string;
+  apellido?: string;
   correo?: string;
   telefono?: string;
   numeroMesa: number;
@@ -176,6 +176,7 @@ export interface ReservaRequestDTO {
 }
 
 export interface ReservaResponseDTO {
+  idReservaCompuesta: string;
   idReserva: number;
   idCliente: number;
   nombreCliente: string;
@@ -195,57 +196,43 @@ export interface ActualizarEstadoReservaRequest {
 
 export interface MetodoPagoRequestDTO {
   tipo: TipoMetodoPago;
-  nombre?: string;
-  descripcion?: string;
-  activo?: boolean;
 }
 
 export interface MetodoPagoResponseDTO {
   tipo: TipoMetodoPago;
-  nombre: string;
-  descripcion: string;
-  activo: boolean;
 }
 
 export interface PagoRequestDTO {
   tipoMetodoPago: TipoMetodoPago;
-  total: number;
-  referenciaTransaccion?: string;
+  monto: number;
 }
 
 export interface PagoResponseDTO {
   idPago: number;
   numFactura: string;
   tipoMetodoPago: TipoMetodoPago;
-  nombreMetodoPago: string;
   estado: string;
-  total: number;
-  referenciaTransaccion: string;
+  monto: number;
   fecha: string;
 }
 
 export interface FacturaRequestDTO {
   idPedido: number;
-  idUsuario?: number;
   propina?: number;
   pagos?: PagoRequestDTO[];
   tipoMetodoPago?: TipoMetodoPago;
-  total?: number;
-  referenciaTransaccion?: string;
+  monto?: number;
 }
 
 export interface FacturaResponseDTO {
   numFactura: string;
   idPedido: number;
-  idCliente: number;
   nombreCliente: string;
   correoCliente: string;
   telefonoCliente: string;
-  idUsuario: number;
   nombreUsuario: string;
   fecha: string;
   estado: EstadoFactura;
-  subtotal: number;
   propina: number;
   impuesto: number;
   total: number;

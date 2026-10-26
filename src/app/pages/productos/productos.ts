@@ -7,7 +7,8 @@ import { SearchBar } from '../../components/molecules/search-bar/search-bar';
 import { TabFilter, Tab } from '../../components/molecules/tab-filter/tab-filter';
 import { Button } from '../../components/atoms/button/button';
 import { ProductoRequestDTO, ProductoResponseDTO } from '../../models/model';
-import { CATEGORIAS_MOCK, PRODUCTOS_MOCK } from '../../mocks/productos.mock';
+import { PRODUCTOS_MOCK } from '../../mocks/productos.mock';
+import { CATEGORIAS_MOCK } from '../../mocks/categorias.mock';
 
 @Component({
   selector: 'app-productos',

@@ -39,7 +39,7 @@ export class RegisterForm {
       apellidos: this.apellidos,
       correo: this.correo,
       contrasena: this.contrasena,
-      rol: 'EMPLEADO',
+      rol: 'MESERO',
     });
   }
 }

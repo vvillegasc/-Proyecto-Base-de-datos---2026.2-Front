@@ -49,7 +49,7 @@
       <select class="modal-form__select" [value]="idCliente" (change)="idCliente = +$any($event.target).value">
         <option [value]="0">Selecciona un cliente...</option>
         @for (c of clientes; track c.idCliente) {
-          <option [value]="c.idCliente">{{ c.nombres }} {{ c.apellidos }}</option>
+          <option [value]="c.idCliente">{{ c.nombre }} {{ c.apellido }}</option>
         }
       </select>
     </div>
