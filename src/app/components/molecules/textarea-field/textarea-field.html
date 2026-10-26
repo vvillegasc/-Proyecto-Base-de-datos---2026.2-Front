@@ -1,0 +1,20 @@
+<div class="field">
+  @if (label) {
+    <label [for]="id" class="field__label">{{ label }}</label>
+  }
+  <textarea
+    [id]="id"
+    class="textarea"
+    [rows]="rows"
+    [placeholder]="placeholder"
+    [value]="value"
+    [attr.maxlength]="maxLength"
+    (input)="onInput($event)"
+  ></textarea>
+  @if (maxLength) {
+    <span class="field__counter">{{ value.length }} / {{ maxLength }}</span>
+  }
+  @if (error) {
+    <span class="field__error">{{ error }}</span>
+  }
+</div>

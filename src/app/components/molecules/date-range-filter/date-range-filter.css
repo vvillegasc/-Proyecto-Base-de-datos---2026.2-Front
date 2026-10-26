@@ -1,0 +1,33 @@
+.range {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.range__field { display: flex; flex-direction: column; gap: 4px; }
+
+.range__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.range__input {
+  padding: 8px 10px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  outline: none;
+}
+.range__input:focus { border-color: var(--color-primary); }
+
+.range__clear {
+  padding: 8px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+.range__clear:hover { text-decoration: underline; }

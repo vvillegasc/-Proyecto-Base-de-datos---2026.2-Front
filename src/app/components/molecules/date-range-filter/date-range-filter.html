@@ -1,0 +1,13 @@
+<div class="range">
+  <label class="range__field">
+    <span class="range__label">Desde</span>
+    <input class="range__input" type="date" [value]="desde" [max]="hasta" (change)="onDesde($event)" />
+  </label>
+  <label class="range__field">
+    <span class="range__label">Hasta</span>
+    <input class="range__input" type="date" [value]="hasta" [min]="desde" (change)="onHasta($event)" />
+  </label>
+  @if (desde || hasta) {
+    <button class="range__clear" type="button" (click)="limpiar()">Limpiar</button>
+  }
+</div>
