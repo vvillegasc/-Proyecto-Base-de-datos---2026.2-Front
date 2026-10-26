@@ -10,10 +10,10 @@
   <div class="producto-card__body">
     <div class="producto-card__header">
       <span class="producto-card__nombre">{{ producto.nombre }}</span>
-      <app-badge [label]="badgeLabel" [variant]="badgeVariant" />
+      <app-badge [label]="estado.label" [variant]="estado.variant" />
     </div>
     <span class="producto-card__categoria">{{ producto.nombreCategoria }}</span>
-    <span class="producto-card__precio">{{ formatPrice(producto.precio) }}</span>
+    <span class="producto-card__precio">{{ producto.precio | precio }}</span>
   </div>
 
   <div class="producto-card__actions">

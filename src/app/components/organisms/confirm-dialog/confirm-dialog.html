@@ -1,0 +1,12 @@
+<app-modal [title]="title" [visible]="visible" (close)="cancel.emit()">
+  <div class="confirm">
+    @if (message) {
+      <p class="confirm__message">{{ message }}</p>
+    }
+    <ng-content />
+    <div class="confirm__actions">
+      <app-button [label]="cancelLabel" variant="ghost" (click)="cancel.emit()" />
+      <app-button [label]="confirmLabel" [variant]="variant" (click)="confirm.emit()" />
+    </div>
+  </div>
+</app-modal>

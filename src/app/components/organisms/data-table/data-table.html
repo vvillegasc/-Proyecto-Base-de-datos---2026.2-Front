@@ -1,0 +1,22 @@
+@if (rows.length === 0) {
+  <app-empty-state [title]="emptyTitle" [message]="emptyMessage" />
+} @else {
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          @for (col of columns; track col.label) {
+            <th [style.text-align]="col.align ?? 'left'" [style.width]="col.width">{{ col.label }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows; track $index) {
+          <tr>
+            <ng-container *ngTemplateOutlet="rowTemplate; context: { $implicit: row, index: $index }" />
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

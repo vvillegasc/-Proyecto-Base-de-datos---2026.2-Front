@@ -11,7 +11,7 @@
             <span class="pedidos-recientes__numero">Pedido #{{ pedido.idPedido }}</span>
             <span class="pedidos-recientes__mesa">Mesa {{ pedido.numeroMesa }}</span>
           </div>
-          <app-badge [label]="estadoLabel(pedido.estado)" [variant]="badgeVariant(pedido.estado)" />
+          <app-badge [label]="estados[pedido.estado].label" [variant]="estados[pedido.estado].variant" />
         </li>
       }
     </ul>

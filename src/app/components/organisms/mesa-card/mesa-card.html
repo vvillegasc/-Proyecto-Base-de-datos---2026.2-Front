@@ -1,7 +1,7 @@
 <div class="mesa-card">
   <div class="mesa-card__number">{{ mesa.numeroMesa }}</div>
   <div class="mesa-card__info">{{ mesa.capacidad }} personas</div>
-  <app-badge [label]="mesa.estado" [variant]="badgeVariant" />
+  <app-badge [label]="estado.label" [variant]="estado.variant" />
   <div class="mesa-card__actions">
     <app-button label="EDITAR" variant="secondary" (click)="editar.emit(mesa)" />
     <app-button label="ELIMINAR" variant="danger" (click)="eliminar.emit(mesa.numeroMesa)" />

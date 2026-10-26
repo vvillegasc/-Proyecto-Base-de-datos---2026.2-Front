@@ -1,0 +1,13 @@
+.confirm { display: flex; flex-direction: column; gap: 20px; }
+
+.confirm__message {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

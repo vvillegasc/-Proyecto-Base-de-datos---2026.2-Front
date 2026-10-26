@@ -2,10 +2,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Badge } from '../../atoms/badge/badge';
 import { Button } from '../../atoms/button/button';
 import { EstadoPedido, PedidoResponseDTO } from '../../../models/model';
+import { ESTADO_PEDIDO, EstadoVisual } from '../../../utils/estados';
+import { PrecioPipe } from '../../../pipes/precio.pipe';
 
 @Component({
   selector: 'app-pedido-card',
-  imports: [Badge, Button],
+  imports: [Badge, Button, PrecioPipe],
   templateUrl: './pedido-card.html',
   styleUrl: './pedido-card.css',
 })
@@ -15,26 +17,8 @@ export class PedidoCard {
   @Output() eliminar = new EventEmitter<number>();
   @Output() verDetalle = new EventEmitter<PedidoResponseDTO>();
 
-  get estadoBadgeVariant(): 'warning' | 'info' | 'success' | 'danger' | 'neutral' {
-    const map: Record<EstadoPedido, 'warning' | 'info' | 'success' | 'danger' | 'neutral'> = {
-      PENDIENTE: 'warning',
-      EN_PREPARACION: 'info',
-      ENTREGADO: 'success',
-      PAGADO: 'neutral',
-      CANCELADO: 'danger',
-    };
-    return map[this.pedido.estado];
-  }
-
-  get estadoLabel(): string {
-    const map: Record<EstadoPedido, string> = {
-      PENDIENTE: 'PENDIENTE',
-      EN_PREPARACION: 'EN PREP.',
-      ENTREGADO: 'ENTREGADO',
-      PAGADO: 'PAGADO',
-      CANCELADO: 'CANCELADO',
-    };
-    return map[this.pedido.estado];
+  get estado(): EstadoVisual {
+    return ESTADO_PEDIDO[this.pedido.estado];
   }
 
   get botonAvanzar(): string {
@@ -43,9 +27,5 @@ export class PedidoCard {
       EN_PREPARACION: 'PASAR A ENTREGADO',
     };
     return map[this.pedido.estado] ?? '';
-  }
-
-  formatPrice(value: number): string {
-    return `$ ${value.toLocaleString('es-CO')}`;
   }
 }

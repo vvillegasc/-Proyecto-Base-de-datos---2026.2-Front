@@ -7,21 +7,21 @@
         @else { · Sin cliente }
       </span>
     </div>
-    <app-badge [label]="estadoLabel" [variant]="estadoBadgeVariant" />
+    <app-badge [label]="estado.label" [variant]="estado.variant" />
   </div>
 
   <div class="pedido-card__items">
     @for (d of pedido.detalles; track d.idDetallePedido) {
       <div class="pedido-card__item">
         <span>{{ d.nombreProducto }} x{{ d.cantidad }}</span>
-        <span>{{ formatPrice(d.subtotal) }}</span>
+        <span>{{ d.subtotal | precio }}</span>
       </div>
     }
   </div>
 
   <div class="pedido-card__total">
     <span>Total</span>
-    <span class="pedido-card__total-value">{{ formatPrice(pedido.subtotal) }}</span>
+    <span class="pedido-card__total-value">{{ pedido.subtotal | precio }}</span>
   </div>
 
   <div class="pedido-card__actions">
