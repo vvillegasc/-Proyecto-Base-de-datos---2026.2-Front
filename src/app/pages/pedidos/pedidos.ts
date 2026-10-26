@@ -10,10 +10,13 @@ import { PEDIDOS_MOCK } from '../../mocks/pedidos.mock';
 import { MESAS_MOCK } from '../../mocks/mesas.mock';
 import { CLIENTES_MOCK } from '../../mocks/clientes.mock';
 import { PRODUCTOS_MOCK } from '../../mocks/productos.mock';
+import { PrecioPipe } from '../../pipes/precio.pipe';
+
+import { EmptyState } from '../../components/molecules/empty-state/empty-state';
 
 @Component({
   selector: 'app-pedidos',
-  imports: [DashboardLayout, PedidoCard, Modal, FormField, TabFilter, Button],
+  imports: [DashboardLayout, PedidoCard, Modal, FormField, TabFilter, Button, PrecioPipe, EmptyState],
   templateUrl: './pedidos.html',
   styleUrl: './pedidos.css',
 })
@@ -72,9 +75,5 @@ export class Pedidos {
   verDetalle(pedido: PedidoResponseDTO): void {
     this.pedidoDetalle.set(pedido);
     this.detalleVisible.set(true);
-  }
-
-  formatPrice(value: number): string {
-    return `$ ${value.toLocaleString('es-CO')}`;
   }
 }

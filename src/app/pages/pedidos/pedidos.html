@@ -22,7 +22,7 @@
           (verDetalle)="verDetalle($event)"
         />
       } @empty {
-        <p class="page__empty">No hay pedidos registrados.</p>
+        <app-empty-state title="No hay pedidos" message="No hay pedidos con este estado." />
       }
     </div>
   </div>
@@ -66,7 +66,7 @@
           <select class="modal-form__select" [value]="d.idProducto" (change)="d.idProducto = +$any($event.target).value">
             <option [value]="0" disabled>Seleccionar producto...</option>
             @for (p of productos; track p.idProducto) {
-              <option [value]="p.idProducto">{{ p.nombre }} — ${{ p.precio }}</option>
+              <option [value]="p.idProducto">{{ p.nombre }} — {{ p.precio | precio }}</option>
             }
           </select>
           <app-form-field label="" id="dCant{{$index}}" type="number" placeholder="Cant." [value]="d.cantidad" (valueChange)="d.cantidad = +$event" />
@@ -95,13 +95,13 @@
       @for (d of pedidoDetalle()!.detalles; track d.idDetallePedido) {
         <div class="detalle__row">
           <span>{{ d.nombreProducto }} x{{ d.cantidad }}</span>
-          <span>{{ formatPrice(d.subtotal) }}</span>
+          <span>{{ d.subtotal | precio }}</span>
         </div>
       }
       <hr class="detalle__divider" />
       <div class="detalle__row detalle__row--total">
         <span>Total</span>
-        <strong>{{ formatPrice(pedidoDetalle()!.subtotal) }}</strong>
+        <strong>{{ pedidoDetalle()!.subtotal | precio }}</strong>
       </div>
     </div>
   }

@@ -8,9 +8,11 @@ import { Button } from '../../components/atoms/button/button';
 import { EstadoMesa, MesaRequestDTO, MesaResponseDTO } from '../../models/model';
 import { MESAS_MOCK } from '../../mocks/mesas.mock';
 
+import { EmptyState } from '../../components/molecules/empty-state/empty-state';
+
 @Component({
   selector: 'app-mesas',
-  imports: [DashboardLayout, MesaCard, Modal, FormField, TabFilter, Button],
+  imports: [DashboardLayout, MesaCard, Modal, FormField, TabFilter, Button, EmptyState],
   templateUrl: './mesas.html',
   styleUrl: './mesas.css',
 })

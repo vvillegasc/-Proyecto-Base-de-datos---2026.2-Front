@@ -17,7 +17,7 @@
       @for (m of mesasFiltradas; track m.numeroMesa) {
         <app-mesa-card [mesa]="m" (editar)="abrirEditar($event)" (eliminar)="eliminar($event)" />
       } @empty {
-        <p class="page__empty">No hay mesas registradas.</p>
+        <app-empty-state title="No hay mesas" message="No hay mesas con este estado." actionLabel="+ NUEVA MESA" (action)="abrirCrear()" />
       }
     </div>
   </div>

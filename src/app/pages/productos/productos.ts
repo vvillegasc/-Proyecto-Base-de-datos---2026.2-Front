@@ -10,9 +10,11 @@ import { ProductoRequestDTO, ProductoResponseDTO } from '../../models/model';
 import { PRODUCTOS_MOCK } from '../../mocks/productos.mock';
 import { CATEGORIAS_MOCK } from '../../mocks/categorias.mock';
 
+import { EmptyState } from '../../components/molecules/empty-state/empty-state';
+
 @Component({
   selector: 'app-productos',
-  imports: [DashboardLayout, ProductoCard, ProductoForm, Modal, SearchBar, TabFilter, Button],
+  imports: [DashboardLayout, ProductoCard, ProductoForm, Modal, SearchBar, TabFilter, Button, EmptyState],
   templateUrl: './productos.html',
   styleUrl: './productos.css',
 })

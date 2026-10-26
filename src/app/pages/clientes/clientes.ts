@@ -8,9 +8,11 @@ import { Button } from '../../components/atoms/button/button';
 import { ClienteRequestDTO, ClienteResponseDTO } from '../../models/model';
 import { CLIENTES_MOCK } from '../../mocks/clientes.mock';
 
+import { EmptyState } from '../../components/molecules/empty-state/empty-state';
+
 @Component({
   selector: 'app-clientes',
-  imports: [DashboardLayout, ClienteCard, Modal, FormField, SearchBar, Button],
+  imports: [DashboardLayout, ClienteCard, Modal, FormField, SearchBar, Button, EmptyState],
   templateUrl: './clientes.html',
   styleUrl: './clientes.css',
 })

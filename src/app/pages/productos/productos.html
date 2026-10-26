@@ -26,7 +26,7 @@
           (eliminar)="eliminar($event)"
         />
       } @empty {
-        <p class="page__empty">No hay productos registrados.</p>
+        <app-empty-state title="No hay productos" message="Prueba con otra categoría o búsqueda, o crea un producto nuevo." actionLabel="+ NUEVO PRODUCTO" (action)="abrirCrear()" />
       }
     </div>
   </div>

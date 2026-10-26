@@ -20,7 +20,7 @@
       @for (c of clientesFiltrados; track c.idCliente) {
         <app-cliente-card [cliente]="c" (editar)="abrirEditar($event)" (eliminar)="eliminar($event)" />
       } @empty {
-        <p class="page__empty">No hay clientes registrados.</p>
+        <app-empty-state title="No hay clientes" message="Ningún cliente coincide con la búsqueda." actionLabel="+ NUEVO CLIENTE" (action)="abrirCrear()" />
       }
     </div>
   </div>
