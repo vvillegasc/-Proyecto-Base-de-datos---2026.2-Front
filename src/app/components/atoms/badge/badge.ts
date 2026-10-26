@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 
+export type BadgeVariant = 'success' | 'danger' | 'warning' | 'info' | 'neutral';
+
 @Component({
   selector: 'app-badge',
   imports: [],
@@ -8,5 +10,5 @@ import { Component, Input } from '@angular/core';
 })
 export class Badge {
   @Input() label = '';
-  @Input() variant: 'success' | 'danger' | 'warning' | 'info' | 'neutral' = 'neutral';
+  @Input() variant: BadgeVariant = 'neutral';
 }
