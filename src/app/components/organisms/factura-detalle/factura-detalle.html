@@ -1,0 +1,64 @@
+<div class="factura">
+  @if (aviso) {
+    <div class="factura__aviso">✓ {{ aviso }}</div>
+  }
+
+  <div class="factura__recibo">
+    <div class="factura__brand">
+      <span class="factura__logo">Savana</span>
+      <span class="factura__sub">DATA COFFEE · FACTURA DE VENTA</span>
+    </div>
+
+    <div class="factura__head">
+      <div>
+        <span class="factura__numero">{{ factura.numFactura }}</span>
+        <span class="factura__fecha">{{ factura.fecha | date: 'dd/MM/yyyy · HH:mm' }}</span>
+      </div>
+      <app-badge [label]="estado.label" [variant]="estado.variant" />
+    </div>
+
+    <div class="factura__section">
+      <div class="factura__row"><span>Cliente</span><span>{{ factura.nombreCliente }}</span></div>
+      <div class="factura__row"><span>Correo</span><span>{{ factura.correoCliente }}</span></div>
+      <div class="factura__row"><span>Teléfono</span><span>{{ factura.telefonoCliente }}</span></div>
+      <div class="factura__row"><span>Atendido por</span><span>{{ factura.nombreUsuario }}</span></div>
+      <div class="factura__row">
+        <span>Pedido</span>
+        <span>#{{ factura.idPedido }}@if (pedido) { · Mesa {{ pedido.numeroMesa }} }</span>
+      </div>
+    </div>
+
+    @if (pedido) {
+      <div class="factura__section">
+        @for (d of pedido.detalles; track d.idDetallePedido) {
+          <div class="factura__item">
+            <span>{{ d.cantidad }} × {{ d.nombreProducto }}</span>
+            <span>{{ d.subtotal | precio }}</span>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="factura__section">
+      <div class="factura__row"><span>Subtotal</span><span>{{ subtotal | precio }}</span></div>
+      <div class="factura__row"><span>IVA (19%)</span><span>{{ factura.impuesto | precio }}</span></div>
+      <div class="factura__row"><span>Propina</span><span>{{ factura.propina | precio }}</span></div>
+      <div class="factura__total"><span>TOTAL</span><span>{{ factura.total | precio }}</span></div>
+    </div>
+
+    <div class="factura__section">
+      <span class="factura__label">Pagos</span>
+      @for (p of factura.pagos; track p.idPago) {
+        <div class="factura__row"><span>{{ metodoLabel[p.tipoMetodoPago] }}</span><span>{{ p.monto | precio }}</span></div>
+      }
+    </div>
+
+    <p class="factura__gracias">¡Gracias por tu visita!</p>
+  </div>
+
+  <div class="factura__actions">
+    <app-button label="IMPRIMIR" variant="ghost" (click)="imprimir.emit()" />
+    <app-button label="REENVIAR AL CORREO" variant="secondary" (click)="reenviar.emit()" />
+    <app-button label="CERRAR" (click)="cerrar.emit()" />
+  </div>
+</div>

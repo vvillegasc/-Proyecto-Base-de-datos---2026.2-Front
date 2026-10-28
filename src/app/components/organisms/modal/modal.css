@@ -20,6 +20,8 @@
   box-shadow: var(--shadow-lg);
 }
 
+.modal--lg { max-width: 860px; }
+
 .modal__header {
   display: flex;
   align-items: center;

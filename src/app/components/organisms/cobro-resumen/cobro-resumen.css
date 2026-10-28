@@ -1,0 +1,51 @@
+.resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+  padding: 16px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.resumen__head { display: flex; align-items: center; justify-content: space-between; }
+.resumen__titulo { font-size: 16px; font-weight: 700; color: var(--color-text-primary); }
+.resumen__mesa {
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.resumen__meta { display: flex; flex-direction: column; gap: 4px; }
+.resumen__meta div { display: flex; justify-content: space-between; font-size: 13px; }
+.resumen__meta span { color: var(--color-text-secondary); }
+.resumen__meta strong { font-weight: 600; color: var(--color-text-primary); }
+
+.resumen__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-border);
+}
+
+.resumen__item { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--color-text-primary); }
+.resumen__item > div { display: flex; flex-direction: column; gap: 2px; }
+.resumen__producto { font-weight: 500; }
+.resumen__cantidad { font-size: 12px; color: var(--color-text-muted); }
+
+.resumen__obs { font-size: 12px; font-style: italic; color: var(--color-text-secondary); }
+
+.resumen__subtotal {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-border);
+  font-size: 15px;
+  color: var(--color-text-primary);
+}

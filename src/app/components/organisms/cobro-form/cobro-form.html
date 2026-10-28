@@ -1,0 +1,67 @@
+<div class="cobro">
+  <div class="cobro__resumen">
+    <app-cobro-resumen [pedido]="pedido" />
+  </div>
+
+  <div class="cobro__liquidacion">
+    <div class="cobro__field">
+      <span class="cobro__label">Propina voluntaria</span>
+      <div class="cobro__propina">
+        <div class="cobro__monto">
+          <span class="cobro__prefix">$</span>
+          <input
+            class="cobro__input"
+            type="number"
+            min="0"
+            [value]="propina || ''"
+            placeholder="0"
+            (input)="setPropina(+$any($event.target).value)"
+          />
+        </div>
+        @for (pct of propinasRapidas; track pct) {
+          <button
+            class="cobro__chip"
+            type="button"
+            [class.cobro__chip--active]="propina === porcentajePropina(pct)"
+            (click)="setPropina(porcentajePropina(pct))"
+          >
+            {{ pct }}%
+          </button>
+        }
+      </div>
+    </div>
+
+    <app-totales-box [subtotal]="subtotal" [impuesto]="impuesto" [propina]="propina" [total]="total" />
+
+    <div class="cobro__field">
+      <div class="cobro__section-header">
+        <span class="cobro__label">Métodos de pago</span>
+        <button class="cobro__add" type="button" (click)="agregarPago()">+ Agregar método</button>
+      </div>
+      @for (p of pagos; track $index) {
+        <app-metodo-pago-row
+          [pago]="p"
+          [metodos]="metodos"
+          [restante]="diferencia"
+          [removible]="pagos.length > 1"
+          (remove)="quitarPago($index)"
+        />
+      }
+    </div>
+
+    <div class="cobro__cuadre" [class.cobro__cuadre--ok]="cuadra">
+      @if (cuadra) {
+        <span>✓ Pagos completos: {{ pagado | precio }}</span>
+      } @else if (diferencia > 0) {
+        <span>Pagado {{ pagado | precio }} de {{ total | precio }} · Faltan <strong>{{ diferencia | precio }}</strong></span>
+      } @else {
+        <span>Pagado {{ pagado | precio }} de {{ total | precio }} · Sobran <strong>{{ -diferencia | precio }}</strong></span>
+      }
+    </div>
+
+    <div class="cobro__actions">
+      <app-button label="CANCELAR" variant="ghost" (click)="cancelar.emit()" />
+      <app-button label="CONFIRMAR PAGO" [disabled]="!cuadra" (click)="onConfirmar()" />
+    </div>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 @if (visible) {
   <div class="modal-backdrop" (click)="close.emit()">
-    <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal" [class.modal--lg]="size === 'lg'" (click)="$event.stopPropagation()">
       <div class="modal__header">
         <h3 class="modal__title">{{ title }}</h3>
         <button class="modal__close" (click)="close.emit()">✕</button>

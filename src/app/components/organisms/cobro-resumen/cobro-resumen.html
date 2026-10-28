@@ -1,0 +1,32 @@
+<div class="resumen">
+  <div class="resumen__head">
+    <span class="resumen__titulo">Pedido #{{ pedido.idPedido }}</span>
+    <span class="resumen__mesa">Mesa {{ pedido.numeroMesa }}</span>
+  </div>
+  <div class="resumen__meta">
+    <div><span>Cliente</span><strong>{{ pedido.nombreCliente }}</strong></div>
+    <div><span>Atendido por</span><strong>{{ pedido.nombreUsuario }}</strong></div>
+    <div><span>Hora</span><strong>{{ pedido.fecha | date: 'HH:mm' }}</strong></div>
+  </div>
+
+  <div class="resumen__items">
+    @for (d of pedido.detalles; track d.idDetallePedido) {
+      <div class="resumen__item">
+        <div>
+          <span class="resumen__producto">{{ d.nombreProducto }}</span>
+          <span class="resumen__cantidad">{{ d.cantidad }} × {{ d.precioUnitario | precio }}</span>
+        </div>
+        <span>{{ d.subtotal | precio }}</span>
+      </div>
+    }
+  </div>
+
+  @if (pedido.observaciones) {
+    <p class="resumen__obs">“{{ pedido.observaciones }}”</p>
+  }
+
+  <div class="resumen__subtotal">
+    <span>Subtotal</span>
+    <strong>{{ pedido.subtotal | precio }}</strong>
+  </div>
+</div>

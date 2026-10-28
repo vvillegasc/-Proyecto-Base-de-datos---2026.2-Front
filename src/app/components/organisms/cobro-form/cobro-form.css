@@ -1,0 +1,59 @@
+.cobro {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+}
+
+.cobro__liquidacion { display: flex; flex-direction: column; gap: 16px; }
+
+.cobro__field { display: flex; flex-direction: column; gap: 8px; }
+
+.cobro__label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
+
+.cobro__section-header { display: flex; align-items: center; justify-content: space-between; }
+
+.cobro__add { font-size: 13px; font-weight: 600; color: var(--color-primary); padding: 0; }
+
+.cobro__propina { display: flex; gap: 6px; }
+
+.cobro__monto { position: relative; display: flex; align-items: center; flex: 1; }
+.cobro__prefix { position: absolute; left: 10px; font-size: 13px; color: var(--color-text-muted); }
+
+.cobro__input {
+  width: 100%;
+  padding: 8px 10px 8px 22px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+.cobro__input:focus { border-color: var(--color-primary); }
+
+.cobro__chip {
+  padding: 6px 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+}
+.cobro__chip:hover { background: var(--color-bg); }
+.cobro__chip--active { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
+.cobro__chip--active:hover { background: var(--color-primary-hover); }
+
+.cobro__cuadre {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+  font-size: 13px;
+}
+.cobro__cuadre--ok { background: var(--color-success-light); color: var(--color-success); font-weight: 600; }
+
+.cobro__actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+@media (max-width: 760px) {
+  .cobro { grid-template-columns: 1fr; }
+}
