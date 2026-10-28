@@ -11,6 +11,8 @@ import { ClienteResponseDTO } from '../../../models/model';
 })
 export class ClienteCard {
   @Input() cliente!: ClienteResponseDTO;
+  // false = sin editar/eliminar (vista del mesero).
+  @Input() editable = true;
   @Output() editar = new EventEmitter<ClienteResponseDTO>();
   @Output() eliminar = new EventEmitter<ClienteResponseDTO>();
 }

@@ -5,7 +5,9 @@
         <h1 class="page__title">Pedidos</h1>
         <span class="page__breadcrumb">Savana / Pedidos</span>
       </div>
-      <app-button label="+ NUEVO PEDIDO" (click)="abrirCrear()" />
+      @if (sesion.esMesero()) {
+        <app-button label="+ NUEVO PEDIDO" (click)="abrirCrear()" />
+      }
     </div>
 
     <div class="page__toolbar">
@@ -42,6 +44,7 @@
       @for (p of pedidosFiltrados; track p.idPedido) {
         <app-pedido-card
           [pedido]="p"
+          [soloLectura]="sesion.esAdmin()"
           (avanzar)="avanzar($event)"
           (cancelar)="porCancelar.set($event)"
           (cobrar)="cobrar($event)"

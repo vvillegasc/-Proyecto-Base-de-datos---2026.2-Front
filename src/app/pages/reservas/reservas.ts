@@ -13,6 +13,7 @@ import { EstadoReserva, ReservaResponseDTO } from '../../models/model';
 import { RESERVAS_MOCK } from '../../mocks/reservas.mock';
 import { MESAS_MOCK } from '../../mocks/mesas.mock';
 import { ToastService } from '../../services/toast.service';
+import { SessionService } from '../../services/session.service';
 import { ESTADO_RESERVA } from '../../utils/estados';
 
 @Component({
@@ -65,7 +66,10 @@ export class Reservas {
     { label: '', align: 'right' },
   ];
 
-  constructor(private toast: ToastService) {}
+  constructor(
+    private toast: ToastService,
+    public sesion: SessionService,
+  ) {}
 
   get reservasFiltradas(): ReservaResponseDTO[] {
     const estado = this.tabActivo();

@@ -18,7 +18,7 @@
 
     <div class="page__grid">
       @for (c of clientesFiltrados; track c.idCliente) {
-        <app-cliente-card [cliente]="c" (editar)="abrirEditar($event)" (eliminar)="porEliminar.set($event)" />
+        <app-cliente-card [cliente]="c" [editable]="sesion.esAdmin()" (editar)="abrirEditar($event)" (eliminar)="porEliminar.set($event)" />
       } @empty {
         <app-empty-state title="No hay clientes" message="Ningún cliente coincide con la búsqueda." actionLabel="+ NUEVO CLIENTE" (action)="abrirCrear()" />
       }

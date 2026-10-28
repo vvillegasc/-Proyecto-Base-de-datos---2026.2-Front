@@ -26,10 +26,12 @@
   </div>
 
   <div class="pedido-card__actions">
-    @if (siguiente; as s) {
-      <app-button [label]="s.label" [fullWidth]="true" (click)="avanzar.emit({ pedido, estado: s.estado })" />
+    @if (!soloLectura) {
+      @if (siguiente; as s) {
+        <app-button [label]="s.label" [fullWidth]="true" (click)="avanzar.emit({ pedido, estado: s.estado })" />
+      }
     }
-    @if (pedido.estado === 'ENTREGADO') {
+    @if (pedido.estado === 'ENTREGADO' && !soloLectura) {
       <app-button label="COBRAR" [fullWidth]="true" (click)="cobrar.emit(pedido)" />
     }
     @if (pedido.estado === 'PAGADO') {
@@ -37,7 +39,7 @@
     }
     <div class="pedido-card__secondary">
       <app-button label="VER DETALLE" variant="ghost" (click)="verDetalle.emit(pedido)" />
-      @if (pedido.estado === 'PENDIENTE') {
+      @if (pedido.estado === 'PENDIENTE' && !soloLectura) {
         <app-button label="CANCELAR" variant="danger" (click)="cancelar.emit(pedido)" />
       }
     </div>

@@ -7,8 +7,10 @@
       <span class="cliente-card__tel">{{ cliente.telefono }}</span>
     </div>
   </div>
-  <div class="cliente-card__actions">
-    <app-button label="EDITAR" variant="secondary" (click)="editar.emit(cliente)" />
-    <app-button label="ELIMINAR" variant="danger" (click)="eliminar.emit(cliente)" />
-  </div>
+  @if (editable) {
+    <div class="cliente-card__actions">
+      <app-button label="EDITAR" variant="secondary" (click)="editar.emit(cliente)" />
+      <app-button label="ELIMINAR" variant="danger" (click)="eliminar.emit(cliente)" />
+    </div>
+  }
 </div>

@@ -1,0 +1,28 @@
+<form class="otp-form" (submit)="$event.preventDefault(); onVerificar()">
+  <h2 class="otp-form__title">Verificación en dos pasos</h2>
+  <p class="otp-form__text">
+    Enviamos un código de 6 dígitos a <strong>{{ correo }}</strong>.
+  </p>
+
+  <app-otp-input [error]="!!error" [disabled]="cargando || expirado" (codigoChange)="codigo = $event" />
+
+  @if (expirado) {
+    <p class="otp-form__error">El código venció. Pide uno nuevo.</p>
+  } @else if (error) {
+    <p class="otp-form__error">{{ error }}</p>
+  } @else {
+    <p class="otp-form__timer">El código vence en <strong>{{ tiempo }}</strong></p>
+  }
+
+  <app-button
+    [label]="cargando ? 'VERIFICANDO...' : 'VERIFICAR'"
+    type="submit"
+    [fullWidth]="true"
+    [disabled]="codigo.length < 6 || cargando || expirado"
+  />
+
+  <div class="otp-form__links">
+    <button class="otp-form__link" type="button" (click)="onReenviar()">Reenviar código</button>
+    <button class="otp-form__link otp-form__link--muted" type="button" (click)="otraCuenta.emit()">Usar otra cuenta</button>
+  </div>
+</form>

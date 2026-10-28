@@ -1,0 +1,16 @@
+<div class="otp" [class.otp--error]="error" (paste)="onPaste($event)">
+  @for (i of indices; track i) {
+    <input
+      #casilla
+      class="otp__casilla"
+      type="text"
+      inputmode="numeric"
+      maxlength="1"
+      autocomplete="one-time-code"
+      [attr.aria-label]="'Dígito ' + (i + 1)"
+      [disabled]="disabled"
+      (input)="onInput(i, $event)"
+      (keydown)="onKeydown(i, $event)"
+    />
+  }
+</div>

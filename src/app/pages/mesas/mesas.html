@@ -5,7 +5,9 @@
         <h1 class="page__title">Mesas</h1>
         <span class="page__breadcrumb">Savana / Mesas</span>
       </div>
-      <app-button label="+ NUEVA MESA" (click)="abrirCrear()" />
+      @if (sesion.esAdmin()) {
+        <app-button label="+ NUEVA MESA" (click)="abrirCrear()" />
+      }
     </div>
 
     <div class="page__toolbar">
@@ -17,6 +19,7 @@
       @for (m of mesasFiltradas; track m.numeroMesa) {
         <app-mesa-card
           [mesa]="m"
+          [modo]="sesion.esAdmin() ? 'admin' : 'mesero'"
           (editar)="abrirEditar($event)"
           (eliminar)="porEliminar.set($event)"
           (cambiarEstado)="cambiarEstado($event)"
@@ -25,7 +28,7 @@
           (cobrar)="cobrar($event)"
         />
       } @empty {
-        <app-empty-state title="No hay mesas" message="No hay mesas con este estado." actionLabel="+ NUEVA MESA" (action)="abrirCrear()" />
+        <app-empty-state title="No hay mesas" message="No hay mesas con este estado." [actionLabel]="sesion.esAdmin() ? '+ NUEVA MESA' : ''" (action)="abrirCrear()" />
       }
     </div>
   </div>

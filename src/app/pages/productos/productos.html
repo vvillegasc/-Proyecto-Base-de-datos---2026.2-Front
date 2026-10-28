@@ -2,10 +2,12 @@
   <div class="page">
     <div class="page__header">
       <div>
-        <h1 class="page__title">Productos</h1>
-        <span class="page__breadcrumb">Savana / Menú / Productos</span>
+        <h1 class="page__title">{{ sesion.esAdmin() ? 'Productos' : 'Menú' }}</h1>
+        <span class="page__breadcrumb">Savana / Menú{{ sesion.esAdmin() ? ' / Productos' : '' }}</span>
       </div>
-      <app-button label="+ NUEVO PRODUCTO" (click)="abrirCrear()" />
+      @if (sesion.esAdmin()) {
+        <app-button label="+ NUEVO PRODUCTO" (click)="abrirCrear()" />
+      }
     </div>
 
     <app-tab-filter [tabs]="tabs" [active]="categoriaActiva()" (tabChange)="cambiarCategoria($event)" />
@@ -22,11 +24,12 @@
       @for (p of productosFiltrados; track p.idProducto) {
         <app-producto-card
           [producto]="p"
+          [editable]="sesion.esAdmin()"
           (editar)="abrirEditar($event)"
           (eliminar)="porEliminar.set($event)"
         />
       } @empty {
-        <app-empty-state title="No hay productos" message="Prueba con otra categoría o búsqueda, o crea un producto nuevo." actionLabel="+ NUEVO PRODUCTO" (action)="abrirCrear()" />
+        <app-empty-state title="No hay productos" message="Prueba con otra categoría o búsqueda." [actionLabel]="sesion.esAdmin() ? '+ NUEVO PRODUCTO' : ''" (action)="abrirCrear()" />
       }
     </div>
   </div>

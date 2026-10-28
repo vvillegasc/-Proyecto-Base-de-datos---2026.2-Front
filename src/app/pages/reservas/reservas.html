@@ -55,16 +55,18 @@
         <td><app-badge [label]="estados[r.estado].label" [variant]="estados[r.estado].variant" /></td>
         <td>
           <div class="td-actions">
-            @switch (r.estado) {
-              @case ('PENDIENTE') {
-                <app-button label="CONFIRMAR" size="sm" (click)="cambiarEstado(r, 'CONFIRMADA')" />
-              }
-              @case ('CONFIRMADA') {
-                <app-button label="COMPLETAR" size="sm" (click)="cambiarEstado(r, 'COMPLETADA')" />
+            @if (sesion.esMesero()) {
+              @switch (r.estado) {
+                @case ('PENDIENTE') {
+                  <app-button label="CONFIRMAR" size="sm" (click)="cambiarEstado(r, 'CONFIRMADA')" />
+                }
+                @case ('CONFIRMADA') {
+                  <app-button label="COMPLETAR" size="sm" (click)="cambiarEstado(r, 'COMPLETADA')" />
+                }
               }
             }
             <app-button label="VER" variant="ghost" size="sm" (click)="detalle.set(r)" />
-            @if (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA') {
+            @if (sesion.esMesero() && (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA')) {
               <app-button label="CANCELAR" variant="danger" size="sm" (click)="pedirCancelar(r)" />
             }
           </div>
@@ -90,7 +92,7 @@
       <div class="detalle__row"><span>Personas</span><span>{{ r.numeroPersonas }}</span></div>
       <div class="detalle__row"><span>Observaciones</span><span>{{ r.observaciones || '—' }}</span></div>
 
-      @if (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA') {
+      @if (sesion.esMesero() && (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA')) {
         <div class="detalle__actions">
           <app-button label="CANCELAR RESERVA" variant="danger" (click)="pedirCancelar(r)" />
           @if (r.estado === 'PENDIENTE') {

@@ -15,6 +15,8 @@ const STOCK_BAJO = 10;
 })
 export class ProductoCard {
   @Input() producto!: ProductoResponseDTO;
+  // false = solo lectura (vista del mesero).
+  @Input() editable = true;
   @Output() editar = new EventEmitter<ProductoResponseDTO>();
   @Output() eliminar = new EventEmitter<ProductoResponseDTO>();
 

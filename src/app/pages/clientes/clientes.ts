@@ -12,6 +12,7 @@ import { RESERVAS_MOCK } from '../../mocks/reservas.mock';
 import { EmptyState } from '../../components/molecules/empty-state/empty-state';
 import { ConfirmDialog } from '../../components/organisms/confirm-dialog/confirm-dialog';
 import { ToastService } from '../../services/toast.service';
+import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-clientes',
@@ -26,7 +27,10 @@ export class Clientes {
   editando = signal<ClienteResponseDTO | null>(null);
   porEliminar = signal<ClienteResponseDTO | null>(null);
 
-  constructor(private toast: ToastService) {}
+  constructor(
+    private toast: ToastService,
+    public sesion: SessionService,
+  ) {}
 
   form: ClienteRequestDTO = { nombre: '', apellido: '', correo: '', telefono: '' };
 

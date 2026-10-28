@@ -4,19 +4,25 @@
   <app-badge [label]="estado.label" [variant]="estado.variant" />
 
   <div class="mesa-card__main">
-    @switch (mesa.estado) {
-      @case ('DISPONIBLE') {
-        <app-button label="TOMAR PEDIDO" [fullWidth]="true" (click)="tomarPedido.emit(mesa)" />
-        <app-button label="DESHABILITAR" variant="ghost" size="sm" [fullWidth]="true"
-          (click)="cambiarEstado.emit({ mesa, estado: 'EN_MANTENIMIENTO' })" />
-      }
-      @case ('OCUPADA') {
-        <app-button label="COBRAR" [fullWidth]="true" (click)="cobrar.emit(mesa)" />
+    @if (modo === 'admin') {
+      @if (mesa.estado === 'OCUPADA') {
         <app-button label="VER PEDIDO" variant="ghost" size="sm" [fullWidth]="true" (click)="verPedido.emit(mesa)" />
       }
-      @case ('EN_MANTENIMIENTO') {
-        <app-button label="HABILITAR" variant="secondary" [fullWidth]="true"
-          (click)="cambiarEstado.emit({ mesa, estado: 'DISPONIBLE' })" />
+    } @else {
+      @switch (mesa.estado) {
+        @case ('DISPONIBLE') {
+          <app-button label="TOMAR PEDIDO" [fullWidth]="true" (click)="tomarPedido.emit(mesa)" />
+          <app-button label="DESHABILITAR" variant="ghost" size="sm" [fullWidth]="true"
+            (click)="cambiarEstado.emit({ mesa, estado: 'EN_MANTENIMIENTO' })" />
+        }
+        @case ('OCUPADA') {
+          <app-button label="COBRAR" [fullWidth]="true" (click)="cobrar.emit(mesa)" />
+          <app-button label="VER PEDIDO" variant="ghost" size="sm" [fullWidth]="true" (click)="verPedido.emit(mesa)" />
+        }
+        @case ('EN_MANTENIMIENTO') {
+          <app-button label="HABILITAR" variant="secondary" [fullWidth]="true"
+            (click)="cambiarEstado.emit({ mesa, estado: 'DISPONIBLE' })" />
+        }
       }
     }
   </div>
@@ -30,8 +36,10 @@
     </select>
   </label>
 
-  <div class="mesa-card__actions">
-    <app-button label="EDITAR" variant="secondary" size="sm" (click)="editar.emit(mesa)" />
-    <app-button label="ELIMINAR" variant="danger" size="sm" (click)="eliminar.emit(mesa)" />
-  </div>
+  @if (modo === 'admin') {
+    <div class="mesa-card__actions">
+      <app-button label="EDITAR" variant="secondary" size="sm" (click)="editar.emit(mesa)" />
+      <app-button label="ELIMINAR" variant="danger" size="sm" (click)="eliminar.emit(mesa)" />
+    </div>
+  }
 </div>

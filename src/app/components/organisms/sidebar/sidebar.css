@@ -125,3 +125,23 @@
   transition: background 0.15s, color 0.15s;
 }
 .sidebar__logout:hover { background: rgba(255,255,255,0.06); color: #fff; }
+
+/* TEMPORAL: selector "Ver como" (se quita en la fase 9) */
+.sidebar__demo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+}
+.sidebar__demo-label { font-size: 10px; letter-spacing: 0.6px; text-transform: uppercase; color: var(--color-sidebar-text); }
+.sidebar__demo-opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.sidebar__demo-opciones button {
+  padding: 5px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--color-sidebar-text);
+}
+.sidebar__demo-opciones button:hover { background: var(--color-sidebar-hover); color: #fff; }
+.sidebar__demo-opciones .sidebar__demo--activo { background: var(--color-primary); color: #fff; }

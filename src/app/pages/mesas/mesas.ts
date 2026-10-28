@@ -12,6 +12,7 @@ import { PEDIDOS_MOCK } from '../../mocks/pedidos.mock';
 import { EmptyState } from '../../components/molecules/empty-state/empty-state';
 import { ConfirmDialog } from '../../components/organisms/confirm-dialog/confirm-dialog';
 import { ToastService } from '../../services/toast.service';
+import { SessionService } from '../../services/session.service';
 import { ESTADO_MESA } from '../../utils/estados';
 
 @Component({
@@ -30,6 +31,7 @@ export class Mesas {
   constructor(
     private router: Router,
     private toast: ToastService,
+    public sesion: SessionService,
   ) {}
 
   form: MesaRequestDTO = { numeroMesa: 1, capacidad: 2, estado: 'DISPONIBLE' };

@@ -28,8 +28,10 @@
     </div>
   </div>
 
-  <div class="producto-card__actions">
-    <app-button label="EDITAR" variant="secondary" (click)="editar.emit(producto)" />
-    <app-button label="ELIMINAR" variant="danger" (click)="eliminar.emit(producto)" />
-  </div>
+  @if (editable) {
+    <div class="producto-card__actions">
+      <app-button label="EDITAR" variant="secondary" (click)="editar.emit(producto)" />
+      <app-button label="ELIMINAR" variant="danger" (click)="eliminar.emit(producto)" />
+    </div>
+  }
 </div>

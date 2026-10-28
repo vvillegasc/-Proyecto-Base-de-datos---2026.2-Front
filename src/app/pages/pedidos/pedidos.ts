@@ -31,6 +31,7 @@ import { USUARIOS_MOCK } from '../../mocks/usuarios.mock';
 import { FACTURAS_MOCK } from '../../mocks/facturas.mock';
 import { PrecioPipe } from '../../pipes/precio.pipe';
 import { ToastService } from '../../services/toast.service';
+import { SessionService } from '../../services/session.service';
 import { ESTADO_PEDIDO } from '../../utils/estados';
 
 @Component({
@@ -98,6 +99,7 @@ export class Pedidos implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private toast: ToastService,
+    public sesion: SessionService,
   ) {}
 
   // Desde Mesas: ?mesa=N filtra por mesa; ?mesa=N&nuevo=1 abre "Nuevo pedido" con la mesa elegida;
@@ -106,9 +108,10 @@ export class Pedidos implements OnInit {
     const params = this.route.snapshot.queryParamMap;
     const mesa = Number(params.get('mesa') ?? 0);
     const cobrar = this.pedidos.find(p => p.idPedido === Number(params.get('cobrar')));
-    if (cobrar) {
+    // Cobrar y tomar pedidos es solo del mesero.
+    if (cobrar && this.sesion.esMesero()) {
       this.porCobrar.set(cobrar);
-    } else if (params.get('nuevo')) {
+    } else if (params.get('nuevo') && this.sesion.esMesero()) {
       this.abrirCrear(mesa);
     } else if (mesa) {
       this.filtroMesa.set(mesa);

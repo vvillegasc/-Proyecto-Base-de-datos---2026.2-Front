@@ -1,6 +1,14 @@
 <app-auth-layout>
-  <app-login-form
-    (submitForm)="onLogin()"
-    (goToRegister)="goToRegister()"
-  />
+  @if (paso() === 'credenciales') {
+    <app-login-form [error]="error()" [cargando]="cargando()" (submitForm)="onLogin($event)" />
+  } @else {
+    <app-otp-form
+      [correo]="correo"
+      [error]="error()"
+      [cargando]="cargando()"
+      (verificar)="onVerificar($event)"
+      (reenviar)="onReenviar()"
+      (otraCuenta)="usarOtraCuenta()"
+    />
+  }
 </app-auth-layout>

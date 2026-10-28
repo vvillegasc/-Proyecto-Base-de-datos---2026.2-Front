@@ -12,6 +12,7 @@ import { CATEGORIAS_MOCK } from '../../mocks/categorias.mock';
 import { EmptyState } from '../../components/molecules/empty-state/empty-state';
 import { ConfirmDialog } from '../../components/organisms/confirm-dialog/confirm-dialog';
 import { ToastService } from '../../services/toast.service';
+import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-productos',
@@ -27,14 +28,18 @@ export class Productos {
   editando = signal<ProductoResponseDTO | null>(null);
   porEliminar = signal<ProductoResponseDTO | null>(null);
 
-  constructor(private toast: ToastService) {}
+  constructor(
+    private toast: ToastService,
+    public sesion: SessionService,
+  ) {}
 
   form: ProductoRequestDTO = this.formVacio();
 
-  readonly tabs: Tab[] = [
-    { label: 'Todos', value: '' },
-    ...CATEGORIAS_MOCK.map(c => ({ label: c.nombreCategoria, value: c.nombreCategoria })),
-  ];
+  // El mesero solo ve las categorías activas (las inactivas no están en el menú).
+  get tabs(): Tab[] {
+    const categorias = this.sesion.esAdmin() ? CATEGORIAS_MOCK : CATEGORIAS_MOCK.filter(c => c.estado === 'ACTIVA');
+    return [{ label: 'Todos', value: '' }, ...categorias.map(c => ({ label: c.nombreCategoria, value: c.nombreCategoria }))];
+  }
 
   cambiarCategoria(value: string): void {
     this.categoriaActiva.set(value);

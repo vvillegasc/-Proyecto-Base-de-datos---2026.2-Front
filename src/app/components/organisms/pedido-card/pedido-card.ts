@@ -14,6 +14,8 @@ import { PrecioPipe } from '../../../pipes/precio.pipe';
 })
 export class PedidoCard {
   @Input() pedido!: PedidoResponseDTO;
+  // true = sin avanzar, cobrar ni cancelar (vista del admin).
+  @Input() soloLectura = false;
   @Output() avanzar = new EventEmitter<{ pedido: PedidoResponseDTO; estado: EstadoPedido }>();
   @Output() cancelar = new EventEmitter<PedidoResponseDTO>();
   @Output() cobrar = new EventEmitter<PedidoResponseDTO>();

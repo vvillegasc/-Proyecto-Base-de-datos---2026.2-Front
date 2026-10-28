@@ -7,6 +7,13 @@
   text-align: center;
 }
 
+.login-form__subtitle {
+  margin-top: -14px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
 .login-form__fields { display: flex; flex-direction: column; gap: 14px; }
 
 .login-form__error {
@@ -17,19 +24,11 @@
   border-radius: var(--radius-md);
 }
 
-.login-form__footer {
-  text-align: center;
-  font-size: 13px;
-  color: var(--color-text-secondary);
+.login-form__demo {
+  padding: 10px 12px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
 }
-
-.login-form__link {
-  background: none;
-  border: none;
-  color: var(--color-primary);
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 13px;
-  padding: 0;
-}
-.login-form__link:hover { text-decoration: underline; }

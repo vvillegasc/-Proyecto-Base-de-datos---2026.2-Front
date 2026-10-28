@@ -1,12 +1,13 @@
-<div class="login-form">
+<form class="login-form" (submit)="$event.preventDefault(); onSubmit()">
   <h2 class="login-form__title">Iniciar Sesión</h2>
+  <p class="login-form__subtitle">Acceso para el personal de Savana</p>
 
   <div class="login-form__fields">
     <app-form-field
       id="email"
       label="Correo electrónico"
       type="email"
-      placeholder="correo@ejemplo.com"
+      placeholder="nombre@savanacoffee.com"
       [value]="correo"
       (valueChange)="correo = $event"
     />
@@ -14,25 +15,26 @@
       id="password"
       label="Contraseña"
       type="password"
-      placeholder="mínimo 6 caracteres"
+      placeholder="Tu contraseña"
       [value]="contrasena"
       (valueChange)="contrasena = $event"
     />
   </div>
 
-  @if (error) {
-    <p class="login-form__error">{{ error }}</p>
+  @if (errorLocal || error) {
+    <p class="login-form__error">{{ errorLocal || error }}</p>
   }
 
   <app-button
-    label="INICIAR SESIÓN"
+    [label]="cargando ? 'INGRESANDO...' : 'INICIAR SESIÓN'"
     type="submit"
     [fullWidth]="true"
-    (click)="onSubmit()"
+    [disabled]="cargando"
   />
 
-  <p class="login-form__footer">
-    ¿No tienes cuenta?
-    <button class="login-form__link" (click)="goToRegister.emit()">Regístrate aquí</button>
+  <!-- TEMPORAL: ayuda para probar con los mocks (se quita en la fase 9) -->
+  <p class="login-form__demo">
+    Demo: <strong>admin&#64;savanacoffee.com</strong> o <strong>mesero&#64;savanacoffee.com</strong>, contraseña
+    <strong>Password123</strong>. Con <strong>camila.vargas&#64;savanacoffee.com</strong> se pide código (123456).
   </p>
-</div>
+</form>

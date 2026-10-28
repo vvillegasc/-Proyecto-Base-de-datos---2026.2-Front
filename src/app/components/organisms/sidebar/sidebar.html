@@ -5,7 +5,7 @@
   </div>
 
   <ul class="sidebar__nav">
-    @for (item of navItems; track item.path) {
+    @for (item of navItems(); track item.path) {
       <li>
         <a [routerLink]="item.path" routerLinkActive="sidebar__link--active" class="sidebar__link">
           <span>{{ item.label }}</span>
@@ -15,15 +15,24 @@
   </ul>
 
   <div class="sidebar__footer">
-    @if (usuario) {
+    <!-- TEMPORAL: cambiar de rol para revisar el diseño (se quita en la fase 9) -->
+    <div class="sidebar__demo">
+      <span class="sidebar__demo-label">Ver como (demo)</span>
+      <div class="sidebar__demo-opciones">
+        <button type="button" [class.sidebar__demo--activo]="sesion.esAdmin()" (click)="verComo('ADMINISTRADOR')">Admin</button>
+        <button type="button" [class.sidebar__demo--activo]="sesion.esMesero()" (click)="verComo('MESERO')">Mesero</button>
+      </div>
+    </div>
+
+    @if (sesion.usuario(); as usuario) {
       <div class="sidebar__user">
         <div class="sidebar__user-avatar">{{ usuario.nombres[0]?.toUpperCase() }}</div>
         <div class="sidebar__user-info">
-          <span class="sidebar__user-name">{{ usuario.nombres }}</span>
-          <span class="sidebar__user-role">{{ usuario.rol }}</span>
+          <span class="sidebar__user-name">{{ usuario.nombres }} {{ usuario.apellidos }}</span>
+          <span class="sidebar__user-role">{{ usuario.rol === 'ADMINISTRADOR' ? 'Administrador' : 'Mesero' }}</span>
         </div>
       </div>
     }
-    <button class="sidebar__logout" routerLink="/login">Cerrar sesión</button>
+    <button class="sidebar__logout" type="button" (click)="cerrarSesion()">Cerrar sesión</button>
   </div>
 </nav>

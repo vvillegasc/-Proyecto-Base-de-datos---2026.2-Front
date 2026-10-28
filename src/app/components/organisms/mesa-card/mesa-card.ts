@@ -12,6 +12,7 @@ import { ESTADO_MESA, EstadoVisual } from '../../../utils/estados';
 })
 export class MesaCard {
   @Input() mesa!: MesaResponseDTO;
+  @Input() modo: 'admin' | 'mesero' = 'admin';
   @Output() editar = new EventEmitter<MesaResponseDTO>();
   @Output() eliminar = new EventEmitter<MesaResponseDTO>();
   @Output() cambiarEstado = new EventEmitter<{ mesa: MesaResponseDTO; estado: EstadoMesa }>();
