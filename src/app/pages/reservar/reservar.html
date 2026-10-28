@@ -1,0 +1,137 @@
+<app-public-layout>
+  <div class="reservar">
+    @if (paso() < 2) {
+      <div class="reservar__header">
+        <h1 class="reservar__title">Reservar mesa</h1>
+        <a routerLink="/" class="reservar__back">← Volver al inicio</a>
+      </div>
+
+      <app-stepper [pasos]="pasos" [actual]="paso()" />
+    }
+
+    @switch (paso()) {
+      @case (0) {
+        <!-- Paso 1: fecha, hora y personas -->
+        <div class="card">
+          <h2 class="card__title">¿Cuándo vienes?</h2>
+          <div class="card__grid">
+            <label class="campo">
+              <span class="campo__label">Fecha</span>
+              <input class="campo__input" type="date" [min]="hoy" [value]="form.fecha" (change)="cambiarCriterio('fecha', $any($event.target).value)" />
+            </label>
+            <label class="campo">
+              <span class="campo__label">Hora</span>
+              <input class="campo__input" type="time" [value]="form.hora" (change)="cambiarCriterio('hora', $any($event.target).value)" />
+            </label>
+            <label class="campo">
+              <span class="campo__label">Personas</span>
+              <select class="campo__input" [value]="form.numeroPersonas" (change)="cambiarCriterio('numeroPersonas', $any($event.target).value)">
+                @for (n of opcionesPersonas; track n) {
+                  <option [value]="n">{{ n }} {{ n === 1 ? 'persona' : 'personas' }}</option>
+                }
+              </select>
+            </label>
+          </div>
+
+          @if (horaPasada) {
+            <p class="aviso aviso--error">Esa hora ya pasó. Elige una hora futura.</p>
+          }
+          @if (sinDisponibilidad()) {
+            <p class="aviso aviso--error">
+              No hay mesas disponibles para {{ form.numeroPersonas }} {{ form.numeroPersonas === 1 ? 'persona' : 'personas' }}
+              a esa hora. Prueba con otro horario.
+            </p>
+          }
+
+          <div class="card__actions">
+            <app-button label="VERIFICAR DISPONIBILIDAD" [disabled]="!paso1Completo" (click)="verificarDisponibilidad()" />
+          </div>
+        </div>
+      }
+
+      @case (1) {
+        <!-- Paso 2: datos del cliente -->
+        <p class="aviso aviso--ok">
+          ✓ ¡Hay disponibilidad! Completa tus datos para reservar.
+        </p>
+        <div class="datos">
+          <div class="card">
+            <h2 class="card__title">Tus datos</h2>
+            <p class="card__subtitle">No necesitas cuenta. Usaremos tu correo para enviarte la confirmación.</p>
+            <div class="card__grid card__grid--2">
+              <app-form-field label="Nombre" id="rNombre" [value]="form.nombre ?? ''" (valueChange)="form.nombre = $event" />
+              <app-form-field label="Apellido" id="rApellido" [value]="form.apellido ?? ''" (valueChange)="form.apellido = $event" />
+              <app-form-field label="Correo electrónico" id="rCorreo" type="email" placeholder="correo@ejemplo.com" [value]="form.correo ?? ''" (valueChange)="form.correo = $event" />
+              <app-form-field label="Teléfono" id="rTel" placeholder="300 000 0000" [value]="form.telefono ?? ''" (valueChange)="form.telefono = $event" />
+            </div>
+            <app-textarea-field
+              label="Observaciones (opcional)"
+              id="rObs"
+              placeholder="Ej: cerca de la ventana, celebramos un cumpleaños..."
+              [maxLength]="255"
+              [value]="form.observaciones ?? ''"
+              (valueChange)="form.observaciones = $event"
+            />
+            <div class="card__actions card__actions--between">
+              <app-button label="ATRÁS" variant="ghost" (click)="paso.set(0)" />
+              <app-button label="CONFIRMAR RESERVA" [disabled]="!paso2Completo" (click)="confirmar()" />
+            </div>
+          </div>
+
+          <aside class="resumen">
+            <span class="resumen__title">Tu reserva</span>
+            <div class="resumen__row"><span>Fecha</span><strong>{{ form.fecha + 'T00:00:00' | date: 'EEE d MMM' }}</strong></div>
+            <div class="resumen__row"><span>Hora</span><strong>{{ form.hora }}</strong></div>
+            <div class="resumen__row"><span>Personas</span><strong>{{ form.numeroPersonas }}</strong></div>
+            <span class="resumen__nota">La mesa se asigna automáticamente según el número de personas.</span>
+          </aside>
+        </div>
+      }
+
+      @case (2) {
+        <!-- Confirmación -->
+        @if (reserva(); as r) {
+          <div class="confirmacion">
+            <span class="confirmacion__icono">✓</span>
+            <h1 class="confirmacion__title">¡Reserva registrada!</h1>
+            <p class="confirmacion__text">
+              Gracias, {{ form.nombre }}. Te enviamos la confirmación a <strong>{{ r.correoCliente }}</strong>.
+            </p>
+
+            <div class="confirmacion__codigos">
+              <div class="confirmacion__codigo">
+                <span>CÓDIGO</span>
+                <strong>{{ r.idReservaCompuesta }}</strong>
+              </div>
+              <div class="confirmacion__codigo">
+                <span>MESA ASIGNADA</span>
+                <strong>{{ r.numeroMesa }}</strong>
+              </div>
+            </div>
+
+            <div class="confirmacion__detalle">
+              <div class="resumen__row"><span>Estado</span><app-badge [label]="estados[r.estado].label" [variant]="estados[r.estado].variant" /></div>
+              <div class="resumen__row"><span>Nombre</span><strong>{{ r.nombreCliente }}</strong></div>
+              <div class="resumen__row"><span>Fecha</span><strong>{{ r.fecha + 'T00:00:00' | date: 'EEEE d \'de\' MMMM' }}</strong></div>
+              <div class="resumen__row"><span>Hora</span><strong>{{ r.hora.slice(0, 5) }}</strong></div>
+              <div class="resumen__row"><span>Personas</span><strong>{{ r.numeroPersonas }}</strong></div>
+              @if (r.observaciones) {
+                <div class="resumen__row"><span>Observaciones</span><strong>{{ r.observaciones }}</strong></div>
+              }
+            </div>
+
+            <p class="confirmacion__nota">
+              Tu reserva queda <strong>pendiente</strong> hasta que el restaurante la confirme. La mesa se guarda hasta
+              15 minutos después de la hora acordada.
+            </p>
+
+            <div class="confirmacion__actions">
+              <app-button label="HACER OTRA RESERVA" variant="secondary" (click)="nuevaReserva()" />
+              <a routerLink="/" class="confirmacion__link">Volver al inicio</a>
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+</app-public-layout>

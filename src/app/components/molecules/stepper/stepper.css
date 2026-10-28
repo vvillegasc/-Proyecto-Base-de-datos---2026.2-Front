@@ -1,0 +1,42 @@
+.stepper {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+}
+
+.stepper__paso {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.stepper__num {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.stepper__label { font-size: 13px; font-weight: 600; }
+
+.stepper__paso--actual { border-bottom-color: var(--color-primary); color: var(--color-text-primary); }
+.stepper__paso--actual .stepper__num { background: var(--color-primary); color: #fff; }
+
+.stepper__paso--hecho { border-bottom-color: var(--color-success); color: var(--color-text-secondary); }
+.stepper__paso--hecho .stepper__num { background: var(--color-success-light); color: var(--color-success); }
+
+@media (max-width: 600px) {
+  .stepper__label { display: none; }
+  .stepper__paso--actual .stepper__label { display: inline; }
+}

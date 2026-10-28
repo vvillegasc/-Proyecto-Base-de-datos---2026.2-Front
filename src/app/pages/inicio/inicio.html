@@ -1,0 +1,21 @@
+<app-public-layout>
+  <section class="hero">
+    <span class="hero__eyebrow">BIENVENIDO A SAVANA</span>
+    <h1 class="hero__title">Tu mesa te está esperando</h1>
+    <p class="hero__text">Reserva en menos de un minuto. No necesitas cuenta: solo tus datos de contacto.</p>
+    <div class="hero__actions">
+      <a routerLink="/reservar" class="hero__btn hero__btn--primary">RESERVAR MESA</a>
+      <a routerLink="/login" class="hero__btn hero__btn--secondary">INGRESAR COMO PERSONAL</a>
+    </div>
+  </section>
+
+  <section class="pasos">
+    @for (p of pasos; track p.titulo; let i = $index) {
+      <div class="paso">
+        <span class="paso__num">{{ i + 1 }}</span>
+        <span class="paso__titulo">{{ p.titulo }}</span>
+        <p class="paso__texto">{{ p.texto }}</p>
+      </div>
+    }
+  </section>
+</app-public-layout>

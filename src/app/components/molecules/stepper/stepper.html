@@ -1,0 +1,12 @@
+<ol class="stepper">
+  @for (p of pasos; track p; let i = $index) {
+    <li
+      class="stepper__paso"
+      [class.stepper__paso--hecho]="i < actual"
+      [class.stepper__paso--actual]="i === actual"
+    >
+      <span class="stepper__num">{{ i < actual ? '✓' : i + 1 }}</span>
+      <span class="stepper__label">{{ p }}</span>
+    </li>
+  }
+</ol>

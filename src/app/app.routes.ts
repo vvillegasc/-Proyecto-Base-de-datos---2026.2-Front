@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
+import { Inicio } from './pages/inicio/inicio';
+import { Reservar } from './pages/reservar/reservar';
 import { Register } from './pages/register/register';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Productos } from './pages/productos/productos';
@@ -12,7 +14,8 @@ import { Reservas } from './pages/reservas/reservas';
 import { Facturas } from './pages/facturas/facturas';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', component: Inicio, pathMatch: 'full' },
+  { path: 'reservar', component: Reservar },
   { path: 'login', component: Login },
   { path: 'registro', component: Register },
   { path: 'dashboard', component: Dashboard },
@@ -24,5 +27,5 @@ export const routes: Routes = [
   { path: 'categorias', component: Categorias },
   { path: 'reservas', component: Reservas },
   { path: 'facturas', component: Facturas },
-  { path: '**', redirectTo: 'login' },
+  { path: '**', redirectTo: '' },
 ];

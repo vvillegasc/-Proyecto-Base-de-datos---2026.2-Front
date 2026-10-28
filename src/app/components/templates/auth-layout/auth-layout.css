@@ -28,3 +28,11 @@
   color: var(--color-primary);
   letter-spacing: -0.5px;
 }
+
+.auth-layout__back {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+.auth-layout__back:hover { color: var(--color-primary); }
