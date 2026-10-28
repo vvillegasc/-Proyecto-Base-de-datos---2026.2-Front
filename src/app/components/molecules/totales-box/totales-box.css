@@ -1,0 +1,33 @@
+.totales {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-md);
+}
+
+.totales__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.totales__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.totales__total span:last-child {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-primary);
+}

@@ -1,0 +1,50 @@
+.pago {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.pago__row { display: grid; grid-template-columns: 1fr 1fr 28px; gap: 8px; align-items: center; }
+
+.pago__select,
+.pago__input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  outline: none;
+}
+.pago__select:focus,
+.pago__input:focus { border-color: var(--color-primary); }
+
+.pago__monto { position: relative; display: flex; align-items: center; }
+.pago__prefix { position: absolute; left: 10px; font-size: 13px; color: var(--color-text-muted); }
+.pago__monto .pago__input { padding-left: 22px; }
+
+.pago__remove { color: var(--color-danger); font-size: 14px; padding: 4px; }
+.pago__remove:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.pago__extra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.pago__extra:empty { display: none; }
+
+.pago__recibido { display: flex; align-items: center; gap: 6px; }
+.pago__input--sm { width: 110px; padding: 5px 8px; font-size: 12px; }
+.pago__cambio strong { color: var(--color-success); }
+
+.pago__restante { font-size: 12px; font-weight: 600; color: var(--color-primary); padding: 0; }
+.pago__restante:hover { text-decoration: underline; }

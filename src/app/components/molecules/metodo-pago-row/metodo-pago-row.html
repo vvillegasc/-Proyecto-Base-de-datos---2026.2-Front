@@ -1,0 +1,29 @@
+<div class="pago">
+  <div class="pago__row">
+    <select class="pago__select" [value]="pago.tipoMetodoPago" (change)="setMetodo($event)">
+      @for (m of metodos; track m) {
+        <option [value]="m">{{ labels[m] }}</option>
+      }
+    </select>
+    <div class="pago__monto">
+      <span class="pago__prefix">$</span>
+      <input class="pago__input" type="number" min="0" placeholder="Monto" [value]="pago.monto || ''" (input)="setMonto($event)" />
+    </div>
+    <button class="pago__remove" type="button" [disabled]="!removible" (click)="remove.emit()">✕</button>
+  </div>
+
+  <div class="pago__extra">
+    @if (pago.tipoMetodoPago === 'EFECTIVO') {
+      <label class="pago__recibido">
+        Recibido $
+        <input class="pago__input pago__input--sm" type="number" min="0" [value]="pago.recibido || ''" (input)="setRecibido($event)" />
+      </label>
+      @if (pago.recibido) {
+        <span class="pago__cambio">Cambio: <strong>{{ cambio | precio }}</strong></span>
+      }
+    }
+    @if (restante > 0) {
+      <button class="pago__restante" type="button" (click)="usarRestante()">+ Sumar restante ({{ restante | precio }})</button>
+    }
+  </div>
+</div>
