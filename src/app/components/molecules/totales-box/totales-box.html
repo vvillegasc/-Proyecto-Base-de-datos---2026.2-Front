@@ -1,0 +1,9 @@
+<div class="totales">
+  <div class="totales__row"><span>Subtotal</span><span>{{ subtotal | precio }}</span></div>
+  <div class="totales__row"><span>IVA (19%)</span><span>{{ impuesto | precio }}</span></div>
+  <div class="totales__row"><span>Propina</span><span>{{ propina | precio }}</span></div>
+  <div class="totales__total">
+    <span>Total a pagar</span>
+    <span>{{ total | precio }}</span>
+  </div>
+</div>

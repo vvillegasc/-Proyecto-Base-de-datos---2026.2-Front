@@ -14,5 +14,6 @@ export class FormField {
   @Input() placeholder = '';
   @Input() value: string | number = '';
   @Input() error = '';
+  @Input() disabled = false;
   @Output() valueChange = new EventEmitter<string>();
 }
