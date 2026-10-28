@@ -1,0 +1,115 @@
+<app-dashboard-layout>
+  <div class="page">
+    <div class="page__header">
+      <div>
+        <h1 class="page__title">Reservas</h1>
+        <span class="page__breadcrumb">Savana / Reservas</span>
+      </div>
+    </div>
+
+    <app-search-bar
+      placeholder="Buscar por cliente, correo o código..."
+      [value]="busqueda()"
+      (valueChange)="busqueda.set($event)"
+    />
+
+    <div class="page__toolbar">
+      <p class="page__count">Reservas ({{ reservasFiltradas.length }} registros)</p>
+      <app-tab-filter [tabs]="tabs" [active]="tabActivo()" (tabChange)="tabActivo.set($event)" />
+    </div>
+
+    <div class="filtros">
+      <label class="filtros__field">
+        <span class="filtros__label">Mesa</span>
+        <select class="filtros__select" [value]="filtroMesa()" (change)="filtroMesa.set(+$any($event.target).value)">
+          <option [value]="0">Todas</option>
+          @for (m of mesas; track m.numeroMesa) {
+            <option [value]="m.numeroMesa">Mesa {{ m.numeroMesa }}</option>
+          }
+        </select>
+      </label>
+      <app-date-range-filter [desde]="rango().desde" [hasta]="rango().hasta" (rangeChange)="rango.set($event)" />
+      @if (hayFiltros) {
+        <button class="filtros__clear" type="button" (click)="limpiarFiltros()">Quitar filtros</button>
+      }
+    </div>
+
+    <app-data-table
+      [columns]="columnas"
+      [rows]="reservasFiltradas"
+      emptyTitle="No hay reservas"
+      emptyMessage="No hay reservas que coincidan con los filtros."
+    >
+      <ng-template [appTableRow]="reservasFiltradas" let-r>
+        <td class="td-strong">{{ r.idReservaCompuesta }}</td>
+        <td>
+          <div class="cliente">
+            <span class="td-strong">{{ r.nombreCliente }}</span>
+            <span class="td-muted">{{ r.correoCliente }}</span>
+          </div>
+        </td>
+        <td>{{ r.fecha + 'T00:00:00' | date: 'EEE dd/MM/yyyy' }}</td>
+        <td>{{ r.hora.slice(0, 5) }}</td>
+        <td style="text-align: center">{{ r.numeroMesa }}</td>
+        <td style="text-align: center">{{ r.numeroPersonas }}</td>
+        <td><app-badge [label]="estados[r.estado].label" [variant]="estados[r.estado].variant" /></td>
+        <td>
+          <div class="td-actions">
+            @switch (r.estado) {
+              @case ('PENDIENTE') {
+                <app-button label="CONFIRMAR" size="sm" (click)="cambiarEstado(r, 'CONFIRMADA')" />
+              }
+              @case ('CONFIRMADA') {
+                <app-button label="COMPLETAR" size="sm" (click)="cambiarEstado(r, 'COMPLETADA')" />
+              }
+            }
+            <app-button label="VER" variant="ghost" size="sm" (click)="detalle.set(r)" />
+            @if (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA') {
+              <app-button label="CANCELAR" variant="danger" size="sm" (click)="pedirCancelar(r)" />
+            }
+          </div>
+        </td>
+      </ng-template>
+    </app-data-table>
+  </div>
+</app-dashboard-layout>
+
+<app-modal title="Detalle de la Reserva" [visible]="!!detalle()" (close)="detalle.set(null)">
+  @if (detalle(); as r) {
+    <div class="detalle">
+      <div class="detalle__header">
+        <span class="detalle__codigo">Reserva {{ r.idReservaCompuesta }}</span>
+        <app-badge [label]="estados[r.estado].label" [variant]="estados[r.estado].variant" />
+      </div>
+      <div class="detalle__row"><span>Cliente</span><span>{{ r.nombreCliente }}</span></div>
+      <div class="detalle__row"><span>Correo</span><span>{{ r.correoCliente }}</span></div>
+      <hr class="detalle__divider" />
+      <div class="detalle__row"><span>Fecha</span><span>{{ r.fecha + 'T00:00:00' | date: 'dd/MM/yyyy' }}</span></div>
+      <div class="detalle__row"><span>Hora</span><span>{{ r.hora.slice(0, 5) }}</span></div>
+      <div class="detalle__row"><span>Mesa</span><span>{{ r.numeroMesa }}</span></div>
+      <div class="detalle__row"><span>Personas</span><span>{{ r.numeroPersonas }}</span></div>
+      <div class="detalle__row"><span>Observaciones</span><span>{{ r.observaciones || '—' }}</span></div>
+
+      @if (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA') {
+        <div class="detalle__actions">
+          <app-button label="CANCELAR RESERVA" variant="danger" (click)="pedirCancelar(r)" />
+          @if (r.estado === 'PENDIENTE') {
+            <app-button label="CONFIRMAR" (click)="cambiarEstado(r, 'CONFIRMADA')" />
+          } @else {
+            <app-button label="COMPLETAR (LLEGÓ)" (click)="cambiarEstado(r, 'COMPLETADA')" />
+          }
+        </div>
+      }
+    </div>
+  }
+</app-modal>
+
+<app-confirm-dialog
+  title="Cancelar reserva"
+  [message]="'¿Seguro que quieres cancelar la reserva de ' + porCancelar()?.nombreCliente + '? La mesa quedará libre para ese horario.'"
+  confirmLabel="CANCELAR RESERVA"
+  cancelLabel="VOLVER"
+  [visible]="!!porCancelar()"
+  (confirm)="confirmarCancelar()"
+  (cancel)="porCancelar.set(null)"
+/>

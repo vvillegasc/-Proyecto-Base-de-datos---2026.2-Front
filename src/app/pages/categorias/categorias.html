@@ -1,0 +1,89 @@
+<app-dashboard-layout>
+  <div class="page">
+    <div class="page__header">
+      <div>
+        <h1 class="page__title">Categorías</h1>
+        <span class="page__breadcrumb">Savana / Menú / Categorías</span>
+      </div>
+      <app-button label="+ NUEVA CATEGORÍA" (click)="abrirCrear()" />
+    </div>
+
+    <div class="page__toolbar">
+      <p class="page__count">Categorías ({{ categoriasFiltradas.length }} registros)</p>
+      <app-tab-filter [tabs]="tabs" [active]="tabActivo()" (tabChange)="tabActivo.set($event)" />
+    </div>
+
+    <app-data-table [columns]="columnas" [rows]="categoriasFiltradas" emptyTitle="No hay categorías">
+      <ng-template [appTableRow]="categoriasFiltradas" let-c>
+        <td class="td-strong">{{ c.nombreCategoria }}</td>
+        <td class="td-muted">{{ c.descripcion || '—' }}</td>
+        <td style="text-align: center">{{ cantidadProductos(c.nombreCategoria) }}</td>
+        <td><app-badge [label]="estados[c.estado].label" [variant]="estados[c.estado].variant" /></td>
+        <td>
+          <div class="td-actions">
+            <app-button label="EDITAR" variant="secondary" size="sm" (click)="abrirEditar(c)" />
+            <app-button
+              [label]="c.estado === 'ACTIVA' ? 'DESACTIVAR' : 'ACTIVAR'"
+              variant="ghost"
+              size="sm"
+              (click)="cambiarEstado(c)"
+            />
+            <app-button label="ELIMINAR" variant="danger" size="sm" (click)="porEliminar.set(c)" />
+          </div>
+        </td>
+      </ng-template>
+    </app-data-table>
+  </div>
+</app-dashboard-layout>
+
+<app-modal
+  [title]="editando() ? 'Editar Categoría' : 'Nueva Categoría'"
+  [visible]="modalVisible()"
+  (close)="modalVisible.set(false)"
+>
+  <div class="modal-form">
+    <app-form-field
+      label="Nombre"
+      id="catNombre"
+      placeholder="Ej: Cafés Filtrados"
+      [value]="form.nombreCategoria"
+      [disabled]="!!editando()"
+      (valueChange)="form.nombreCategoria = $event"
+    />
+    @if (editando()) {
+      <span class="modal-form__hint">El nombre identifica la categoría y no se puede cambiar.</span>
+    }
+    <app-textarea-field
+      label="Descripción"
+      id="catDesc"
+      placeholder="¿Qué productos incluye?"
+      [maxLength]="150"
+      [value]="form.descripcion ?? ''"
+      (valueChange)="form.descripcion = $event"
+    />
+    <div class="modal-form__field">
+      <label class="modal-form__label" for="catEstado">Estado</label>
+      <select id="catEstado" class="modal-form__select" [(ngModel)]="form.estado">
+        <option value="ACTIVA">Activa (visible en el menú)</option>
+        <option value="INACTIVA">Inactiva (oculta en el menú)</option>
+      </select>
+    </div>
+    <app-button [label]="editando() ? 'ACTUALIZAR' : 'CREAR CATEGORÍA'" [fullWidth]="true" (click)="guardar()" />
+  </div>
+</app-modal>
+
+<app-confirm-dialog
+  title="Eliminar categoría"
+  [message]="'¿Seguro que quieres eliminar la categoría ' + porEliminar()?.nombreCategoria + '?'"
+  confirmLabel="ELIMINAR"
+  [visible]="!!porEliminar()"
+  (confirm)="confirmarEliminar()"
+  (cancel)="porEliminar.set(null)"
+>
+  @if (porEliminar() && cantidadProductos(porEliminar()!.nombreCategoria) > 0) {
+    <p class="confirm-nota">
+      Esta categoría tiene {{ cantidadProductos(porEliminar()!.nombreCategoria) }} producto(s). Muévelos a otra categoría o
+      desactívala en lugar de eliminarla.
+    </p>
+  }
+</app-confirm-dialog>

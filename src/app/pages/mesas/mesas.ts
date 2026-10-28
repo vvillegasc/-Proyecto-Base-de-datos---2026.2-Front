@@ -8,6 +8,7 @@ import { TabFilter, Tab } from '../../components/molecules/tab-filter/tab-filter
 import { Button } from '../../components/atoms/button/button';
 import { EstadoMesa, MesaRequestDTO, MesaResponseDTO } from '../../models/model';
 import { MESAS_MOCK } from '../../mocks/mesas.mock';
+import { PEDIDOS_MOCK } from '../../mocks/pedidos.mock';
 import { EmptyState } from '../../components/molecules/empty-state/empty-state';
 import { ConfirmDialog } from '../../components/organisms/confirm-dialog/confirm-dialog';
 import { ToastService } from '../../services/toast.service';
@@ -83,7 +84,13 @@ export class Mesas {
     this.router.navigate(['/pedidos'], { queryParams: { mesa: m.numeroMesa } });
   }
 
+  // Solo se cobra un pedido ENTREGADO; si el de la mesa aún no lo está, se avisa.
   cobrar(m: MesaResponseDTO): void {
-    this.toast.show(`Cobro de la mesa ${m.numeroMesa}: la pantalla de cobro llega en la fase 4`, 'info');
+    const pedido = PEDIDOS_MOCK.find(p => p.numeroMesa === m.numeroMesa && p.estado === 'ENTREGADO');
+    if (pedido) {
+      this.router.navigate(['/pedidos'], { queryParams: { cobrar: pedido.idPedido } });
+    } else {
+      this.toast.show(`El pedido de la mesa ${m.numeroMesa} aún no está entregado`, 'info');
+    }
   }
 }

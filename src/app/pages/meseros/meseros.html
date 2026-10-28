@@ -1,0 +1,128 @@
+<app-dashboard-layout>
+  <div class="page">
+    <div class="page__header">
+      <div>
+        <h1 class="page__title">Meseros</h1>
+        <span class="page__breadcrumb">Savana / Meseros</span>
+      </div>
+      <app-button label="+ NUEVO MESERO" (click)="abrirCrear()" />
+    </div>
+
+    <app-search-bar
+      placeholder="Buscar por nombre o correo..."
+      [value]="busqueda()"
+      (valueChange)="busqueda.set($event)"
+    />
+
+    <div class="page__toolbar">
+      <p class="page__count">Usuarios ({{ usuariosFiltrados.length }} registros)</p>
+      <app-tab-filter [tabs]="tabs" [active]="tabActivo()" (tabChange)="tabActivo.set($event)" />
+    </div>
+
+    <app-data-table
+      [columns]="columnas"
+      [rows]="usuariosFiltrados"
+      emptyTitle="No hay usuarios"
+      emptyMessage="Ningún usuario coincide con la búsqueda."
+    >
+      <ng-template [appTableRow]="usuariosFiltrados" let-u>
+        <td>
+          <div class="usuario">
+            <app-avatar [name]="u.nombres + ' ' + u.apellidos" />
+            <div class="usuario__info">
+              <span class="td-strong">{{ u.nombres }} {{ u.apellidos }}</span>
+              <span class="td-muted">{{ u.correo }}</span>
+            </div>
+          </div>
+        </td>
+        <td><app-badge [label]="u.rol === 'MESERO' ? 'Mesero' : 'Admin'" [variant]="u.rol === 'MESERO' ? 'info' : 'warning'" /></td>
+        <td><app-badge [label]="estados[u.estado].label" [variant]="estados[u.estado].variant" /></td>
+        <td style="text-align: center">
+          @if (u.dosFacHab) {
+            <span class="dosfa dosfa--on" title="Verificación en dos pasos activa">✓</span>
+          } @else {
+            <span class="td-muted">—</span>
+          }
+        </td>
+        <td class="td-muted">{{ u.fechaInicio | date: 'dd/MM/yyyy' }}</td>
+        <td>
+          <div class="td-actions">
+            <app-button label="EDITAR" variant="secondary" size="sm" (click)="abrirEditar(u)" />
+            <app-button
+              [label]="u.estado === 'ACTIVO' ? 'DESACTIVAR' : 'ACTIVAR'"
+              variant="ghost"
+              size="sm"
+              (click)="cambiarEstado(u)"
+            />
+            <app-button label="ELIMINAR" variant="danger" size="sm" (click)="porEliminar.set(u)" />
+          </div>
+        </td>
+      </ng-template>
+    </app-data-table>
+  </div>
+</app-dashboard-layout>
+
+<app-modal
+  [title]="editando() ? 'Editar Usuario' : 'Nuevo Mesero'"
+  [visible]="modalVisible()"
+  (close)="modalVisible.set(false)"
+>
+  <div class="modal-form">
+    <div class="modal-form__row">
+      <app-form-field label="Nombres" id="uNombres" [value]="form.nombres" (valueChange)="form.nombres = $event" />
+      <app-form-field label="Apellidos" id="uApellidos" [value]="form.apellidos ?? ''" (valueChange)="form.apellidos = $event" />
+    </div>
+    <app-form-field label="Correo electrónico" id="uCorreo" type="email" placeholder="nombre@savanacoffee.com" [value]="form.correo" (valueChange)="form.correo = $event" />
+    <app-form-field
+      [label]="editando() ? 'Nueva contraseña (opcional)' : 'Contraseña'"
+      id="uPass"
+      type="password"
+      [placeholder]="editando() ? 'Déjala vacía para no cambiarla' : 'mínimo 6 caracteres'"
+      [value]="form.contrasena"
+      (valueChange)="form.contrasena = $event"
+    />
+    <div class="modal-form__row">
+      <div class="modal-form__field">
+        <label class="modal-form__label" for="uRol">Rol</label>
+        <select id="uRol" class="modal-form__select" [(ngModel)]="form.rol">
+          @for (r of roles; track r) {
+            <option [value]="r">{{ r === 'MESERO' ? 'Mesero' : 'Administrador' }}</option>
+          }
+        </select>
+      </div>
+      <div class="modal-form__field">
+        <label class="modal-form__label" for="uEstado">Estado</label>
+        <select id="uEstado" class="modal-form__select" [(ngModel)]="form.estado">
+          <option value="ACTIVO">Activo</option>
+          <option value="INACTIVO">Inactivo</option>
+        </select>
+      </div>
+    </div>
+    <label class="modal-form__check">
+      <input type="checkbox" [(ngModel)]="form.dosFacHab" />
+      <span>
+        Requiere verificación en 2 pasos
+        <small>Al iniciar sesión se le enviará un código de 6 dígitos al correo.</small>
+      </span>
+    </label>
+    <app-button [label]="editando() ? 'ACTUALIZAR' : 'REGISTRAR MESERO'" [fullWidth]="true" (click)="guardar()" />
+  </div>
+</app-modal>
+
+<app-confirm-dialog
+  title="Desactivar usuario"
+  [message]="porDesactivar()?.nombres + ' ' + porDesactivar()?.apellidos + ' no podrá iniciar sesión hasta que lo vuelvas a activar.'"
+  confirmLabel="DESACTIVAR"
+  [visible]="!!porDesactivar()"
+  (confirm)="confirmarDesactivar()"
+  (cancel)="porDesactivar.set(null)"
+/>
+
+<app-confirm-dialog
+  title="Eliminar usuario"
+  [message]="'¿Seguro que quieres eliminar a ' + porEliminar()?.nombres + ' ' + porEliminar()?.apellidos + '? Si solo quieres quitarle el acceso, usa DESACTIVAR.'"
+  confirmLabel="ELIMINAR"
+  [visible]="!!porEliminar()"
+  (confirm)="confirmarEliminar()"
+  (cancel)="porEliminar.set(null)"
+/>

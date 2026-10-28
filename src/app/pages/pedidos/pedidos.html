@@ -169,6 +169,27 @@
   }
 </app-modal>
 
+<!-- Cobro -->
+<app-modal title="Cobrar pedido" size="lg" [visible]="!!porCobrar()" (close)="porCobrar.set(null)">
+  @if (porCobrar(); as p) {
+    <app-cobro-form [pedido]="p" (confirmar)="confirmarPago($event)" (cancelar)="porCobrar.set(null)" />
+  }
+</app-modal>
+
+<!-- Factura -->
+<app-modal title="Factura" [visible]="!!factura()" (close)="factura.set(null)">
+  @if (factura(); as f) {
+    <app-factura-detalle
+      [factura]="f.factura"
+      [pedido]="f.pedido"
+      [aviso]="f.aviso"
+      (imprimir)="imprimirFactura()"
+      (reenviar)="reenviarFactura(f.factura)"
+      (cerrar)="factura.set(null)"
+    />
+  }
+</app-modal>
+
 <app-confirm-dialog
   title="Cancelar pedido"
   [message]="'¿Seguro que quieres cancelar el pedido #' + porCancelar()?.idPedido + '? Un pedido cancelado no se puede reactivar.'"

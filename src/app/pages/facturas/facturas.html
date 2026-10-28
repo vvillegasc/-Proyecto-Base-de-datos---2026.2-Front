@@ -1,0 +1,62 @@
+<app-dashboard-layout>
+  <div class="page">
+    <div class="page__header">
+      <div>
+        <h1 class="page__title">Facturas</h1>
+        <span class="page__breadcrumb">Savana / Facturas</span>
+      </div>
+    </div>
+
+    <div class="page__stats">
+      <app-stat-card label="Facturas" [value]="facturasFiltradas.length" />
+      <app-stat-card label="Total vendido" [value]="totalVendido | precio" />
+      <app-stat-card label="Propinas" [value]="totalPropinas | precio" />
+    </div>
+
+    <app-search-bar
+      placeholder="Buscar por número, cliente o correo..."
+      [value]="busqueda()"
+      (valueChange)="busqueda.set($event)"
+    />
+
+    <div class="page__toolbar">
+      <p class="page__count">Facturas ({{ facturasFiltradas.length }} registros)</p>
+      <app-date-range-filter [desde]="rango().desde" [hasta]="rango().hasta" (rangeChange)="rango.set($event)" />
+    </div>
+
+    <app-data-table
+      [columns]="columnas"
+      [rows]="facturasFiltradas"
+      emptyTitle="No hay facturas"
+      emptyMessage="Las facturas se generan automáticamente al cobrar un pedido."
+    >
+      <ng-template [appTableRow]="facturasFiltradas" let-f>
+        <td class="td-strong">{{ f.numFactura }}</td>
+        <td>{{ f.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td style="text-align: center">#{{ f.idPedido }}</td>
+        <td>{{ f.nombreCliente }}</td>
+        <td class="td-muted">{{ f.nombreUsuario }}</td>
+        <td class="td-muted">{{ metodos(f) }}</td>
+        <td class="td-strong" style="text-align: right">{{ f.total | precio }}</td>
+        <td><app-badge [label]="estados[f.estado].label" [variant]="estados[f.estado].variant" /></td>
+        <td>
+          <div class="td-actions">
+            <app-button label="VER FACTURA" variant="secondary" size="sm" (click)="seleccionada.set(f)" />
+          </div>
+        </td>
+      </ng-template>
+    </app-data-table>
+  </div>
+</app-dashboard-layout>
+
+<app-modal title="Factura" [visible]="!!seleccionada()" (close)="seleccionada.set(null)">
+  @if (seleccionada(); as f) {
+    <app-factura-detalle
+      [factura]="f"
+      [pedido]="pedidoDe(f)"
+      (imprimir)="imprimir()"
+      (reenviar)="reenviar(f)"
+      (cerrar)="seleccionada.set(null)"
+    />
+  }
+</app-modal>
