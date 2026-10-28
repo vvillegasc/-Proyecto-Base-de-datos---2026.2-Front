@@ -1,8 +1,8 @@
 <div class="pago">
   <div class="pago__row">
-    <select class="pago__select" [value]="pago.tipoMetodoPago" (change)="setMetodo($event)">
+    <select class="pago__select" (change)="setMetodo($event)">
       @for (m of metodos; track m) {
-        <option [value]="m">{{ labels[m] }}</option>
+        <option [value]="m" [selected]="m === pago.tipoMetodoPago">{{ labels[m] }}</option>
       }
     </select>
     <div class="pago__monto">

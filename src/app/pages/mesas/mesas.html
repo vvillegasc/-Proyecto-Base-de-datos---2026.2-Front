@@ -41,9 +41,9 @@
     <app-form-field label="Capacidad" id="mCap" type="number" [value]="form.capacidad" (valueChange)="form.capacidad = +$event" />
     <div class="modal-form__field">
       <label class="modal-form__label">Estado</label>
-      <select class="modal-form__select" [value]="form.estado" (change)="form.estado = $any($event.target).value">
+      <select class="modal-form__select" (change)="form.estado = $any($event.target).value">
         @for (e of estados; track e) {
-          <option [value]="e">{{ estadoLabel[e].label }}</option>
+          <option [value]="e" [selected]="e === form.estado">{{ estadoLabel[e].label }}</option>
         }
       </select>
     </div>

@@ -11,7 +11,7 @@ import { PublicLayout } from '../../components/templates/public-layout/public-la
 export class Inicio {
   readonly pasos = [
     { titulo: 'Elige fecha y hora', texto: 'Dinos cuándo vienes y cuántas personas son.' },
-    { titulo: 'Escoge tu mesa', texto: 'Te mostramos las mesas libres para ese horario.' },
-    { titulo: 'Recibe tu código', texto: 'Con tus datos de contacto, tu reserva queda registrada.' },
+    { titulo: 'Déjanos tus datos', texto: 'Te asignamos una mesa según el número de personas.' },
+    { titulo: 'Recibe tu código', texto: 'Tu reserva queda registrada y te llega la confirmación al correo.' },
   ];
 }

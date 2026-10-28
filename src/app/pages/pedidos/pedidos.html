@@ -16,19 +16,19 @@
     <div class="filtros">
       <label class="filtros__field">
         <span class="filtros__label">Mesa</span>
-        <select class="filtros__select" [value]="filtroMesa()" (change)="filtroMesa.set(+$any($event.target).value)">
-          <option [value]="0">Todas</option>
+        <select class="filtros__select" (change)="filtroMesa.set(+$any($event.target).value)">
+          <option [value]="0" [selected]="!filtroMesa()">Todas</option>
           @for (m of todasLasMesas; track m.numeroMesa) {
-            <option [value]="m.numeroMesa">Mesa {{ m.numeroMesa }}</option>
+            <option [value]="m.numeroMesa" [selected]="m.numeroMesa === filtroMesa()">Mesa {{ m.numeroMesa }}</option>
           }
         </select>
       </label>
       <label class="filtros__field">
         <span class="filtros__label">Mesero</span>
-        <select class="filtros__select" [value]="filtroMesero()" (change)="filtroMesero.set(+$any($event.target).value)">
-          <option [value]="0">Todos</option>
+        <select class="filtros__select" (change)="filtroMesero.set(+$any($event.target).value)">
+          <option [value]="0" [selected]="!filtroMesero()">Todos</option>
           @for (u of meseros; track u.idUsuario) {
-            <option [value]="u.idUsuario">{{ u.nombres }} {{ u.apellidos }}</option>
+            <option [value]="u.idUsuario" [selected]="u.idUsuario === filtroMesero()">{{ u.nombres }} {{ u.apellidos }}</option>
           }
         </select>
       </label>
@@ -60,10 +60,10 @@
   <div class="modal-form">
     <div class="modal-form__field">
       <label class="modal-form__label">Mesa</label>
-      <select class="modal-form__select" [value]="numeroMesa" (change)="numeroMesa = +$any($event.target).value">
-        <option [value]="0">Selecciona una mesa...</option>
+      <select class="modal-form__select" (change)="numeroMesa = +$any($event.target).value">
+        <option [value]="0" [selected]="!numeroMesa">Selecciona una mesa...</option>
         @for (m of mesasDisponibles; track m.numeroMesa) {
-          <option [value]="m.numeroMesa">Mesa {{ m.numeroMesa }} ({{ m.capacidad }} personas)</option>
+          <option [value]="m.numeroMesa" [selected]="m.numeroMesa === numeroMesa">Mesa {{ m.numeroMesa }} ({{ m.capacidad }} personas)</option>
         }
       </select>
     </div>
@@ -84,10 +84,10 @@
         </div>
       } @else {
         <app-search-bar placeholder="Buscar por nombre o correo..." [value]="busquedaCliente" (valueChange)="busquedaCliente = $event" />
-        <select class="modal-form__select" [value]="idCliente" (change)="idCliente = +$any($event.target).value">
-          <option [value]="0">Selecciona un cliente ({{ clientesFiltrados.length }})...</option>
+        <select class="modal-form__select" (change)="idCliente = +$any($event.target).value">
+          <option [value]="0" [selected]="!idCliente">Selecciona un cliente ({{ clientesFiltrados.length }})...</option>
           @for (c of clientesFiltrados; track c.idCliente) {
-            <option [value]="c.idCliente">{{ c.nombre }} {{ c.apellido }} — {{ c.correo }}</option>
+            <option [value]="c.idCliente" [selected]="c.idCliente === idCliente">{{ c.nombre }} {{ c.apellido }} — {{ c.correo }}</option>
           }
         </select>
       }
@@ -101,10 +101,10 @@
       @for (d of detalles; track $index) {
         <div class="modal-form__detalle">
           <div class="modal-form__detalle-row">
-            <select class="modal-form__select" [value]="d.idProducto" (change)="d.idProducto = +$any($event.target).value">
-              <option [value]="0" disabled>Seleccionar producto...</option>
+            <select class="modal-form__select" (change)="d.idProducto = +$any($event.target).value">
+              <option [value]="0" disabled [selected]="!d.idProducto">Seleccionar producto...</option>
               @for (p of productos; track p.idProducto) {
-                <option [value]="p.idProducto" [disabled]="agotado(p)">
+                <option [value]="p.idProducto" [disabled]="agotado(p)" [selected]="p.idProducto === d.idProducto">
                   {{ p.nombre }}{{ agotado(p) ? ' (agotado)' : '' }}
                 </option>
               }

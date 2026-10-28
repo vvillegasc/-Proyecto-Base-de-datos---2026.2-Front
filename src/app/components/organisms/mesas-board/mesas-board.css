@@ -45,14 +45,21 @@
   border-color: var(--color-sidebar-bg);
 }
 
+.mesas-board__card--reservada {
+  background: var(--color-warning-light);
+  border-color: var(--color-warning);
+}
+
+.mesas-board__card--en_mantenimiento {
+  background: var(--color-bg);
+  border-style: dashed;
+  opacity: 0.7;
+}
+
 .mesas-board__numero {
   font-size: 15px;
   font-weight: 700;
   color: var(--color-text-primary);
-}
-
-.mesas-board__card--ocupada .mesas-board__numero {
-  color: #fff;
 }
 
 .mesas-board__estado {
@@ -62,6 +69,25 @@
   color: var(--color-text-secondary);
 }
 
-.mesas-board__card--ocupada .mesas-board__estado {
-  color: var(--color-sidebar-text);
+.mesas-board__card--ocupada .mesas-board__numero { color: #fff; }
+.mesas-board__card--ocupada .mesas-board__estado { color: var(--color-sidebar-text); }
+.mesas-board__card--reservada .mesas-board__estado { color: var(--color-warning); }
+
+.mesas-board__leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
 }
+
+.mesas-board__leyenda span { display: flex; align-items: center; gap: 6px; }
+
+.mesas-board__punto {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 3px;
+}
+.mesas-board__punto.mesas-board__card--disponible { background: var(--color-primary-light); }

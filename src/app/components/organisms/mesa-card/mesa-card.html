@@ -23,9 +23,9 @@
 
   <label class="mesa-card__estado">
     <span class="mesa-card__estado-label">Cambiar estado</span>
-    <select class="mesa-card__select" [value]="mesa.estado" (change)="onEstadoChange($event)">
+    <select class="mesa-card__select" (change)="onEstadoChange($event)">
       @for (e of estados; track e[0]) {
-        <option [value]="e[0]">{{ e[1].label }}</option>
+        <option [value]="e[0]" [selected]="e[0] === mesa.estado">{{ e[1].label }}</option>
       }
     </select>
   </label>

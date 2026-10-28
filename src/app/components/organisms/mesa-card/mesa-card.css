@@ -1,4 +1,8 @@
+/* La tarjeta ocupa toda la celda del grid para que las de una misma fila midan igual. */
+:host { display: block; height: 100%; }
+
 .mesa-card {
+  height: 100%;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-top: 4px solid var(--color-border);
@@ -72,6 +76,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   width: 100%;
+  margin-top: auto;
   padding-top: 10px;
   border-top: 1px solid var(--color-border);
 }

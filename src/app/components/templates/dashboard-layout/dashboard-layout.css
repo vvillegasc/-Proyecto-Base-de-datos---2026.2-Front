@@ -11,3 +11,54 @@
   padding: 28px 32px;
   background: var(--color-bg);
 }
+
+/* Barra superior y fondo oscuro: solo en pantallas angostas. */
+.dashboard-layout__topbar,
+.dashboard-layout__backdrop { display: none; }
+
+@media (max-width: 900px) {
+  .dashboard-layout { flex-direction: column; }
+
+  .dashboard-layout__topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 56px;
+    flex-shrink: 0;
+    padding: 0 16px;
+    background: var(--color-sidebar-bg);
+  }
+
+  .dashboard-layout__toggle {
+    font-size: 20px;
+    line-height: 1;
+    color: #fff;
+    padding: 6px;
+  }
+
+  .dashboard-layout__logo { font-size: 18px; font-weight: 700; color: #fff; }
+
+  .dashboard-layout__sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+
+  .dashboard-layout--menu-abierto .dashboard-layout__sidebar { transform: translateX(0); }
+
+  .dashboard-layout--menu-abierto .dashboard-layout__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .dashboard-layout__main {
+    height: auto;
+    min-height: 0;
+    padding: 20px 16px;
+  }
+}

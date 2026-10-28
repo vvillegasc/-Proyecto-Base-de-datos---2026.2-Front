@@ -1,5 +1,14 @@
-<div class="dashboard-layout">
-  <app-sidebar />
+<div class="dashboard-layout" [class.dashboard-layout--menu-abierto]="menuAbierto()">
+  <header class="dashboard-layout__topbar">
+    <button class="dashboard-layout__toggle" type="button" aria-label="Abrir menú" (click)="menuAbierto.set(true)">☰</button>
+    <span class="dashboard-layout__logo">Savana</span>
+  </header>
+
+  <div class="dashboard-layout__sidebar">
+    <app-sidebar />
+  </div>
+  <div class="dashboard-layout__backdrop" (click)="menuAbierto.set(false)"></div>
+
   <main class="dashboard-layout__main">
     <ng-content />
   </main>

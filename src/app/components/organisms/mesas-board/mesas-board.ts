@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MesaResponseDTO } from '../../../models/model';
+import { EstadoMesa, MesaResponseDTO } from '../../../models/model';
 
 @Component({
   selector: 'app-mesas-board',
@@ -11,7 +11,11 @@ import { MesaResponseDTO } from '../../../models/model';
 export class MesasBoard {
   @Input() mesas: MesaResponseDTO[] = [];
 
-  isOcupada(mesa: MesaResponseDTO): boolean {
-    return mesa.estado === 'OCUPADA';
-  }
+  // Texto corto para que quepa en la casilla.
+  readonly abreviatura: Record<EstadoMesa, string> = {
+    DISPONIBLE: 'LIBRE',
+    OCUPADA: 'OCUP',
+    RESERVADA: 'RESERV',
+    EN_MANTENIMIENTO: 'MANT',
+  };
 }

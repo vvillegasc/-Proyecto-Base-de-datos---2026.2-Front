@@ -6,11 +6,18 @@
   } @else {
     <div class="mesas-board__grid">
       @for (mesa of mesas; track mesa.numeroMesa) {
-        <div class="mesas-board__card" [class.mesas-board__card--ocupada]="isOcupada(mesa)">
+        <div [class]="'mesas-board__card mesas-board__card--' + mesa.estado.toLowerCase()">
           <span class="mesas-board__numero">M{{ mesa.numeroMesa }}</span>
-          <span class="mesas-board__estado">{{ isOcupada(mesa) ? 'OCUP' : 'LIBRE' }}</span>
+          <span class="mesas-board__estado">{{ abreviatura[mesa.estado] }}</span>
         </div>
       }
+    </div>
+
+    <div class="mesas-board__leyenda">
+      <span><i class="mesas-board__punto mesas-board__card--disponible"></i>Libre</span>
+      <span><i class="mesas-board__punto mesas-board__card--ocupada"></i>Ocupada</span>
+      <span><i class="mesas-board__punto mesas-board__card--reservada"></i>Reservada</span>
+      <span><i class="mesas-board__punto mesas-board__card--en_mantenimiento"></i>Mantenimiento</span>
     </div>
   }
 </div>

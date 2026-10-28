@@ -44,3 +44,8 @@
 
 .table ::ng-deep .td-muted { color: var(--color-text-muted); }
 .table ::ng-deep .td-strong { font-weight: 600; }
+
+@media (max-width: 900px) {
+  .table th,
+  .table ::ng-deep td { padding: 10px 12px; }
+}

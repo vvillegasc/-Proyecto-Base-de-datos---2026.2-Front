@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Sidebar } from '../../organisms/sidebar/sidebar';
 
 @Component({
@@ -7,4 +7,7 @@ import { Sidebar } from '../../organisms/sidebar/sidebar';
   templateUrl: './dashboard-layout.html',
   styleUrl: './dashboard-layout.css',
 })
-export class DashboardLayout {}
+export class DashboardLayout {
+  // Solo aplica en pantallas angostas: ahí el sidebar se oculta y se abre con el botón ☰.
+  menuAbierto = signal(false);
+}

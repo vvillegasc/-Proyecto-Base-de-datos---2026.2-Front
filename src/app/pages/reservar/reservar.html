@@ -25,9 +25,9 @@
             </label>
             <label class="campo">
               <span class="campo__label">Personas</span>
-              <select class="campo__input" [value]="form.numeroPersonas" (change)="cambiarCriterio('numeroPersonas', $any($event.target).value)">
+              <select class="campo__input" (change)="cambiarCriterio('numeroPersonas', $any($event.target).value)">
                 @for (n of opcionesPersonas; track n) {
-                  <option [value]="n">{{ n }} {{ n === 1 ? 'persona' : 'personas' }}</option>
+                  <option [value]="n" [selected]="n === form.numeroPersonas">{{ n }} {{ n === 1 ? 'persona' : 'personas' }}</option>
                 }
               </select>
             </label>

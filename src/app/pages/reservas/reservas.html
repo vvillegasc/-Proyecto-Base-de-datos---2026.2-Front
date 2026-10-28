@@ -21,10 +21,10 @@
     <div class="filtros">
       <label class="filtros__field">
         <span class="filtros__label">Mesa</span>
-        <select class="filtros__select" [value]="filtroMesa()" (change)="filtroMesa.set(+$any($event.target).value)">
-          <option [value]="0">Todas</option>
+        <select class="filtros__select" (change)="filtroMesa.set(+$any($event.target).value)">
+          <option [value]="0" [selected]="!filtroMesa()">Todas</option>
           @for (m of mesas; track m.numeroMesa) {
-            <option [value]="m.numeroMesa">Mesa {{ m.numeroMesa }}</option>
+            <option [value]="m.numeroMesa" [selected]="m.numeroMesa === filtroMesa()">Mesa {{ m.numeroMesa }}</option>
           }
         </select>
       </label>
