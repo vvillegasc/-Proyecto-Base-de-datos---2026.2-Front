@@ -1,11 +1,9 @@
-<div class="pedido-card">
+<div class="pedido-card" [class.pedido-card--cancelado]="pedido.estado === 'CANCELADO'">
   <div class="pedido-card__header">
     <div class="pedido-card__meta">
       <span class="pedido-card__id">Pedido #{{ pedido.idPedido }}</span>
-      <span class="pedido-card__mesa">Mesa {{ pedido.numeroMesa }}
-        @if (pedido.nombreCliente) { · {{ pedido.nombreCliente }} }
-        @else { · Sin cliente }
-      </span>
+      <span class="pedido-card__mesa">Mesa {{ pedido.numeroMesa }} · {{ pedido.nombreCliente }}</span>
+      <span class="pedido-card__info">{{ pedido.fecha | date: 'HH:mm' }} · {{ pedido.nombreUsuario }}</span>
     </div>
     <app-badge [label]="estado.label" [variant]="estado.variant" />
   </div>
@@ -17,21 +15,30 @@
         <span>{{ d.subtotal | precio }}</span>
       </div>
     }
+    @if (pedido.observaciones) {
+      <p class="pedido-card__obs">“{{ pedido.observaciones }}”</p>
+    }
   </div>
 
   <div class="pedido-card__total">
-    <span>Total</span>
+    <span>Subtotal</span>
     <span class="pedido-card__total-value">{{ pedido.subtotal | precio }}</span>
   </div>
 
   <div class="pedido-card__actions">
-    @if (botonAvanzar) {
-      <app-button [label]="botonAvanzar" variant="primary" (click)="avanzar.emit(pedido.idPedido)" />
+    @if (siguiente; as s) {
+      <app-button [label]="s.label" [fullWidth]="true" (click)="avanzar.emit({ pedido, estado: s.estado })" />
+    }
+    @if (pedido.estado === 'ENTREGADO') {
+      <app-button label="COBRAR" [fullWidth]="true" (click)="cobrar.emit(pedido)" />
+    }
+    @if (pedido.estado === 'PAGADO') {
+      <app-button label="VER FACTURA" variant="secondary" [fullWidth]="true" (click)="verFactura.emit(pedido)" />
     }
     <div class="pedido-card__secondary">
       <app-button label="VER DETALLE" variant="ghost" (click)="verDetalle.emit(pedido)" />
       @if (pedido.estado === 'PENDIENTE') {
-        <app-button label="ELIM." variant="danger" (click)="eliminar.emit(pedido.idPedido)" />
+        <app-button label="CANCELAR" variant="danger" (click)="cancelar.emit(pedido)" />
       }
     </div>
   </div>

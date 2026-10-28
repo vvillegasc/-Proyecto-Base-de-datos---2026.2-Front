@@ -14,6 +14,9 @@
   border-radius: var(--radius-lg);
   width: 100%;
   max-width: 480px;
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
   box-shadow: var(--shadow-lg);
 }
 
@@ -43,4 +46,4 @@
 }
 .modal__close:hover { background: var(--color-bg); color: var(--color-text-primary); }
 
-.modal__body { padding: 20px; }
+.modal__body { padding: 20px; overflow-y: auto; }

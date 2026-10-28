@@ -1,6 +1,7 @@
 .mesa-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
+  border-top: 4px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 20px;
   display: flex;
@@ -8,6 +9,12 @@
   align-items: center;
   gap: 10px;
 }
+
+/* Color del borde superior según el estado (mismo color que el badge). */
+.mesa-card--disponible { border-top-color: var(--color-success); }
+.mesa-card--ocupada { border-top-color: var(--color-danger); }
+.mesa-card--reservada { border-top-color: var(--color-warning); }
+.mesa-card--en_mantenimiento { border-top-color: var(--color-text-muted); opacity: 0.85; }
 
 .mesa-card__number {
   font-size: 40px;
@@ -21,11 +28,52 @@
   color: var(--color-text-secondary);
 }
 
+.mesa-card__main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.mesa-card__main:empty { display: none; }
+
+.mesa-card__estado {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.mesa-card__estado-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.mesa-card__select {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  outline: none;
+  cursor: pointer;
+}
+.mesa-card__select:focus { border-color: var(--color-primary); }
+
 .mesa-card__actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   width: 100%;
-  margin-top: 4px;
-  justify-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border);
 }
+
+.mesa-card__actions app-button ::ng-deep .btn { width: 100%; }

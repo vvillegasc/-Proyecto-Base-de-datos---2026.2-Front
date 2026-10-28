@@ -1,9 +1,37 @@
-<div class="mesa-card">
+<div class="mesa-card" [class]="'mesa-card mesa-card--' + mesa.estado.toLowerCase()">
   <div class="mesa-card__number">{{ mesa.numeroMesa }}</div>
   <div class="mesa-card__info">{{ mesa.capacidad }} personas</div>
   <app-badge [label]="estado.label" [variant]="estado.variant" />
+
+  <div class="mesa-card__main">
+    @switch (mesa.estado) {
+      @case ('DISPONIBLE') {
+        <app-button label="TOMAR PEDIDO" [fullWidth]="true" (click)="tomarPedido.emit(mesa)" />
+        <app-button label="DESHABILITAR" variant="ghost" size="sm" [fullWidth]="true"
+          (click)="cambiarEstado.emit({ mesa, estado: 'EN_MANTENIMIENTO' })" />
+      }
+      @case ('OCUPADA') {
+        <app-button label="COBRAR" [fullWidth]="true" (click)="cobrar.emit(mesa)" />
+        <app-button label="VER PEDIDO" variant="ghost" size="sm" [fullWidth]="true" (click)="verPedido.emit(mesa)" />
+      }
+      @case ('EN_MANTENIMIENTO') {
+        <app-button label="HABILITAR" variant="secondary" [fullWidth]="true"
+          (click)="cambiarEstado.emit({ mesa, estado: 'DISPONIBLE' })" />
+      }
+    }
+  </div>
+
+  <label class="mesa-card__estado">
+    <span class="mesa-card__estado-label">Cambiar estado</span>
+    <select class="mesa-card__select" [value]="mesa.estado" (change)="onEstadoChange($event)">
+      @for (e of estados; track e[0]) {
+        <option [value]="e[0]">{{ e[1].label }}</option>
+      }
+    </select>
+  </label>
+
   <div class="mesa-card__actions">
-    <app-button label="EDITAR" variant="secondary" (click)="editar.emit(mesa)" />
-    <app-button label="ELIMINAR" variant="danger" (click)="eliminar.emit(mesa.numeroMesa)" />
+    <app-button label="EDITAR" variant="secondary" size="sm" (click)="editar.emit(mesa)" />
+    <app-button label="ELIMINAR" variant="danger" size="sm" (click)="eliminar.emit(mesa)" />
   </div>
 </div>

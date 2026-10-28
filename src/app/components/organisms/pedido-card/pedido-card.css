@@ -30,6 +30,21 @@
   color: var(--color-text-secondary);
 }
 
+.pedido-card__info {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.pedido-card__obs {
+  margin-top: 4px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+.pedido-card--cancelado { opacity: 0.6; }
+.pedido-card--cancelado .pedido-card__items { text-decoration: line-through; }
+
 .pedido-card__items {
   padding: 12px 14px;
   display: flex;
@@ -71,3 +86,5 @@
 }
 
 .pedido-card__secondary { display: flex; gap: 8px; }
+.pedido-card__secondary app-button { flex: 1; }
+.pedido-card__secondary app-button ::ng-deep .btn { width: 100%; }

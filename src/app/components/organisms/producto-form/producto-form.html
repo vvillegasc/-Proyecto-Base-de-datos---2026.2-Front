@@ -6,9 +6,11 @@
     (valueChange)="form.nombre = $event"
   />
 
-  <app-form-field
+  <app-textarea-field
     label="Descripción"
     id="pDesc"
+    placeholder="Notas, ingredientes o preparación..."
+    [maxLength]="200"
     [value]="form.descripcion ?? ''"
     (valueChange)="form.descripcion = $event"
   />
@@ -34,8 +36,10 @@
     <label class="producto-form__label" for="pCat">Categoría</label>
     <select id="pCat" class="producto-form__select" [(ngModel)]="form.nombreCategoria">
       <option value="" disabled>Seleccionar categoría...</option>
-      @for (cat of categorias; track cat) {
-        <option [value]="cat">{{ cat }}</option>
+      @for (cat of categorias; track cat.nombreCategoria) {
+        <option [value]="cat.nombreCategoria">
+          {{ cat.nombreCategoria }}{{ cat.estado === 'INACTIVA' ? ' (inactiva)' : '' }}
+        </option>
       }
     </select>
   </div>
@@ -43,9 +47,18 @@
   <app-form-field
     label="URL Imagen"
     id="pImg"
+    placeholder="https://..."
     [value]="form.imagenUrl"
-    (valueChange)="form.imagenUrl = $event"
+    (valueChange)="onImagenChange($event)"
   />
+
+  <div class="producto-form__preview">
+    @if (form.imagenUrl && !imagenConError) {
+      <img [src]="form.imagenUrl" alt="Vista previa" (error)="imagenConError = true" />
+    } @else {
+      <span>{{ imagenConError ? 'No se pudo cargar la imagen' : 'Vista previa de la imagen' }}</span>
+    }
+  </div>
 
   <div class="producto-form__check">
     <label class="producto-form__check-label">

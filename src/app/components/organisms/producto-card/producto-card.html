@@ -13,11 +13,23 @@
       <app-badge [label]="estado.label" [variant]="estado.variant" />
     </div>
     <span class="producto-card__categoria">{{ producto.nombreCategoria }}</span>
-    <span class="producto-card__precio">{{ producto.precio | precio }}</span>
+    @if (producto.descripcion) {
+      <p class="producto-card__descripcion" [title]="producto.descripcion">{{ producto.descripcion }}</p>
+    }
+    <div class="producto-card__footer">
+      <span class="producto-card__precio">{{ producto.precio | precio }}</span>
+      <span class="producto-card__stock" [class]="'producto-card__stock producto-card__stock--' + nivelStock">
+        @switch (nivelStock) {
+          @case ('agotado') { Sin stock }
+          @case ('bajo') { Stock bajo · {{ producto.stock }} }
+          @default { Stock · {{ producto.stock }} }
+        }
+      </span>
+    </div>
   </div>
 
   <div class="producto-card__actions">
     <app-button label="EDITAR" variant="secondary" (click)="editar.emit(producto)" />
-    <app-button label="ELIMINAR" variant="danger" (click)="eliminar.emit(producto.idProducto)" />
+    <app-button label="ELIMINAR" variant="danger" (click)="eliminar.emit(producto)" />
   </div>
 </div>

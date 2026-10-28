@@ -5,6 +5,8 @@ import { ProductoResponseDTO } from '../../../models/model';
 import { DISPONIBILIDAD_PRODUCTO, EstadoVisual } from '../../../utils/estados';
 import { PrecioPipe } from '../../../pipes/precio.pipe';
 
+const STOCK_BAJO = 10;
+
 @Component({
   selector: 'app-producto-card',
   imports: [Badge, Button, PrecioPipe],
@@ -14,9 +16,14 @@ import { PrecioPipe } from '../../../pipes/precio.pipe';
 export class ProductoCard {
   @Input() producto!: ProductoResponseDTO;
   @Output() editar = new EventEmitter<ProductoResponseDTO>();
-  @Output() eliminar = new EventEmitter<number>();
+  @Output() eliminar = new EventEmitter<ProductoResponseDTO>();
 
   get estado(): EstadoVisual {
     return this.producto.disponibilidad ? DISPONIBILIDAD_PRODUCTO.disponible : DISPONIBILIDAD_PRODUCTO.agotado;
+  }
+
+  get nivelStock(): 'ok' | 'bajo' | 'agotado' {
+    if (this.producto.stock <= 0) return 'agotado';
+    return this.producto.stock <= STOCK_BAJO ? 'bajo' : 'ok';
   }
 }

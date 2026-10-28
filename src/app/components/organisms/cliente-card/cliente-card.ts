@@ -12,5 +12,5 @@ import { ClienteResponseDTO } from '../../../models/model';
 export class ClienteCard {
   @Input() cliente!: ClienteResponseDTO;
   @Output() editar = new EventEmitter<ClienteResponseDTO>();
-  @Output() eliminar = new EventEmitter<number>();
+  @Output() eliminar = new EventEmitter<ClienteResponseDTO>();
 }
