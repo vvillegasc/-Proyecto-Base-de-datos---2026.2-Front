@@ -9,12 +9,13 @@ import { Button } from '../../components/atoms/button/button';
 import { ProductoRequestDTO, ProductoResponseDTO } from '../../models/model';
 import { PRODUCTOS_MOCK } from '../../mocks/productos.mock';
 import { CATEGORIAS_MOCK } from '../../mocks/categorias.mock';
-
 import { EmptyState } from '../../components/molecules/empty-state/empty-state';
+import { ConfirmDialog } from '../../components/organisms/confirm-dialog/confirm-dialog';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-productos',
-  imports: [DashboardLayout, ProductoCard, ProductoForm, Modal, SearchBar, TabFilter, Button, EmptyState],
+  imports: [DashboardLayout, ProductoCard, ProductoForm, Modal, SearchBar, TabFilter, Button, EmptyState, ConfirmDialog],
   templateUrl: './productos.html',
   styleUrl: './productos.css',
 })
@@ -24,6 +25,9 @@ export class Productos {
   categoriaActiva = signal('');
   modalVisible = signal(false);
   editando = signal<ProductoResponseDTO | null>(null);
+  porEliminar = signal<ProductoResponseDTO | null>(null);
+
+  constructor(private toast: ToastService) {}
 
   form: ProductoRequestDTO = this.formVacio();
 
@@ -68,9 +72,13 @@ export class Productos {
 
   guardar(): void {
     this.modalVisible.set(false);
+    this.toast.show(this.editando() ? 'Producto actualizado' : 'Producto creado', 'success');
   }
 
-  eliminar(_id: number): void {}
+  confirmarEliminar(): void {
+    this.toast.show(`Producto "${this.porEliminar()?.nombre}" eliminado`, 'success');
+    this.porEliminar.set(null);
+  }
 
   private formVacio(): ProductoRequestDTO {
     return { nombre: '', descripcion: '', precio: 0, disponibilidad: true, stock: 0, imagenUrl: '', nombreCategoria: '' };

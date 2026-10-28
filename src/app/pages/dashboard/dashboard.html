@@ -10,6 +10,8 @@
       <app-stat-card label="Mesas disponibles" [value]="mesasDisponiblesLabel" />
       <app-stat-card label="Pedidos activos" [value]="resumen.pedidosActivos" />
       <app-stat-card label="Pedidos entregados hoy" [value]="resumen.pedidosEntregadosHoy" />
+      <app-stat-card label="Ventas de hoy" [value]="resumen.totalVentasHoy | precio" />
+      <app-stat-card label="Reservas de hoy" [value]="resumen.reservasHoy" />
     </div>
 
     <div class="dashboard-page__bottom">

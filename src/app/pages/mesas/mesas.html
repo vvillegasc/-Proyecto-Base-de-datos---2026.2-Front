@@ -15,7 +15,15 @@
 
     <div class="page__grid">
       @for (m of mesasFiltradas; track m.numeroMesa) {
-        <app-mesa-card [mesa]="m" (editar)="abrirEditar($event)" (eliminar)="eliminar($event)" />
+        <app-mesa-card
+          [mesa]="m"
+          (editar)="abrirEditar($event)"
+          (eliminar)="porEliminar.set($event)"
+          (cambiarEstado)="cambiarEstado($event)"
+          (tomarPedido)="tomarPedido($event)"
+          (verPedido)="verPedido($event)"
+          (cobrar)="cobrar($event)"
+        />
       } @empty {
         <app-empty-state title="No hay mesas" message="No hay mesas con este estado." actionLabel="+ NUEVA MESA" (action)="abrirCrear()" />
       }
@@ -35,10 +43,19 @@
       <label class="modal-form__label">Estado</label>
       <select class="modal-form__select" [value]="form.estado" (change)="form.estado = $any($event.target).value">
         @for (e of estados; track e) {
-          <option [value]="e">{{ e }}</option>
+          <option [value]="e">{{ estadoLabel[e].label }}</option>
         }
       </select>
     </div>
     <app-button label="GUARDAR" [fullWidth]="true" (click)="guardar()" />
   </div>
 </app-modal>
+
+<app-confirm-dialog
+  title="Eliminar mesa"
+  [message]="'¿Seguro que quieres eliminar la mesa ' + porEliminar()?.numeroMesa + '? Esta acción no se puede deshacer.'"
+  confirmLabel="ELIMINAR"
+  [visible]="!!porEliminar()"
+  (confirm)="confirmarEliminar()"
+  (cancel)="porEliminar.set(null)"
+/>

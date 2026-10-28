@@ -23,7 +23,7 @@
         <app-producto-card
           [producto]="p"
           (editar)="abrirEditar($event)"
-          (eliminar)="eliminar($event)"
+          (eliminar)="porEliminar.set($event)"
         />
       } @empty {
         <app-empty-state title="No hay productos" message="Prueba con otra categoría o búsqueda, o crea un producto nuevo." actionLabel="+ NUEVO PRODUCTO" (action)="abrirCrear()" />
@@ -43,3 +43,12 @@
     (guardar)="guardar()"
   />
 </app-modal>
+
+<app-confirm-dialog
+  title="Eliminar producto"
+  [message]="'¿Seguro que quieres eliminar ' + porEliminar()?.nombre + '? Esta acción no se puede deshacer.'"
+  confirmLabel="ELIMINAR"
+  [visible]="!!porEliminar()"
+  (confirm)="confirmarEliminar()"
+  (cancel)="porEliminar.set(null)"
+/>

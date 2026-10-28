@@ -13,96 +13,168 @@
       <app-tab-filter [tabs]="tabs" [active]="tabActivo()" (tabChange)="tabActivo.set($event)" />
     </div>
 
+    <div class="filtros">
+      <label class="filtros__field">
+        <span class="filtros__label">Mesa</span>
+        <select class="filtros__select" [value]="filtroMesa()" (change)="filtroMesa.set(+$any($event.target).value)">
+          <option [value]="0">Todas</option>
+          @for (m of todasLasMesas; track m.numeroMesa) {
+            <option [value]="m.numeroMesa">Mesa {{ m.numeroMesa }}</option>
+          }
+        </select>
+      </label>
+      <label class="filtros__field">
+        <span class="filtros__label">Mesero</span>
+        <select class="filtros__select" [value]="filtroMesero()" (change)="filtroMesero.set(+$any($event.target).value)">
+          <option [value]="0">Todos</option>
+          @for (u of meseros; track u.idUsuario) {
+            <option [value]="u.idUsuario">{{ u.nombres }} {{ u.apellidos }}</option>
+          }
+        </select>
+      </label>
+      <app-date-range-filter [desde]="rango().desde" [hasta]="rango().hasta" (rangeChange)="rango.set($event)" />
+      @if (hayFiltros) {
+        <button class="filtros__clear" type="button" (click)="limpiarFiltros()">Quitar filtros</button>
+      }
+    </div>
+
     <div class="page__grid">
       @for (p of pedidosFiltrados; track p.idPedido) {
         <app-pedido-card
           [pedido]="p"
           (avanzar)="avanzar($event)"
-          (eliminar)="eliminar($event)"
+          (cancelar)="porCancelar.set($event)"
+          (cobrar)="cobrar($event)"
+          (verFactura)="verFactura($event)"
           (verDetalle)="verDetalle($event)"
         />
       } @empty {
-        <app-empty-state title="No hay pedidos" message="No hay pedidos con este estado." />
+        <app-empty-state title="No hay pedidos" message="No hay pedidos que coincidan con los filtros." />
       }
     </div>
   </div>
 </app-dashboard-layout>
 
-<app-modal
-  title="Nuevo Pedido"
-  [visible]="modalVisible()"
-  (close)="modalVisible.set(false)"
->
+<!-- Nuevo pedido -->
+<app-modal title="Nuevo Pedido" [visible]="modalVisible()" (close)="modalVisible.set(false)">
   <div class="modal-form">
     <div class="modal-form__field">
       <label class="modal-form__label">Mesa</label>
       <select class="modal-form__select" [value]="numeroMesa" (change)="numeroMesa = +$any($event.target).value">
         <option [value]="0">Selecciona una mesa...</option>
-        @for (m of mesas; track m.numeroMesa) {
+        @for (m of mesasDisponibles; track m.numeroMesa) {
           <option [value]="m.numeroMesa">Mesa {{ m.numeroMesa }} ({{ m.capacidad }} personas)</option>
         }
       </select>
     </div>
 
     <div class="modal-form__field">
-      <label class="modal-form__label">Cliente</label>
-      <select class="modal-form__select" [value]="idCliente" (change)="idCliente = +$any($event.target).value">
-        <option [value]="0">Selecciona un cliente...</option>
-        @for (c of clientes; track c.idCliente) {
-          <option [value]="c.idCliente">{{ c.nombre }} {{ c.apellido }}</option>
-        }
-      </select>
+      <div class="modal-form__section-header">
+        <span class="modal-form__label">Cliente</span>
+        <button class="modal-form__add" type="button" (click)="clienteNuevo = !clienteNuevo">
+          {{ clienteNuevo ? 'Elegir cliente existente' : '+ Cliente nuevo' }}
+        </button>
+      </div>
+      @if (clienteNuevo) {
+        <div class="modal-form__cliente-nuevo">
+          <app-form-field label="Nombre" id="ncNombre" [value]="nuevoCliente.nombre" (valueChange)="nuevoCliente.nombre = $event" />
+          <app-form-field label="Apellido" id="ncApellido" [value]="nuevoCliente.apellido" (valueChange)="nuevoCliente.apellido = $event" />
+          <app-form-field label="Correo" id="ncCorreo" type="email" [value]="nuevoCliente.correo" (valueChange)="nuevoCliente.correo = $event" />
+          <app-form-field label="Teléfono" id="ncTel" [value]="nuevoCliente.telefono" (valueChange)="nuevoCliente.telefono = $event" />
+        </div>
+      } @else {
+        <app-search-bar placeholder="Buscar por nombre o correo..." [value]="busquedaCliente" (valueChange)="busquedaCliente = $event" />
+        <select class="modal-form__select" [value]="idCliente" (change)="idCliente = +$any($event.target).value">
+          <option [value]="0">Selecciona un cliente ({{ clientesFiltrados.length }})...</option>
+          @for (c of clientesFiltrados; track c.idCliente) {
+            <option [value]="c.idCliente">{{ c.nombre }} {{ c.apellido }} — {{ c.correo }}</option>
+          }
+        </select>
+      }
     </div>
 
-    <app-form-field label="Observaciones" id="pObs" [value]="observaciones" (valueChange)="observaciones = $event" />
-
     <div class="modal-form__detalles">
-      <div class="modal-form__detalles-header">
+      <div class="modal-form__section-header">
         <span class="modal-form__label">Productos</span>
-        <button class="modal-form__add" (click)="agregarDetalle()">+ Agregar</button>
+        <button class="modal-form__add" type="button" (click)="agregarDetalle()">+ Agregar</button>
       </div>
       @for (d of detalles; track $index) {
-        <div class="modal-form__detalle-row">
-          <select class="modal-form__select" [value]="d.idProducto" (change)="d.idProducto = +$any($event.target).value">
-            <option [value]="0" disabled>Seleccionar producto...</option>
-            @for (p of productos; track p.idProducto) {
-              <option [value]="p.idProducto">{{ p.nombre }} — {{ p.precio | precio }}</option>
-            }
-          </select>
-          <app-form-field label="" id="dCant{{$index}}" type="number" placeholder="Cant." [value]="d.cantidad" (valueChange)="d.cantidad = +$event" />
-          <button class="modal-form__remove" (click)="quitarDetalle($index)">✕</button>
+        <div class="modal-form__detalle">
+          <div class="modal-form__detalle-row">
+            <select class="modal-form__select" [value]="d.idProducto" (change)="d.idProducto = +$any($event.target).value">
+              <option [value]="0" disabled>Seleccionar producto...</option>
+              @for (p of productos; track p.idProducto) {
+                <option [value]="p.idProducto" [disabled]="agotado(p)">
+                  {{ p.nombre }}{{ agotado(p) ? ' (agotado)' : '' }}
+                </option>
+              }
+            </select>
+            <app-form-field label="" id="dCant{{ $index }}" type="number" placeholder="Cant." [value]="d.cantidad" (valueChange)="d.cantidad = +$event" />
+            <button class="modal-form__remove" type="button" [disabled]="detalles.length === 1" (click)="quitarDetalle($index)">✕</button>
+          </div>
+          @if (producto(d.idProducto); as p) {
+            <div class="modal-form__detalle-info">
+              <span>{{ p.precio | precio }} c/u · Stock {{ p.stock }}</span>
+              <strong>{{ subtotalLinea(d) | precio }}</strong>
+            </div>
+          }
         </div>
       }
+    </div>
+
+    <app-textarea-field
+      label="Observaciones"
+      id="pObs"
+      placeholder="Ej: leche deslactosada, sin azúcar..."
+      [value]="observaciones"
+      (valueChange)="observaciones = $event"
+    />
+
+    <div class="modal-form__resumen">
+      <div class="modal-form__resumen-row">
+        <span>Subtotal</span>
+        <strong>{{ subtotalPedido | precio }}</strong>
+      </div>
+      <span class="modal-form__resumen-nota">El IVA (19%) y la propina se calculan al cobrar.</span>
     </div>
 
     <app-button label="CREAR PEDIDO" [fullWidth]="true" (click)="guardar()" />
   </div>
 </app-modal>
 
-<app-modal
-  title="Detalle del Pedido"
-  [visible]="detalleVisible()"
-  (close)="detalleVisible.set(false)"
->
-  @if (pedidoDetalle()) {
+<!-- Detalle -->
+<app-modal title="Detalle del Pedido" [visible]="detalleVisible()" (close)="detalleVisible.set(false)">
+  @if (pedidoDetalle(); as p) {
     <div class="detalle">
-      <div class="detalle__row"><span>Mesa</span><span>{{ pedidoDetalle()!.numeroMesa }}</span></div>
-      <div class="detalle__row"><span>Cliente</span><span>{{ pedidoDetalle()!.nombreCliente || 'Sin cliente' }}</span></div>
-      <div class="detalle__row"><span>Atendido por</span><span>{{ pedidoDetalle()!.nombreUsuario }}</span></div>
-      <div class="detalle__row"><span>Estado</span><span>{{ pedidoDetalle()!.estado }}</span></div>
-      <div class="detalle__row"><span>Observaciones</span><span>{{ pedidoDetalle()!.observaciones || '—' }}</span></div>
+      <div class="detalle__row"><span>Pedido</span><span>#{{ p.idPedido }}</span></div>
+      <div class="detalle__row"><span>Fecha</span><span>{{ p.fecha | date: 'dd/MM/yyyy HH:mm' }}</span></div>
+      <div class="detalle__row"><span>Mesa</span><span>{{ p.numeroMesa }}</span></div>
+      <div class="detalle__row"><span>Cliente</span><span>{{ p.nombreCliente }}</span></div>
+      <div class="detalle__row"><span>Atendido por</span><span>{{ p.nombreUsuario }}</span></div>
+      <div class="detalle__row"><span>Estado</span><span>{{ estados[p.estado].label }}</span></div>
+      <div class="detalle__row"><span>Observaciones</span><span>{{ p.observaciones || '—' }}</span></div>
       <hr class="detalle__divider" />
-      @for (d of pedidoDetalle()!.detalles; track d.idDetallePedido) {
+      @for (d of p.detalles; track d.idDetallePedido) {
         <div class="detalle__row">
-          <span>{{ d.nombreProducto }} x{{ d.cantidad }}</span>
+          <span>{{ d.nombreProducto }} x{{ d.cantidad }} <small class="detalle__muted">({{ d.precioUnitario | precio }} c/u)</small></span>
           <span>{{ d.subtotal | precio }}</span>
         </div>
       }
       <hr class="detalle__divider" />
       <div class="detalle__row detalle__row--total">
-        <span>Total</span>
-        <strong>{{ pedidoDetalle()!.subtotal | precio }}</strong>
+        <span>Subtotal</span>
+        <strong>{{ p.subtotal | precio }}</strong>
       </div>
     </div>
   }
 </app-modal>
+
+<app-confirm-dialog
+  title="Cancelar pedido"
+  [message]="'¿Seguro que quieres cancelar el pedido #' + porCancelar()?.idPedido + '? Un pedido cancelado no se puede reactivar.'"
+  confirmLabel="CANCELAR PEDIDO"
+  cancelLabel="VOLVER"
+  [visible]="!!porCancelar()"
+  (confirm)="confirmarCancelar()"
+  (cancel)="porCancelar.set(null)"
+/>

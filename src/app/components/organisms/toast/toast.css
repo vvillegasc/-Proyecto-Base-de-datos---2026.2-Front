@@ -37,6 +37,10 @@
   border-left-color: var(--color-success);
 }
 
+.toast--info {
+  border-left-color: var(--color-primary);
+}
+
 .toast__message {
   font-size: 13px;
   color: var(--color-text-primary);

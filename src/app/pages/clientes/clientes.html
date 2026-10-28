@@ -18,7 +18,7 @@
 
     <div class="page__grid">
       @for (c of clientesFiltrados; track c.idCliente) {
-        <app-cliente-card [cliente]="c" (editar)="abrirEditar($event)" (eliminar)="eliminar($event)" />
+        <app-cliente-card [cliente]="c" (editar)="abrirEditar($event)" (eliminar)="porEliminar.set($event)" />
       } @empty {
         <app-empty-state title="No hay clientes" message="Ningún cliente coincide con la búsqueda." actionLabel="+ NUEVO CLIENTE" (action)="abrirCrear()" />
       }
@@ -39,3 +39,16 @@
     <app-button label="GUARDAR" [fullWidth]="true" (click)="guardar()" />
   </div>
 </app-modal>
+
+<app-confirm-dialog
+  title="Eliminar cliente"
+  [message]="'¿Seguro que quieres eliminar a ' + porEliminar()?.nombre + ' ' + porEliminar()?.apellido + '?'"
+  confirmLabel="ELIMINAR"
+  [visible]="!!porEliminar()"
+  (confirm)="confirmarEliminar()"
+  (cancel)="porEliminar.set(null)"
+>
+  <p class="confirm-nota">
+    No se puede eliminar un cliente que tenga reservas pendientes o confirmadas, ni pedidos o facturas registrados.
+  </p>
+</app-confirm-dialog>

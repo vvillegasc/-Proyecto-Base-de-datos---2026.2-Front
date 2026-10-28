@@ -6,10 +6,11 @@ import { MesasBoard } from '../../components/organisms/mesas-board/mesas-board';
 import { DASHBOARD_MOCK } from '../../mocks/dashboard.mock';
 import { PEDIDOS_MOCK } from '../../mocks/pedidos.mock';
 import { MESAS_MOCK } from '../../mocks/mesas.mock';
+import { PrecioPipe } from '../../pipes/precio.pipe';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [DashboardLayout, StatCard, PedidosRecientes, MesasBoard],
+  imports: [DashboardLayout, StatCard, PedidosRecientes, MesasBoard, PrecioPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
