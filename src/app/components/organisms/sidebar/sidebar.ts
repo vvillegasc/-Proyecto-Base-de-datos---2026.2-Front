@@ -2,7 +2,6 @@ import { Component, computed } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { RolUsuario } from '../../../models/model';
 import { SessionService } from '../../../services/session.service';
-import { USUARIOS_MOCK } from '../../../mocks/usuarios.mock';
 
 interface NavItem {
   label: string;
@@ -51,14 +50,5 @@ export class Sidebar {
   cerrarSesion(): void {
     this.sesion.cerrar();
     this.router.navigate(['/login']);
-  }
-
-  // TEMPORAL (solo para revisar el diseño con mocks): cambia de rol sin volver a iniciar sesión.
-  // Se borra en la fase 9 junto con los mocks.
-  verComo(rol: RolUsuario): void {
-    const usuario = USUARIOS_MOCK.find(u => u.rol === rol && u.estado === 'ACTIVO');
-    if (!usuario) return;
-    this.sesion.iniciar('token-simulado', usuario);
-    this.router.navigate([this.sesion.inicio()]);
   }
 }

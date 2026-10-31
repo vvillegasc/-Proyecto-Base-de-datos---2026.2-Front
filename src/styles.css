@@ -17,8 +17,9 @@
   --color-danger-hover: #6e2619;
   --color-danger-light: #fdf0ec;
 
-  --color-success: #a06b2c;
-  --color-success-light: #fdf6e3;
+  /* Verde oliva: se distingue del amarillo de "advertencia" y cumple contraste AA (5.5:1). */
+  --color-success: #3f6b2e;
+  --color-success-light: #eaf3e3;
 
   --color-warning: #8b5e15;
   --color-warning-light: #fdf0d5;
@@ -75,4 +76,18 @@ input,
 textarea,
 select {
   font-family: inherit;
+}
+
+/* Impresión de facturas: solo se imprime el recibo (.factura__recibo). */
+@media print {
+  body * { visibility: hidden; }
+  .factura__recibo,
+  .factura__recibo * { visibility: visible; }
+  .factura__recibo {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    border: none;
+    background: #fff;
+  }
 }

@@ -25,7 +25,6 @@ export class FacturaDetalle {
   // Mensaje opcional arriba del recibo (ej. justo después de cobrar).
   @Input() aviso = '';
   @Output() imprimir = new EventEmitter<void>();
-  @Output() reenviar = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();
 
   readonly metodoLabel = METODO_LABEL;

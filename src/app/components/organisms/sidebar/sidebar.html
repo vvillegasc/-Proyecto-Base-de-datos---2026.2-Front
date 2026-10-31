@@ -15,15 +15,6 @@
   </ul>
 
   <div class="sidebar__footer">
-    <!-- TEMPORAL: cambiar de rol para revisar el diseño (se quita en la fase 9) -->
-    <div class="sidebar__demo">
-      <span class="sidebar__demo-label">Ver como (demo)</span>
-      <div class="sidebar__demo-opciones">
-        <button type="button" [class.sidebar__demo--activo]="sesion.esAdmin()" (click)="verComo('ADMINISTRADOR')">Admin</button>
-        <button type="button" [class.sidebar__demo--activo]="sesion.esMesero()" (click)="verComo('MESERO')">Mesero</button>
-      </div>
-    </div>
-
     @if (sesion.usuario(); as usuario) {
       <div class="sidebar__user">
         <div class="sidebar__user-avatar">{{ usuario.nombres[0]?.toUpperCase() }}</div>

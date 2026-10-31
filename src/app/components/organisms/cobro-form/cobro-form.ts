@@ -4,7 +4,6 @@ import { TotalesBox } from '../../molecules/totales-box/totales-box';
 import { MetodoPagoRow, PagoForm } from '../../molecules/metodo-pago-row/metodo-pago-row';
 import { CobroResumen } from '../cobro-resumen/cobro-resumen';
 import { FacturaRequestDTO, PedidoResponseDTO, TipoMetodoPago } from '../../../models/model';
-import { METODOS_PAGO_MOCK } from '../../../mocks/metodos-pago.mock';
 import { PrecioPipe } from '../../../pipes/precio.pipe';
 
 const IVA = 0.19;
@@ -19,10 +18,13 @@ const redondear = (n: number) => Math.round(n * 100) / 100;
 })
 export class CobroForm implements OnInit {
   @Input() pedido!: PedidoResponseDTO;
+  // Métodos de pago del back (GET /metodos-pago).
+  @Input() metodos: TipoMetodoPago[] = ['EFECTIVO', 'TARJETA', 'TRANSFERENCIA'];
+  // true mientras se envía el pago.
+  @Input() procesando = false;
   @Output() confirmar = new EventEmitter<FacturaRequestDTO>();
   @Output() cancelar = new EventEmitter<void>();
 
-  readonly metodos: TipoMetodoPago[] = METODOS_PAGO_MOCK.map(m => m.tipo);
   readonly propinasRapidas = [0, 5, 10];
 
   propina = 0;

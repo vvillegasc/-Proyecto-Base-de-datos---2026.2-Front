@@ -61,7 +61,7 @@
 
     <div class="cobro__actions">
       <app-button label="CANCELAR" variant="ghost" (click)="cancelar.emit()" />
-      <app-button label="CONFIRMAR PAGO" [disabled]="!cuadra" (click)="onConfirmar()" />
+      <app-button [label]="procesando ? 'PROCESANDO...' : 'CONFIRMAR PAGO'" [disabled]="!cuadra || procesando" (click)="onConfirmar()" />
     </div>
   </div>
 </div>

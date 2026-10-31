@@ -13,26 +13,30 @@
       <app-tab-filter [tabs]="tabs" [active]="tabActivo()" (tabChange)="tabActivo.set($event)" />
     </div>
 
-    <app-data-table [columns]="columnas" [rows]="categoriasFiltradas" emptyTitle="No hay categorías">
-      <ng-template [appTableRow]="categoriasFiltradas" let-c>
-        <td class="td-strong">{{ c.nombreCategoria }}</td>
-        <td class="td-muted">{{ c.descripcion || '—' }}</td>
-        <td style="text-align: center">{{ cantidadProductos(c.nombreCategoria) }}</td>
-        <td><app-badge [label]="estados[c.estado].label" [variant]="estados[c.estado].variant" /></td>
-        <td>
-          <div class="td-actions">
-            <app-button label="EDITAR" variant="secondary" size="sm" (click)="abrirEditar(c)" />
-            <app-button
-              [label]="c.estado === 'ACTIVA' ? 'DESACTIVAR' : 'ACTIVAR'"
-              variant="ghost"
-              size="sm"
-              (click)="cambiarEstado(c)"
-            />
-            <app-button label="ELIMINAR" variant="danger" size="sm" (click)="porEliminar.set(c)" />
-          </div>
-        </td>
-      </ng-template>
-    </app-data-table>
+    @if (cargando() || error()) {
+      <app-estado-carga [cargando]="cargando()" [error]="error()" (reintentar)="cargar()" />
+    } @else {
+      <app-data-table [columns]="columnas" [rows]="categoriasFiltradas" emptyTitle="No hay categorías">
+        <ng-template [appTableRow]="categoriasFiltradas" let-c>
+          <td class="td-strong">{{ c.nombreCategoria }}</td>
+          <td class="td-muted">{{ c.descripcion || '—' }}</td>
+          <td style="text-align: center">{{ cantidadProductos(c.nombreCategoria) }}</td>
+          <td><app-badge [label]="estados[c.estado].label" [variant]="estados[c.estado].variant" /></td>
+          <td>
+            <div class="td-actions">
+              <app-button label="EDITAR" variant="secondary" size="sm" (click)="abrirEditar(c)" />
+              <app-button
+                [label]="c.estado === 'ACTIVA' ? 'DESACTIVAR' : 'ACTIVAR'"
+                variant="ghost"
+                size="sm"
+                (click)="cambiarEstado(c)"
+              />
+              <app-button label="ELIMINAR" variant="danger" size="sm" (click)="porEliminar.set(c)" />
+            </div>
+          </td>
+        </ng-template>
+      </app-data-table>
+    }
   </div>
 </app-dashboard-layout>
 
@@ -68,7 +72,12 @@
         <option value="INACTIVA">Inactiva (oculta en el menú)</option>
       </select>
     </div>
-    <app-button [label]="editando() ? 'ACTUALIZAR' : 'CREAR CATEGORÍA'" [fullWidth]="true" (click)="guardar()" />
+    <app-button
+      [label]="guardando() ? 'GUARDANDO...' : editando() ? 'ACTUALIZAR' : 'CREAR CATEGORÍA'"
+      [fullWidth]="true"
+      [disabled]="guardando()"
+      (click)="guardar()"
+    />
   </div>
 </app-modal>
 

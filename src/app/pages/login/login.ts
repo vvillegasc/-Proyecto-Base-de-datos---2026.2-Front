@@ -7,6 +7,7 @@ import { AuthResponseDTO, LoginRequestDTO } from '../../models/model';
 import { AuthService } from '../../services/auth.service';
 import { SessionService } from '../../services/session.service';
 import { ToastService } from '../../services/toast.service';
+import { mensajeDeError } from '../../interceptors/error.interceptor';
 
 @Component({
   selector: 'app-login',
@@ -79,8 +80,8 @@ export class Login {
     this.router.navigate([this.sesion.inicio()]);
   }
 
-  private fallo(err: { message?: string }): void {
+  private fallo(err: unknown): void {
     this.cargando.set(false);
-    this.error.set(err?.message ?? 'No se pudo iniciar sesión.');
+    this.error.set(mensajeDeError(err));
   }
 }

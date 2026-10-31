@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { DashboardLayout } from '../../components/templates/dashboard-layout/dashboard-layout';
 import { DataTable, TableColumn, TableRow } from '../../components/organisms/data-table/data-table';
@@ -7,11 +8,12 @@ import { ConfirmDialog } from '../../components/organisms/confirm-dialog/confirm
 import { SearchBar } from '../../components/molecules/search-bar/search-bar';
 import { TabFilter, Tab } from '../../components/molecules/tab-filter/tab-filter';
 import { DateRangeFilter, RangoFechas } from '../../components/molecules/date-range-filter/date-range-filter';
+import { EstadoCarga } from '../../components/molecules/estado-carga/estado-carga';
 import { Badge } from '../../components/atoms/badge/badge';
 import { Button } from '../../components/atoms/button/button';
-import { EstadoReserva, ReservaResponseDTO } from '../../models/model';
-import { RESERVAS_MOCK } from '../../mocks/reservas.mock';
-import { MESAS_MOCK } from '../../mocks/mesas.mock';
+import { EstadoReserva, MesaResponseDTO, ReservaResponseDTO } from '../../models/model';
+import { ReservaService } from '../../services/reserva.service';
+import { MesaService } from '../../services/mesa.service';
 import { ToastService } from '../../services/toast.service';
 import { SessionService } from '../../services/session.service';
 import { ESTADO_RESERVA } from '../../utils/estados';
@@ -27,6 +29,7 @@ import { ESTADO_RESERVA } from '../../utils/estados';
     SearchBar,
     TabFilter,
     DateRangeFilter,
+    EstadoCarga,
     Badge,
     Button,
     DatePipe,
@@ -34,9 +37,11 @@ import { ESTADO_RESERVA } from '../../utils/estados';
   templateUrl: './reservas.html',
   styleUrl: './reservas.css',
 })
-export class Reservas {
-  readonly reservas = [...RESERVAS_MOCK].sort((a, b) => a.fechaHora.localeCompare(b.fechaHora));
-  readonly mesas = MESAS_MOCK;
+export class Reservas implements OnInit {
+  reservas = signal<ReservaResponseDTO[]>([]);
+  mesas = signal<MesaResponseDTO[]>([]);
+  cargando = signal(true);
+  error = signal(false);
   readonly estados = ESTADO_RESERVA;
 
   busqueda = signal('');
@@ -67,16 +72,38 @@ export class Reservas {
   ];
 
   constructor(
+    private reservaService: ReservaService,
+    private mesaService: MesaService,
     private toast: ToastService,
     public sesion: SessionService,
   ) {}
+
+  ngOnInit(): void {
+    this.cargar();
+  }
+
+  cargar(): void {
+    this.cargando.set(true);
+    this.error.set(false);
+    forkJoin({ reservas: this.reservaService.listar(), mesas: this.mesaService.listar() }).subscribe({
+      next: ({ reservas, mesas }) => {
+        this.reservas.set([...reservas].sort((a, b) => a.fechaHora.localeCompare(b.fechaHora)));
+        this.mesas.set(mesas);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.error.set(true);
+        this.cargando.set(false);
+      },
+    });
+  }
 
   get reservasFiltradas(): ReservaResponseDTO[] {
     const estado = this.tabActivo();
     const mesa = this.filtroMesa();
     const q = this.busqueda().toLowerCase();
     const { desde, hasta } = this.rango();
-    return this.reservas.filter(
+    return this.reservas().filter(
       r =>
         (!estado || r.estado === estado) &&
         (!mesa || r.numeroMesa === mesa) &&
@@ -98,7 +125,10 @@ export class Reservas {
 
   cambiarEstado(r: ReservaResponseDTO, estado: EstadoReserva): void {
     this.detalle.set(null);
-    this.toast.show(`Reserva ${r.idReservaCompuesta} → ${ESTADO_RESERVA[estado].label}`, 'success');
+    this.reservaService.cambiarEstado(r.idReserva, estado).subscribe(actualizada => {
+      this.reservas.update(lista => lista.map(x => (x.idReserva === actualizada.idReserva ? actualizada : x)));
+      this.toast.show(`Reserva ${r.idReservaCompuesta} → ${ESTADO_RESERVA[estado].label}`, 'success');
+    });
   }
 
   pedirCancelar(r: ReservaResponseDTO): void {
@@ -107,7 +137,8 @@ export class Reservas {
   }
 
   confirmarCancelar(): void {
-    this.toast.show(`Reserva ${this.porCancelar()?.idReservaCompuesta} cancelada`, 'success');
+    const r = this.porCancelar();
     this.porCancelar.set(null);
+    if (r) this.cambiarEstado(r, 'CANCELADA');
   }
 }

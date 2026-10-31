@@ -36,6 +36,9 @@
           @if (horaPasada) {
             <p class="aviso aviso--error">Esa hora ya pasó. Elige una hora futura.</p>
           }
+          @if (error()) {
+            <p class="aviso aviso--error">{{ error() }}</p>
+          }
           @if (sinDisponibilidad()) {
             <p class="aviso aviso--error">
               No hay mesas disponibles para {{ form.numeroPersonas }} {{ form.numeroPersonas === 1 ? 'persona' : 'personas' }}
@@ -44,7 +47,11 @@
           }
 
           <div class="card__actions">
-            <app-button label="VERIFICAR DISPONIBILIDAD" [disabled]="!paso1Completo" (click)="verificarDisponibilidad()" />
+            <app-button
+              [label]="cargando() ? 'VERIFICANDO...' : 'VERIFICAR DISPONIBILIDAD'"
+              [disabled]="!paso1Completo || cargando()"
+              (click)="verificarDisponibilidad()"
+            />
           </div>
         </div>
       }
@@ -72,9 +79,16 @@
               [value]="form.observaciones ?? ''"
               (valueChange)="form.observaciones = $event"
             />
+            @if (error()) {
+              <p class="aviso aviso--error">{{ error() }}</p>
+            }
             <div class="card__actions card__actions--between">
               <app-button label="ATRÁS" variant="ghost" (click)="paso.set(0)" />
-              <app-button label="CONFIRMAR RESERVA" [disabled]="!paso2Completo" (click)="confirmar()" />
+              <app-button
+                [label]="cargando() ? 'RESERVANDO...' : 'CONFIRMAR RESERVA'"
+                [disabled]="!paso2Completo || cargando()"
+                (click)="confirmar()"
+              />
             </div>
           </div>
 

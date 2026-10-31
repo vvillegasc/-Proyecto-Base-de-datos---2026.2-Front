@@ -3,8 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { FormField } from '../../molecules/form-field/form-field';
 import { TextareaField } from '../../molecules/textarea-field/textarea-field';
 import { Button } from '../../atoms/button/button';
-import { ProductoRequestDTO } from '../../../models/model';
-import { CATEGORIAS_MOCK } from '../../../mocks/categorias.mock';
+import { CategoriaResponseDTO, ProductoRequestDTO } from '../../../models/model';
 
 @Component({
   selector: 'app-producto-form',
@@ -15,9 +14,10 @@ import { CATEGORIAS_MOCK } from '../../../mocks/categorias.mock';
 export class ProductoForm {
   @Input() form!: ProductoRequestDTO;
   @Input() editando = false;
+  @Input() guardando = false;
+  @Input() categorias: CategoriaResponseDTO[] = [];
   @Output() guardar = new EventEmitter<void>();
 
-  readonly categorias = CATEGORIAS_MOCK;
   imagenConError = false;
 
   onImagenChange(url: string): void {

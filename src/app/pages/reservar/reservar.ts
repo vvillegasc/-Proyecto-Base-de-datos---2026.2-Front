@@ -8,13 +8,14 @@ import { TextareaField } from '../../components/molecules/textarea-field/textare
 import { Badge } from '../../components/atoms/badge/badge';
 import { Button } from '../../components/atoms/button/button';
 import { MesaResponseDTO, ReservaRequestDTO, ReservaResponseDTO } from '../../models/model';
-import { MESAS_MOCK } from '../../mocks/mesas.mock';
-import { RESERVAS_MOCK } from '../../mocks/reservas.mock';
-import { CLIENTES_MOCK } from '../../mocks/clientes.mock';
+import { ReservaService } from '../../services/reserva.service';
+import { mensajeDeError } from '../../interceptors/error.interceptor';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ESTADO_RESERVA } from '../../utils/estados';
 
-// El back bloquea la mesa 2 horas antes y después de cada reserva activa.
-const VENTANA_MINUTOS = 119;
+// El cliente no puede consultar las mesas: si no hay ninguna para ese número de personas,
+// el back simplemente no devuelve disponibilidad.
+const MAX_PERSONAS = 10;
 
 const aMinutos = (hora: string) => {
   const [h, m] = hora.split(':').map(Number);
@@ -30,18 +31,21 @@ const aMinutos = (hora: string) => {
 export class Reservar {
   readonly pasos = ['Fecha y hora', 'Tus datos'];
   readonly hoy = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD en hora local
-  readonly maxPersonas = Math.max(...MESAS_MOCK.map(m => m.capacidad));
-  readonly opcionesPersonas = Array.from({ length: this.maxPersonas }, (_, i) => i + 1);
+  readonly opcionesPersonas = Array.from({ length: MAX_PERSONAS }, (_, i) => i + 1);
   readonly estados = ESTADO_RESERVA;
 
   // 0 = fecha y hora, 1 = datos, 2 = confirmación.
   paso = signal(0);
   sinDisponibilidad = signal(false);
+  cargando = signal(false);
+  error = signal('');
   reserva = signal<ReservaResponseDTO | null>(null);
 
   // Mesas libres en el orden del back (menor capacidad primero). La reserva usa la primera;
-  // al conectar el back, si POST /reservas responde 409 se reintenta con la siguiente.
+  // si POST /reservas responde 409 (otro cliente la tomó), se reintenta con la siguiente.
   private mesasDisponibles: MesaResponseDTO[] = [];
+
+  constructor(private reservaService: ReservaService) {}
 
   form: ReservaRequestDTO = this.formVacio();
 
@@ -63,58 +67,73 @@ export class Reservar {
     if (campo === 'numeroPersonas') this.form.numeroPersonas = +valor;
     else this.form[campo] = valor;
     this.sinDisponibilidad.set(false);
+    this.error.set('');
   }
 
-  // Simula GET /api/reservas/disponibles: capacidad suficiente, no en mantenimiento y sin reserva
-  // activa en ±2 h el mismo día; ordenadas por capacidad y número de mesa.
+  // GET /reservas/disponibles: ya excluye mesas sin capacidad, en mantenimiento o con reserva en ±2 h.
   verificarDisponibilidad(): void {
-    const minutos = aMinutos(this.form.hora ?? '00:00');
-    const bloqueadas = RESERVAS_MOCK.filter(
-      r =>
-        r.fecha === this.form.fecha &&
-        (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA') &&
-        Math.abs(aMinutos(r.hora) - minutos) <= VENTANA_MINUTOS,
-    ).map(r => r.numeroMesa);
+    this.cargando.set(true);
+    this.error.set('');
+    this.reservaService.disponibles(this.fechaHora, this.form.numeroPersonas).subscribe({
+      next: mesas => {
+        this.cargando.set(false);
+        this.mesasDisponibles = mesas;
+        if (mesas.length === 0) {
+          this.sinDisponibilidad.set(true);
+          return;
+        }
+        this.paso.set(1);
+      },
+      error: err => {
+        this.cargando.set(false);
+        this.error.set(mensajeDeError(err));
+      },
+    });
+  }
 
-    this.mesasDisponibles = MESAS_MOCK.filter(
-      m => m.estado !== 'EN_MANTENIMIENTO' && m.capacidad >= this.form.numeroPersonas && !bloqueadas.includes(m.numeroMesa),
-    ).sort((a, b) => a.capacidad - b.capacidad || a.numeroMesa - b.numeroMesa);
+  confirmar(): void {
+    this.cargando.set(true);
+    this.error.set('');
+    this.intentarReservar(0);
+  }
 
-    if (this.mesasDisponibles.length === 0) {
+  private intentarReservar(indice: number): void {
+    const mesa = this.mesasDisponibles[indice];
+    if (!mesa) {
+      // Se ocuparon todas mientras el cliente llenaba sus datos.
+      this.cargando.set(false);
       this.sinDisponibilidad.set(true);
+      this.paso.set(0);
       return;
     }
-    this.form.numeroMesa = this.mesasDisponibles[0].numeroMesa;
-    this.paso.set(1);
+    this.reservaService
+      .crear({ ...this.form, numeroMesa: mesa.numeroMesa, hora: `${this.form.hora}:00` })
+      .subscribe({
+        next: reserva => {
+          this.cargando.set(false);
+          this.reserva.set(reserva);
+          this.paso.set(2);
+        },
+        error: err => {
+          if (err instanceof HttpErrorResponse && err.status === 409) {
+            this.intentarReservar(indice + 1);
+          } else {
+            this.cargando.set(false);
+            this.error.set(mensajeDeError(err));
+          }
+        },
+      });
   }
 
-  // Simula POST /api/reservas: el back reutiliza el cliente si el correo ya existe.
-  confirmar(): void {
-    const existente = CLIENTES_MOCK.find(c => c.correo.toLowerCase() === this.form.correo?.toLowerCase());
-    const idCliente = existente?.idCliente ?? CLIENTES_MOCK.length + 1;
-    const idReserva = RESERVAS_MOCK.length + 1;
-    const hora = `${this.form.hora}:00`;
-    this.reserva.set({
-      idReservaCompuesta: `${idReserva}_${idCliente}`,
-      idReserva,
-      idCliente,
-      nombreCliente: `${this.form.nombre} ${this.form.apellido}`,
-      correoCliente: this.form.correo ?? '',
-      numeroMesa: this.form.numeroMesa,
-      fecha: this.form.fecha ?? '',
-      hora,
-      fechaHora: `${this.form.fecha}T${hora}`,
-      numeroPersonas: this.form.numeroPersonas,
-      estado: 'PENDIENTE',
-      observaciones: this.form.observaciones ?? '',
-    });
-    this.paso.set(2);
+  private get fechaHora(): string {
+    return `${this.form.fecha}T${this.form.hora}:00`;
   }
 
   nuevaReserva(): void {
     this.form = this.formVacio();
     this.reserva.set(null);
     this.sinDisponibilidad.set(false);
+    this.error.set('');
     this.paso.set(0);
   }
 

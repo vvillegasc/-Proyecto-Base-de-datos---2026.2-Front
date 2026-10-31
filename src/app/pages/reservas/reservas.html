@@ -23,7 +23,7 @@
         <span class="filtros__label">Mesa</span>
         <select class="filtros__select" (change)="filtroMesa.set(+$any($event.target).value)">
           <option [value]="0" [selected]="!filtroMesa()">Todas</option>
-          @for (m of mesas; track m.numeroMesa) {
+          @for (m of mesas(); track m.numeroMesa) {
             <option [value]="m.numeroMesa" [selected]="m.numeroMesa === filtroMesa()">Mesa {{ m.numeroMesa }}</option>
           }
         </select>
@@ -34,45 +34,49 @@
       }
     </div>
 
-    <app-data-table
-      [columns]="columnas"
-      [rows]="reservasFiltradas"
-      emptyTitle="No hay reservas"
-      emptyMessage="No hay reservas que coincidan con los filtros."
-    >
-      <ng-template [appTableRow]="reservasFiltradas" let-r>
-        <td class="td-strong">{{ r.idReservaCompuesta }}</td>
-        <td>
-          <div class="cliente">
-            <span class="td-strong">{{ r.nombreCliente }}</span>
-            <span class="td-muted">{{ r.correoCliente }}</span>
-          </div>
-        </td>
-        <td>{{ r.fecha + 'T00:00:00' | date: 'EEE dd/MM/yyyy' }}</td>
-        <td>{{ r.hora.slice(0, 5) }}</td>
-        <td style="text-align: center">{{ r.numeroMesa }}</td>
-        <td style="text-align: center">{{ r.numeroPersonas }}</td>
-        <td><app-badge [label]="estados[r.estado].label" [variant]="estados[r.estado].variant" /></td>
-        <td>
-          <div class="td-actions">
-            @if (sesion.esMesero()) {
-              @switch (r.estado) {
-                @case ('PENDIENTE') {
-                  <app-button label="CONFIRMAR" size="sm" (click)="cambiarEstado(r, 'CONFIRMADA')" />
-                }
-                @case ('CONFIRMADA') {
-                  <app-button label="COMPLETAR" size="sm" (click)="cambiarEstado(r, 'COMPLETADA')" />
+    @if (cargando() || error()) {
+      <app-estado-carga [cargando]="cargando()" [error]="error()" (reintentar)="cargar()" />
+    } @else {
+      <app-data-table
+        [columns]="columnas"
+        [rows]="reservasFiltradas"
+        emptyTitle="No hay reservas"
+        emptyMessage="No hay reservas que coincidan con los filtros."
+      >
+        <ng-template [appTableRow]="reservasFiltradas" let-r>
+          <td class="td-strong">{{ r.idReservaCompuesta }}</td>
+          <td>
+            <div class="cliente">
+              <span class="td-strong">{{ r.nombreCliente }}</span>
+              <span class="td-muted">{{ r.correoCliente }}</span>
+            </div>
+          </td>
+          <td>{{ r.fecha + 'T00:00:00' | date: 'EEE dd/MM/yyyy' }}</td>
+          <td>{{ r.hora.slice(0, 5) }}</td>
+          <td style="text-align: center">{{ r.numeroMesa }}</td>
+          <td style="text-align: center">{{ r.numeroPersonas }}</td>
+          <td><app-badge [label]="estados[r.estado].label" [variant]="estados[r.estado].variant" /></td>
+          <td>
+            <div class="td-actions">
+              @if (sesion.esMesero()) {
+                @switch (r.estado) {
+                  @case ('PENDIENTE') {
+                    <app-button label="CONFIRMAR" size="sm" (click)="cambiarEstado(r, 'CONFIRMADA')" />
+                  }
+                  @case ('CONFIRMADA') {
+                    <app-button label="COMPLETAR" size="sm" (click)="cambiarEstado(r, 'COMPLETADA')" />
+                  }
                 }
               }
-            }
-            <app-button label="VER" variant="ghost" size="sm" (click)="detalle.set(r)" />
-            @if (sesion.esMesero() && (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA')) {
-              <app-button label="CANCELAR" variant="danger" size="sm" (click)="pedirCancelar(r)" />
-            }
-          </div>
-        </td>
-      </ng-template>
-    </app-data-table>
+              <app-button label="VER" variant="ghost" size="sm" (click)="detalle.set(r)" />
+              @if (sesion.esMesero() && (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA')) {
+                <app-button label="CANCELAR" variant="danger" size="sm" (click)="pedirCancelar(r)" />
+              }
+            </div>
+          </td>
+        </ng-template>
+      </app-data-table>
+    }
   </div>
 </app-dashboard-layout>
 

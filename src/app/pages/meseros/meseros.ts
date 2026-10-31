@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DashboardLayout } from '../../components/templates/dashboard-layout/dashboard-layout';
@@ -8,11 +8,12 @@ import { ConfirmDialog } from '../../components/organisms/confirm-dialog/confirm
 import { FormField } from '../../components/molecules/form-field/form-field';
 import { SearchBar } from '../../components/molecules/search-bar/search-bar';
 import { TabFilter, Tab } from '../../components/molecules/tab-filter/tab-filter';
+import { EstadoCarga } from '../../components/molecules/estado-carga/estado-carga';
 import { Avatar } from '../../components/atoms/avatar/avatar';
 import { Badge } from '../../components/atoms/badge/badge';
 import { Button } from '../../components/atoms/button/button';
 import { EstadoUsuario, RolUsuario, UsuarioRequestDTO, UsuarioResponseDTO } from '../../models/model';
-import { USUARIOS_MOCK } from '../../mocks/usuarios.mock';
+import { UsuarioService } from '../../services/usuario.service';
 import { ToastService } from '../../services/toast.service';
 import { ESTADO_USUARIO } from '../../utils/estados';
 
@@ -27,6 +28,7 @@ import { ESTADO_USUARIO } from '../../utils/estados';
     FormField,
     SearchBar,
     TabFilter,
+    EstadoCarga,
     Avatar,
     Badge,
     Button,
@@ -36,8 +38,11 @@ import { ESTADO_USUARIO } from '../../utils/estados';
   templateUrl: './meseros.html',
   styleUrl: './meseros.css',
 })
-export class Meseros {
-  readonly usuarios = USUARIOS_MOCK;
+export class Meseros implements OnInit {
+  usuarios = signal<UsuarioResponseDTO[]>([]);
+  cargando = signal(true);
+  error = signal(false);
+  guardando = signal(false);
   readonly estados = ESTADO_USUARIO;
   readonly roles: RolUsuario[] = ['MESERO', 'ADMINISTRADOR'];
 
@@ -65,12 +70,34 @@ export class Meseros {
     { label: '', align: 'right' },
   ];
 
-  constructor(private toast: ToastService) {}
+  constructor(
+    private usuarioService: UsuarioService,
+    private toast: ToastService,
+  ) {}
+
+  ngOnInit(): void {
+    this.cargar();
+  }
+
+  cargar(): void {
+    this.cargando.set(true);
+    this.error.set(false);
+    this.usuarioService.listar().subscribe({
+      next: usuarios => {
+        this.usuarios.set(usuarios);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.error.set(true);
+        this.cargando.set(false);
+      },
+    });
+  }
 
   get usuariosFiltrados(): UsuarioResponseDTO[] {
     const estado = this.tabActivo();
     const q = this.busqueda().toLowerCase();
-    return this.usuarios.filter(
+    return this.usuarios().filter(
       u =>
         (!estado || u.estado === estado) &&
         (!q || `${u.nombres} ${u.apellidos} ${u.correo}`.toLowerCase().includes(q)),
@@ -98,8 +125,20 @@ export class Meseros {
   }
 
   guardar(): void {
-    this.modalVisible.set(false);
-    this.toast.show(this.editando() ? 'Usuario actualizado' : 'Mesero registrado', 'success');
+    const editando = this.editando();
+    const peticion = editando
+      ? this.usuarioService.actualizar(editando.idUsuario, this.form)
+      : this.usuarioService.crear(this.form);
+    this.guardando.set(true);
+    peticion.subscribe({
+      next: () => {
+        this.guardando.set(false);
+        this.modalVisible.set(false);
+        this.toast.show(editando ? 'Usuario actualizado' : 'Mesero registrado', 'success');
+        this.cargar();
+      },
+      error: () => this.guardando.set(false),
+    });
   }
 
   // Activar no pide confirmación; desactivar sí, porque le corta el acceso.
@@ -107,20 +146,34 @@ export class Meseros {
     if (u.estado === 'ACTIVO') {
       this.porDesactivar.set(u);
     } else {
-      this.toast.show(`${u.nombres} ${u.apellidos} activado`, 'success');
+      this.aplicarEstado(u, 'ACTIVO');
     }
   }
 
   confirmarDesactivar(): void {
     const u = this.porDesactivar();
-    this.toast.show(`${u?.nombres} ${u?.apellidos} desactivado`, 'success');
     this.porDesactivar.set(null);
+    if (u) this.aplicarEstado(u, 'INACTIVO');
   }
 
   confirmarEliminar(): void {
     const u = this.porEliminar();
-    this.toast.show(`${u?.nombres} ${u?.apellidos} eliminado`, 'success');
-    this.porEliminar.set(null);
+    if (!u) return;
+    this.usuarioService.eliminar(u.idUsuario).subscribe({
+      next: () => {
+        this.porEliminar.set(null);
+        this.toast.show(`${u.nombres} ${u.apellidos} eliminado`, 'success');
+        this.cargar();
+      },
+      error: () => this.porEliminar.set(null),
+    });
+  }
+
+  private aplicarEstado(u: UsuarioResponseDTO, estado: EstadoUsuario): void {
+    this.usuarioService.cambiarEstado(u.idUsuario, estado).subscribe(() => {
+      this.toast.show(`${u.nombres} ${u.apellidos} ${estado === 'ACTIVO' ? 'activado' : 'desactivado'}`, 'success');
+      this.cargar();
+    });
   }
 
   private formVacio(): UsuarioRequestDTO {

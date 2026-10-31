@@ -6,6 +6,9 @@ import { InputField } from '../../atoms/input-field/input-field';
   imports: [InputField],
   templateUrl: './form-field.html',
   styleUrl: './form-field.css',
+  // El id va solo en el <input>; si quedara también en la etiqueta del componente habría dos elementos
+  // con el mismo id y el <label for> apuntaría al equivocado.
+  host: { '[attr.id]': 'null' },
 })
 export class FormField {
   @Input() id = '';

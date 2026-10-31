@@ -17,10 +17,14 @@
     <p class="page__count">Clientes ({{ clientesFiltrados.length }} registros)</p>
 
     <div class="page__grid">
-      @for (c of clientesFiltrados; track c.idCliente) {
-        <app-cliente-card [cliente]="c" [editable]="sesion.esAdmin()" (editar)="abrirEditar($event)" (eliminar)="porEliminar.set($event)" />
-      } @empty {
-        <app-empty-state title="No hay clientes" message="Ningún cliente coincide con la búsqueda." actionLabel="+ NUEVO CLIENTE" (action)="abrirCrear()" />
+      @if (cargando() || error()) {
+        <app-estado-carga [cargando]="cargando()" [error]="error()" (reintentar)="cargar()" />
+      } @else {
+        @for (c of clientesFiltrados; track c.idCliente) {
+          <app-cliente-card [cliente]="c" [editable]="sesion.esAdmin()" (editar)="abrirEditar($event)" (eliminar)="porEliminar.set($event)" />
+        } @empty {
+          <app-empty-state title="No hay clientes" message="Ningún cliente coincide con la búsqueda." actionLabel="+ NUEVO CLIENTE" (action)="abrirCrear()" />
+        }
       }
     </div>
   </div>
@@ -36,7 +40,7 @@
     <app-form-field label="Apellido" id="cApellidos" [value]="form.apellido" (valueChange)="form.apellido = $event" />
     <app-form-field label="Correo electrónico" id="cCorreo" type="email" [value]="form.correo" (valueChange)="form.correo = $event" />
     <app-form-field label="Teléfono" id="cTel" [value]="form.telefono" (valueChange)="form.telefono = $event" />
-    <app-button label="GUARDAR" [fullWidth]="true" (click)="guardar()" />
+    <app-button [label]="guardando() ? 'GUARDANDO...' : 'GUARDAR'" [fullWidth]="true" [disabled]="guardando()" (click)="guardar()" />
   </div>
 </app-modal>
 

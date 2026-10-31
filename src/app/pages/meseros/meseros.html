@@ -19,46 +19,50 @@
       <app-tab-filter [tabs]="tabs" [active]="tabActivo()" (tabChange)="tabActivo.set($event)" />
     </div>
 
-    <app-data-table
-      [columns]="columnas"
-      [rows]="usuariosFiltrados"
-      emptyTitle="No hay usuarios"
-      emptyMessage="Ningún usuario coincide con la búsqueda."
-    >
-      <ng-template [appTableRow]="usuariosFiltrados" let-u>
-        <td>
-          <div class="usuario">
-            <app-avatar [name]="u.nombres + ' ' + u.apellidos" />
-            <div class="usuario__info">
-              <span class="td-strong">{{ u.nombres }} {{ u.apellidos }}</span>
-              <span class="td-muted">{{ u.correo }}</span>
+    @if (cargando() || error()) {
+      <app-estado-carga [cargando]="cargando()" [error]="error()" (reintentar)="cargar()" />
+    } @else {
+      <app-data-table
+        [columns]="columnas"
+        [rows]="usuariosFiltrados"
+        emptyTitle="No hay usuarios"
+        emptyMessage="Ningún usuario coincide con la búsqueda."
+      >
+        <ng-template [appTableRow]="usuariosFiltrados" let-u>
+          <td>
+            <div class="usuario">
+              <app-avatar [name]="u.nombres + ' ' + u.apellidos" />
+              <div class="usuario__info">
+                <span class="td-strong">{{ u.nombres }} {{ u.apellidos }}</span>
+                <span class="td-muted">{{ u.correo }}</span>
+              </div>
             </div>
-          </div>
-        </td>
-        <td><app-badge [label]="u.rol === 'MESERO' ? 'Mesero' : 'Admin'" [variant]="u.rol === 'MESERO' ? 'info' : 'warning'" /></td>
-        <td><app-badge [label]="estados[u.estado].label" [variant]="estados[u.estado].variant" /></td>
-        <td style="text-align: center">
-          @if (u.dosFacHab) {
-            <span class="dosfa dosfa--on" title="Verificación en dos pasos activa">✓</span>
-          } @else {
-            <span class="td-muted">—</span>
-          }
-        </td>
-        <td class="td-muted">{{ u.fechaInicio | date: 'dd/MM/yyyy' }}</td>
-        <td>
-          <div class="td-actions">
-            <app-button label="EDITAR" variant="secondary" size="sm" (click)="abrirEditar(u)" />
-            <app-button
-              [label]="u.estado === 'ACTIVO' ? 'DESACTIVAR' : 'ACTIVAR'"
-              variant="ghost"
-              size="sm"
-              (click)="cambiarEstado(u)"
-            />
-            <app-button label="ELIMINAR" variant="danger" size="sm" (click)="porEliminar.set(u)" />
-          </div>
-        </td>
-      </ng-template>
-    </app-data-table>
+          </td>
+          <td><app-badge [label]="u.rol === 'MESERO' ? 'Mesero' : 'Admin'" [variant]="u.rol === 'MESERO' ? 'info' : 'warning'" /></td>
+          <td><app-badge [label]="estados[u.estado].label" [variant]="estados[u.estado].variant" /></td>
+          <td style="text-align: center">
+            @if (u.dosFacHab) {
+              <span class="dosfa dosfa--on" title="Verificación en dos pasos activa">✓</span>
+            } @else {
+              <span class="td-muted">—</span>
+            }
+          </td>
+          <td class="td-muted">{{ u.fechaInicio | date: 'dd/MM/yyyy' }}</td>
+          <td>
+            <div class="td-actions">
+              <app-button label="EDITAR" variant="secondary" size="sm" (click)="abrirEditar(u)" />
+              <app-button
+                [label]="u.estado === 'ACTIVO' ? 'DESACTIVAR' : 'ACTIVAR'"
+                variant="ghost"
+                size="sm"
+                (click)="cambiarEstado(u)"
+              />
+              <app-button label="ELIMINAR" variant="danger" size="sm" (click)="porEliminar.set(u)" />
+            </div>
+          </td>
+        </ng-template>
+      </app-data-table>
+    }
   </div>
 </app-dashboard-layout>
 
@@ -74,13 +78,16 @@
     </div>
     <app-form-field label="Correo electrónico" id="uCorreo" type="email" placeholder="nombre@savanacoffee.com" [value]="form.correo" (valueChange)="form.correo = $event" />
     <app-form-field
-      [label]="editando() ? 'Nueva contraseña (opcional)' : 'Contraseña'"
+      label="Contraseña"
       id="uPass"
       type="password"
-      [placeholder]="editando() ? 'Déjala vacía para no cambiarla' : 'mínimo 6 caracteres'"
+      placeholder="mínimo 6 caracteres"
       [value]="form.contrasena"
       (valueChange)="form.contrasena = $event"
     />
+    @if (editando()) {
+      <span class="modal-form__hint">Para guardar cambios el sistema pide una contraseña: escribe la actual o una nueva.</span>
+    }
     <div class="modal-form__row">
       <div class="modal-form__field">
         <label class="modal-form__label" for="uRol">Rol</label>
@@ -105,7 +112,12 @@
         <small>Al iniciar sesión se le enviará un código de 6 dígitos al correo.</small>
       </span>
     </label>
-    <app-button [label]="editando() ? 'ACTUALIZAR' : 'REGISTRAR MESERO'" [fullWidth]="true" (click)="guardar()" />
+    <app-button
+      [label]="guardando() ? 'GUARDANDO...' : editando() ? 'ACTUALIZAR' : 'REGISTRAR MESERO'"
+      [fullWidth]="true"
+      [disabled]="guardando()"
+      (click)="guardar()"
+    />
   </div>
 </app-modal>
 

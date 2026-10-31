@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { forkJoin, of, switchMap } from 'rxjs';
 import { DashboardLayout } from '../../components/templates/dashboard-layout/dashboard-layout';
 import { PedidoCard } from '../../components/organisms/pedido-card/pedido-card';
 import { Modal } from '../../components/organisms/modal/modal';
@@ -13,22 +14,27 @@ import { SearchBar } from '../../components/molecules/search-bar/search-bar';
 import { TabFilter, Tab } from '../../components/molecules/tab-filter/tab-filter';
 import { DateRangeFilter, RangoFechas } from '../../components/molecules/date-range-filter/date-range-filter';
 import { EmptyState } from '../../components/molecules/empty-state/empty-state';
+import { EstadoCarga } from '../../components/molecules/estado-carga/estado-carga';
 import { Button } from '../../components/atoms/button/button';
 import {
   ClienteRequestDTO,
+  ClienteResponseDTO,
   DetallePedidoRequestDTO,
   EstadoPedido,
   FacturaRequestDTO,
   FacturaResponseDTO,
+  MesaResponseDTO,
   PedidoResponseDTO,
   ProductoResponseDTO,
+  TipoMetodoPago,
 } from '../../models/model';
-import { PEDIDOS_MOCK } from '../../mocks/pedidos.mock';
-import { MESAS_MOCK } from '../../mocks/mesas.mock';
-import { CLIENTES_MOCK } from '../../mocks/clientes.mock';
-import { PRODUCTOS_MOCK } from '../../mocks/productos.mock';
-import { USUARIOS_MOCK } from '../../mocks/usuarios.mock';
-import { FACTURAS_MOCK } from '../../mocks/facturas.mock';
+import { PedidoService } from '../../services/pedido.service';
+import { MesaService } from '../../services/mesa.service';
+import { ClienteService } from '../../services/cliente.service';
+import { ProductoService } from '../../services/producto.service';
+import { MetodoPagoService } from '../../services/metodo-pago.service';
+import { PagoService } from '../../services/pago.service';
+import { FacturaService } from '../../services/factura.service';
 import { PrecioPipe } from '../../pipes/precio.pipe';
 import { ToastService } from '../../services/toast.service';
 import { SessionService } from '../../services/session.service';
@@ -49,6 +55,7 @@ import { ESTADO_PEDIDO } from '../../utils/estados';
     TabFilter,
     DateRangeFilter,
     EmptyState,
+    EstadoCarga,
     Button,
     PrecioPipe,
     DatePipe,
@@ -57,12 +64,17 @@ import { ESTADO_PEDIDO } from '../../utils/estados';
   styleUrl: './pedidos.css',
 })
 export class Pedidos implements OnInit {
-  readonly pedidos = PEDIDOS_MOCK;
-  readonly todasLasMesas = MESAS_MOCK;
-  readonly clientes = CLIENTES_MOCK;
-  readonly productos = PRODUCTOS_MOCK;
-  readonly meseros = USUARIOS_MOCK.filter(u => u.rol === 'MESERO');
   readonly estados = ESTADO_PEDIDO;
+
+  pedidos = signal<PedidoResponseDTO[]>([]);
+  todasLasMesas = signal<MesaResponseDTO[]>([]);
+  clientes = signal<ClienteResponseDTO[]>([]);
+  productos = signal<ProductoResponseDTO[]>([]);
+  metodosPago = signal<TipoMetodoPago[]>([]);
+  cargando = signal(true);
+  error = signal(false);
+  guardando = signal(false);
+  pagando = signal(false);
 
   // Filtros
   tabActivo = signal('');
@@ -87,6 +99,9 @@ export class Pedidos implements OnInit {
   observaciones = '';
   detalles: DetallePedidoRequestDTO[] = [{ idProducto: 0, cantidad: 1 }];
 
+  // ?cobrar=ID llega desde Mesas: se abre cuando terminan de cargar los pedidos.
+  private cobrarAlCargar = 0;
+
   readonly tabs: Tab[] = [
     { label: 'Todos', value: '' },
     { label: 'Pendiente', value: 'PENDIENTE' },
@@ -98,32 +113,76 @@ export class Pedidos implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private pedidoService: PedidoService,
+    private mesaService: MesaService,
+    private clienteService: ClienteService,
+    private productoService: ProductoService,
+    private metodoPagoService: MetodoPagoService,
+    private pagoService: PagoService,
+    private facturaService: FacturaService,
     private toast: ToastService,
     public sesion: SessionService,
   ) {}
 
   // Desde Mesas: ?mesa=N filtra por mesa; ?mesa=N&nuevo=1 abre "Nuevo pedido" con la mesa elegida;
-  // ?cobrar=ID abre el cobro de ese pedido.
+  // ?cobrar=ID abre el cobro de ese pedido. Cobrar y tomar pedidos es solo del mesero.
   ngOnInit(): void {
     const params = this.route.snapshot.queryParamMap;
     const mesa = Number(params.get('mesa') ?? 0);
-    const cobrar = this.pedidos.find(p => p.idPedido === Number(params.get('cobrar')));
-    // Cobrar y tomar pedidos es solo del mesero.
-    if (cobrar && this.sesion.esMesero()) {
-      this.porCobrar.set(cobrar);
+    if (params.get('cobrar') && this.sesion.esMesero()) {
+      this.cobrarAlCargar = Number(params.get('cobrar'));
     } else if (params.get('nuevo') && this.sesion.esMesero()) {
       this.abrirCrear(mesa);
     } else if (mesa) {
       this.filtroMesa.set(mesa);
     }
+    this.cargar();
   }
 
+  cargar(): void {
+    this.cargando.set(true);
+    this.error.set(false);
+    forkJoin({
+      pedidos: this.pedidoService.listar(),
+      mesas: this.mesaService.listar(),
+      clientes: this.clienteService.listar(),
+      productos: this.productoService.listar(),
+      metodos: this.metodoPagoService.listar(),
+    }).subscribe({
+      next: ({ pedidos, mesas, clientes, productos, metodos }) => {
+        this.pedidos.set([...pedidos].sort((a, b) => b.fecha.localeCompare(a.fecha)));
+        this.todasLasMesas.set(mesas);
+        this.clientes.set(clientes);
+        this.productos.set(productos);
+        this.metodosPago.set(metodos.map(m => m.tipo));
+        this.cargando.set(false);
+        if (this.cobrarAlCargar) {
+          const pedido = pedidos.find(p => p.idPedido === this.cobrarAlCargar);
+          if (pedido) this.porCobrar.set(pedido);
+          this.cobrarAlCargar = 0;
+        }
+      },
+      error: () => {
+        this.error.set(true);
+        this.cargando.set(false);
+      },
+    });
+  }
+
+  // El mesero no puede leer /usuarios: la lista del filtro sale de los propios pedidos.
+  get meseros(): { idUsuario: number; nombre: string }[] {
+    const vistos = new Map<number, string>();
+    this.pedidos().forEach(p => vistos.set(p.idUsuario, p.nombreUsuario));
+    return [...vistos].map(([idUsuario, nombre]) => ({ idUsuario, nombre }));
+  }
+
+  // El back solo filtra por estado y cliente: mesa, mesero y fechas se filtran aquí.
   get pedidosFiltrados(): PedidoResponseDTO[] {
     const estado = this.tabActivo();
     const mesa = this.filtroMesa();
     const mesero = this.filtroMesero();
     const { desde, hasta } = this.rango();
-    return this.pedidos.filter(p => {
+    return this.pedidos().filter(p => {
       const dia = p.fecha.slice(0, 10);
       return (
         (!estado || p.estado === estado) &&
@@ -146,74 +205,48 @@ export class Pedidos implements OnInit {
     this.rango.set({ desde: '', hasta: '' });
   }
 
-  // --- Acciones de la tarjeta (solo visual por ahora) ---
+  // --- Acciones de la tarjeta ---
 
   avanzar(e: { pedido: PedidoResponseDTO; estado: EstadoPedido }): void {
-    this.toast.show(`Pedido #${e.pedido.idPedido} → ${ESTADO_PEDIDO[e.estado].label}`, 'success');
+    this.cambiarEstado(e.pedido, e.estado);
   }
 
   confirmarCancelar(): void {
-    this.toast.show(`Pedido #${this.porCancelar()?.idPedido} cancelado`, 'success');
+    const p = this.porCancelar();
     this.porCancelar.set(null);
+    if (p) this.cambiarEstado(p, 'CANCELADO');
   }
 
   cobrar(p: PedidoResponseDTO): void {
     this.porCobrar.set(p);
   }
 
-  // Simula la respuesta de POST /api/pagos: la factura nace al pagar.
+  // POST /pagos: el back crea la factura, marca el pedido PAGADO y libera la mesa.
   confirmarPago(req: FacturaRequestDTO): void {
     const pedido = this.porCobrar();
     if (!pedido) return;
-    const cliente = this.clientes.find(c => c.idCliente === pedido.idCliente);
-    const impuesto = Math.round(pedido.subtotal * 0.19 * 100) / 100;
-    const propina = req.propina ?? 0;
-    const numFactura = `FAC-2026-${String(FACTURAS_MOCK.length + 1).padStart(5, '0')}`;
-    const ahora = new Date().toISOString().slice(0, 19);
-    const factura: FacturaResponseDTO = {
-      numFactura,
-      idPedido: pedido.idPedido,
-      nombreCliente: pedido.nombreCliente,
-      correoCliente: cliente?.correo ?? '',
-      telefonoCliente: cliente?.telefono ?? '',
-      nombreUsuario: pedido.nombreUsuario,
-      fecha: ahora,
-      estado: 'PAGADA',
-      propina,
-      impuesto,
-      total: Math.round((pedido.subtotal + impuesto + propina) * 100) / 100,
-      pagos: (req.pagos ?? []).map((p, i) => ({
-        idPago: i + 1,
-        numFactura,
-        tipoMetodoPago: p.tipoMetodoPago,
-        estado: 'PAGADO',
-        monto: p.monto,
-        fecha: ahora,
-      })),
-    };
-    this.porCobrar.set(null);
-    this.factura.set({
-      factura,
-      pedido,
-      aviso: `Pago registrado. Factura enviada a ${factura.correoCliente}. Mesa ${pedido.numeroMesa} liberada.`,
+    this.pagando.set(true);
+    this.pagoService.pagar(req).subscribe({
+      next: factura => {
+        this.pagando.set(false);
+        this.porCobrar.set(null);
+        this.factura.set({
+          factura,
+          pedido,
+          aviso: `Pago registrado. Factura enviada a ${factura.correoCliente}. Mesa ${pedido.numeroMesa} liberada.`,
+        });
+        this.cargar();
+      },
+      error: () => this.pagando.set(false),
     });
   }
 
   verFactura(p: PedidoResponseDTO): void {
-    const factura = FACTURAS_MOCK.find(f => f.idPedido === p.idPedido);
-    if (factura) {
-      this.factura.set({ factura, pedido: p, aviso: '' });
-    } else {
-      this.toast.show(`No se encontró la factura del pedido #${p.idPedido}`, 'error');
-    }
+    this.facturaService.porPedido(p.idPedido).subscribe(factura => this.factura.set({ factura, pedido: p, aviso: '' }));
   }
 
   imprimirFactura(): void {
-    this.toast.show('Imprimir: disponible al conectar con el back', 'info');
-  }
-
-  reenviarFactura(f: FacturaResponseDTO): void {
-    this.toast.show(`Factura ${f.numFactura} reenviada a ${f.correoCliente}`, 'success');
+    window.print();
   }
 
   verDetalle(pedido: PedidoResponseDTO): void {
@@ -221,20 +254,27 @@ export class Pedidos implements OnInit {
     this.detalleVisible.set(true);
   }
 
-  // --- Nuevo pedido ---
-
-  get mesasDisponibles() {
-    return this.todasLasMesas.filter(m => m.estado === 'DISPONIBLE' || m.numeroMesa === this.numeroMesa);
+  private cambiarEstado(p: PedidoResponseDTO, estado: EstadoPedido): void {
+    this.pedidoService.cambiarEstado(p.idPedido, estado).subscribe(actualizado => {
+      this.pedidos.update(lista => lista.map(x => (x.idPedido === actualizado.idPedido ? actualizado : x)));
+      this.toast.show(`Pedido #${p.idPedido} → ${ESTADO_PEDIDO[estado].label}`, 'success');
+    });
   }
 
-  get clientesFiltrados() {
+  // --- Nuevo pedido ---
+
+  get mesasDisponibles(): MesaResponseDTO[] {
+    return this.todasLasMesas().filter(m => m.estado === 'DISPONIBLE' || m.numeroMesa === this.numeroMesa);
+  }
+
+  get clientesFiltrados(): ClienteResponseDTO[] {
     const q = this.busquedaCliente.toLowerCase();
-    if (!q) return this.clientes;
-    return this.clientes.filter(c => `${c.nombre} ${c.apellido} ${c.correo}`.toLowerCase().includes(q));
+    if (!q) return this.clientes();
+    return this.clientes().filter(c => `${c.nombre} ${c.apellido} ${c.correo}`.toLowerCase().includes(q));
   }
 
   producto(id: number): ProductoResponseDTO | undefined {
-    return this.productos.find(p => p.idProducto === id);
+    return this.productos().find(p => p.idProducto === id);
   }
 
   agotado(p: ProductoResponseDTO): boolean {
@@ -247,6 +287,13 @@ export class Pedidos implements OnInit {
 
   get subtotalPedido(): number {
     return this.detalles.reduce((total, d) => total + this.subtotalLinea(d), 0);
+  }
+
+  get puedeCrear(): boolean {
+    const cliente = this.clienteNuevo
+      ? !!(this.nuevoCliente.nombre && this.nuevoCliente.apellido && this.nuevoCliente.correo && this.nuevoCliente.telefono)
+      : !!this.idCliente;
+    return !!this.numeroMesa && cliente && this.detalles.some(d => d.idProducto && d.cantidad > 0);
   }
 
   abrirCrear(mesa = 0): void {
@@ -268,9 +315,35 @@ export class Pedidos implements OnInit {
     this.detalles = this.detalles.filter((_, idx) => idx !== i);
   }
 
+  // Si el cliente es nuevo, primero se registra (POST /clientes) y con su id se crea el pedido.
   guardar(): void {
-    this.modalVisible.set(false);
-    this.toast.show(`Pedido creado para la mesa ${this.numeroMesa || '—'}`, 'success');
+    const usuario = this.sesion.usuario();
+    if (!usuario || !this.puedeCrear) return;
+    const cliente$ = this.clienteNuevo
+      ? this.clienteService.crear(this.nuevoCliente)
+      : of({ idCliente: this.idCliente } as ClienteResponseDTO);
+    this.guardando.set(true);
+    cliente$
+      .pipe(
+        switchMap(cliente =>
+          this.pedidoService.crear({
+            idCliente: cliente.idCliente,
+            numeroMesa: this.numeroMesa,
+            idUsuario: usuario.idUsuario,
+            observaciones: this.observaciones,
+            detalles: this.detalles.filter(d => d.idProducto && d.cantidad > 0),
+          }),
+        ),
+      )
+      .subscribe({
+        next: pedido => {
+          this.guardando.set(false);
+          this.modalVisible.set(false);
+          this.toast.show(`Pedido #${pedido.idPedido} creado para la mesa ${pedido.numeroMesa}`, 'success');
+          this.cargar();
+        },
+        error: () => this.guardando.set(false),
+      });
   }
 
   private clienteVacio(): ClienteRequestDTO {

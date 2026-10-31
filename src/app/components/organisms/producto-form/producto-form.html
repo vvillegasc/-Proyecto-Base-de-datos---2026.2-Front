@@ -68,8 +68,9 @@
   </div>
 
   <app-button
-    [label]="editando ? 'ACTUALIZAR' : 'CREAR PRODUCTO'"
+    [label]="guardando ? 'GUARDANDO...' : editando ? 'ACTUALIZAR' : 'CREAR PRODUCTO'"
     [fullWidth]="true"
+    [disabled]="guardando"
     (click)="guardar.emit()"
   />
 </div>

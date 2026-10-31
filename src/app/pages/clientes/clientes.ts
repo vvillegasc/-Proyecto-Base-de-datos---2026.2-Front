@@ -1,50 +1,71 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { DashboardLayout } from '../../components/templates/dashboard-layout/dashboard-layout';
 import { ClienteCard } from '../../components/organisms/cliente-card/cliente-card';
 import { Modal } from '../../components/organisms/modal/modal';
+import { ConfirmDialog } from '../../components/organisms/confirm-dialog/confirm-dialog';
 import { FormField } from '../../components/molecules/form-field/form-field';
 import { SearchBar } from '../../components/molecules/search-bar/search-bar';
+import { EmptyState } from '../../components/molecules/empty-state/empty-state';
+import { EstadoCarga } from '../../components/molecules/estado-carga/estado-carga';
 import { Button } from '../../components/atoms/button/button';
 import { ClienteRequestDTO, ClienteResponseDTO } from '../../models/model';
-import { CLIENTES_MOCK } from '../../mocks/clientes.mock';
-import { PEDIDOS_MOCK } from '../../mocks/pedidos.mock';
-import { RESERVAS_MOCK } from '../../mocks/reservas.mock';
-import { EmptyState } from '../../components/molecules/empty-state/empty-state';
-import { ConfirmDialog } from '../../components/organisms/confirm-dialog/confirm-dialog';
+import { ClienteService } from '../../services/cliente.service';
 import { ToastService } from '../../services/toast.service';
 import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-clientes',
-  imports: [DashboardLayout, ClienteCard, Modal, FormField, SearchBar, Button, EmptyState, ConfirmDialog],
+  imports: [DashboardLayout, ClienteCard, Modal, ConfirmDialog, FormField, SearchBar, EmptyState, EstadoCarga, Button],
   templateUrl: './clientes.html',
   styleUrl: './clientes.css',
 })
-export class Clientes {
-  readonly clientes = CLIENTES_MOCK;
+export class Clientes implements OnInit {
+  clientes = signal<ClienteResponseDTO[]>([]);
+  cargando = signal(true);
+  error = signal(false);
+  guardando = signal(false);
+
   busqueda = signal('');
   modalVisible = signal(false);
   editando = signal<ClienteResponseDTO | null>(null);
   porEliminar = signal<ClienteResponseDTO | null>(null);
 
+  form: ClienteRequestDTO = this.formVacio();
+
   constructor(
+    private clienteService: ClienteService,
     private toast: ToastService,
     public sesion: SessionService,
   ) {}
 
-  form: ClienteRequestDTO = { nombre: '', apellido: '', correo: '', telefono: '' };
+  ngOnInit(): void {
+    this.cargar();
+  }
+
+  cargar(): void {
+    this.cargando.set(true);
+    this.error.set(false);
+    this.clienteService.listar().subscribe({
+      next: clientes => {
+        this.clientes.set(clientes);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.error.set(true);
+        this.cargando.set(false);
+      },
+    });
+  }
 
   get clientesFiltrados(): ClienteResponseDTO[] {
     const q = this.busqueda().toLowerCase();
-    if (!q) return this.clientes;
-    return this.clientes.filter(c =>
-      `${c.nombre} ${c.apellido} ${c.correo}`.toLowerCase().includes(q),
-    );
+    if (!q) return this.clientes();
+    return this.clientes().filter(c => `${c.nombre} ${c.apellido} ${c.correo}`.toLowerCase().includes(q));
   }
 
   abrirCrear(): void {
     this.editando.set(null);
-    this.form = { nombre: '', apellido: '', correo: '', telefono: '' };
+    this.form = this.formVacio();
     this.modalVisible.set(true);
   }
 
@@ -55,26 +76,34 @@ export class Clientes {
   }
 
   guardar(): void {
-    this.modalVisible.set(false);
-    this.toast.show(this.editando() ? 'Cliente actualizado' : 'Cliente registrado', 'success');
+    const editando = this.editando();
+    const peticion = editando
+      ? this.clienteService.actualizar(editando.idCliente, this.form)
+      : this.clienteService.crear(this.form);
+    this.guardando.set(true);
+    peticion.subscribe({
+      next: () => {
+        this.guardando.set(false);
+        this.modalVisible.set(false);
+        this.toast.show(editando ? 'Cliente actualizado' : 'Cliente registrado', 'success');
+        this.cargar();
+      },
+      error: () => this.guardando.set(false),
+    });
   }
 
+  // Si el cliente tiene reservas activas, pedidos o facturas, el back responde 409 y el toast lo explica.
   confirmarEliminar(): void {
     const c = this.porEliminar();
-    this.porEliminar.set(null);
     if (!c) return;
-    // Simula la respuesta 409 del back: no se elimina un cliente con pedidos/facturas o reservas activas.
-    const tieneHistorial = PEDIDOS_MOCK.some(p => p.idCliente === c.idCliente);
-    const tieneReservaActiva = RESERVAS_MOCK.some(
-      r => r.idCliente === c.idCliente && (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA'),
-    );
-    if (tieneHistorial || tieneReservaActiva) {
-      this.toast.show(
-        `No se puede eliminar a ${c.nombre} ${c.apellido}: tiene ${tieneHistorial ? 'pedidos o facturas' : 'reservas activas'} asociados.`,
-        'error',
-      );
-      return;
-    }
-    this.toast.show(`Cliente ${c.nombre} ${c.apellido} eliminado`, 'success');
+    this.porEliminar.set(null);
+    this.clienteService.eliminar(c.idCliente).subscribe(() => {
+      this.toast.show(`Cliente ${c.nombre} ${c.apellido} eliminado`, 'success');
+      this.cargar();
+    });
+  }
+
+  private formVacio(): ClienteRequestDTO {
+    return { nombre: '', apellido: '', correo: '', telefono: '' };
   }
 }

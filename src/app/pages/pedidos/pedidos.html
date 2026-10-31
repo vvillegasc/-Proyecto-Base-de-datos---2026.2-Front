@@ -20,7 +20,7 @@
         <span class="filtros__label">Mesa</span>
         <select class="filtros__select" (change)="filtroMesa.set(+$any($event.target).value)">
           <option [value]="0" [selected]="!filtroMesa()">Todas</option>
-          @for (m of todasLasMesas; track m.numeroMesa) {
+          @for (m of todasLasMesas(); track m.numeroMesa) {
             <option [value]="m.numeroMesa" [selected]="m.numeroMesa === filtroMesa()">Mesa {{ m.numeroMesa }}</option>
           }
         </select>
@@ -30,7 +30,7 @@
         <select class="filtros__select" (change)="filtroMesero.set(+$any($event.target).value)">
           <option [value]="0" [selected]="!filtroMesero()">Todos</option>
           @for (u of meseros; track u.idUsuario) {
-            <option [value]="u.idUsuario" [selected]="u.idUsuario === filtroMesero()">{{ u.nombres }} {{ u.apellidos }}</option>
+            <option [value]="u.idUsuario" [selected]="u.idUsuario === filtroMesero()">{{ u.nombre }}</option>
           }
         </select>
       </label>
@@ -41,18 +41,22 @@
     </div>
 
     <div class="page__grid">
-      @for (p of pedidosFiltrados; track p.idPedido) {
-        <app-pedido-card
-          [pedido]="p"
-          [soloLectura]="sesion.esAdmin()"
-          (avanzar)="avanzar($event)"
-          (cancelar)="porCancelar.set($event)"
-          (cobrar)="cobrar($event)"
-          (verFactura)="verFactura($event)"
-          (verDetalle)="verDetalle($event)"
-        />
-      } @empty {
-        <app-empty-state title="No hay pedidos" message="No hay pedidos que coincidan con los filtros." />
+      @if (cargando() || error()) {
+        <app-estado-carga [cargando]="cargando()" [error]="error()" (reintentar)="cargar()" />
+      } @else {
+        @for (p of pedidosFiltrados; track p.idPedido) {
+          <app-pedido-card
+            [pedido]="p"
+            [soloLectura]="sesion.esAdmin()"
+            (avanzar)="avanzar($event)"
+            (cancelar)="porCancelar.set($event)"
+            (cobrar)="cobrar($event)"
+            (verFactura)="verFactura($event)"
+            (verDetalle)="verDetalle($event)"
+          />
+        } @empty {
+          <app-empty-state title="No hay pedidos" message="No hay pedidos que coincidan con los filtros." />
+        }
       }
     </div>
   </div>
@@ -106,7 +110,7 @@
           <div class="modal-form__detalle-row">
             <select class="modal-form__select" (change)="d.idProducto = +$any($event.target).value">
               <option [value]="0" disabled [selected]="!d.idProducto">Seleccionar producto...</option>
-              @for (p of productos; track p.idProducto) {
+              @for (p of productos(); track p.idProducto) {
                 <option [value]="p.idProducto" [disabled]="agotado(p)" [selected]="p.idProducto === d.idProducto">
                   {{ p.nombre }}{{ agotado(p) ? ' (agotado)' : '' }}
                 </option>
@@ -141,7 +145,12 @@
       <span class="modal-form__resumen-nota">El IVA (19%) y la propina se calculan al cobrar.</span>
     </div>
 
-    <app-button label="CREAR PEDIDO" [fullWidth]="true" (click)="guardar()" />
+    <app-button
+      [label]="guardando() ? 'CREANDO...' : 'CREAR PEDIDO'"
+      [fullWidth]="true"
+      [disabled]="!puedeCrear || guardando()"
+      (click)="guardar()"
+    />
   </div>
 </app-modal>
 
@@ -175,7 +184,7 @@
 <!-- Cobro -->
 <app-modal title="Cobrar pedido" size="lg" [visible]="!!porCobrar()" (close)="porCobrar.set(null)">
   @if (porCobrar(); as p) {
-    <app-cobro-form [pedido]="p" (confirmar)="confirmarPago($event)" (cancelar)="porCobrar.set(null)" />
+    <app-cobro-form [pedido]="p" [metodos]="metodosPago()" [procesando]="pagando()" (confirmar)="confirmarPago($event)" (cancelar)="porCobrar.set(null)" />
   }
 </app-modal>
 
@@ -187,7 +196,6 @@
       [pedido]="f.pedido"
       [aviso]="f.aviso"
       (imprimir)="imprimirFactura()"
-      (reenviar)="reenviarFactura(f.factura)"
       (cerrar)="factura.set(null)"
     />
   }

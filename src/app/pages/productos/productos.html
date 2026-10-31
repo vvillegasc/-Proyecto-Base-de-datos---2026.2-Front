@@ -21,15 +21,19 @@
     <p class="page__count">Productos ({{ productosFiltrados.length }} registros)</p>
 
     <div class="page__grid">
-      @for (p of productosFiltrados; track p.idProducto) {
-        <app-producto-card
-          [producto]="p"
-          [editable]="sesion.esAdmin()"
-          (editar)="abrirEditar($event)"
-          (eliminar)="porEliminar.set($event)"
-        />
-      } @empty {
-        <app-empty-state title="No hay productos" message="Prueba con otra categoría o búsqueda." [actionLabel]="sesion.esAdmin() ? '+ NUEVO PRODUCTO' : ''" (action)="abrirCrear()" />
+      @if (cargando() || error()) {
+        <app-estado-carga [cargando]="cargando()" [error]="error()" (reintentar)="cargar()" />
+      } @else {
+        @for (p of productosFiltrados; track p.idProducto) {
+          <app-producto-card
+            [producto]="p"
+            [editable]="sesion.esAdmin()"
+            (editar)="abrirEditar($event)"
+            (eliminar)="porEliminar.set($event)"
+          />
+        } @empty {
+          <app-empty-state title="No hay productos" message="Prueba con otra categoría o búsqueda." [actionLabel]="sesion.esAdmin() ? '+ NUEVO PRODUCTO' : ''" (action)="abrirCrear()" />
+        }
       }
     </div>
   </div>
@@ -43,6 +47,8 @@
   <app-producto-form
     [form]="form"
     [editando]="!!editando()"
+    [guardando]="guardando()"
+    [categorias]="categorias()"
     (guardar)="guardar()"
   />
 </app-modal>

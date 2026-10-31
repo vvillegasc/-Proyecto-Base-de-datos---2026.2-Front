@@ -23,12 +23,3 @@
   padding: 8px 12px;
   border-radius: var(--radius-md);
 }
-
-.login-form__demo {
-  padding: 10px 12px;
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--color-text-muted);
-}

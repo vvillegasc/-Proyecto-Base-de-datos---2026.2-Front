@@ -5,6 +5,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   imports: [],
   templateUrl: './textarea-field.html',
   styleUrl: './textarea-field.css',
+  // El id va solo en el <input>; si quedara también en la etiqueta del componente habría dos elementos
+  // con el mismo id y el <label for> apuntaría al equivocado.
+  host: { '[attr.id]': 'null' },
 })
 export class TextareaField {
   @Input() id = '';

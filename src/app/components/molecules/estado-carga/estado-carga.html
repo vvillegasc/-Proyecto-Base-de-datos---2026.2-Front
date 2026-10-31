@@ -1,0 +1,13 @@
+@if (cargando) {
+  <div class="carga">
+    <span class="carga__spinner"></span>
+    <span>Cargando…</span>
+  </div>
+} @else if (error) {
+  <app-empty-state
+    title="No se pudo cargar la información"
+    message="Revisa tu conexión o que el servidor esté encendido."
+    actionLabel="REINTENTAR"
+    (action)="reintentar.emit()"
+  />
+}

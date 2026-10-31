@@ -48,7 +48,7 @@
 
     <div class="factura__section">
       <span class="factura__label">Pagos</span>
-      @for (p of factura.pagos; track p.idPago) {
+      @for (p of factura.pagos; track $index) {
         <div class="factura__row"><span>{{ metodoLabel[p.tipoMetodoPago] }}</span><span>{{ p.monto | precio }}</span></div>
       }
     </div>
@@ -57,8 +57,7 @@
   </div>
 
   <div class="factura__actions">
-    <app-button label="IMPRIMIR" variant="ghost" (click)="imprimir.emit()" />
-    <app-button label="REENVIAR AL CORREO" variant="secondary" (click)="reenviar.emit()" />
+    <app-button label="IMPRIMIR" variant="secondary" (click)="imprimir.emit()" />
     <app-button label="CERRAR" (click)="cerrar.emit()" />
   </div>
 </div>

@@ -5,18 +5,22 @@
       <span class="dashboard-page__breadcrumb">Savana / Dashboard</span>
     </div>
 
-    <div class="dashboard-page__stats">
-      <app-stat-card label="Productos activos" [value]="resumen.productosActivos" />
-      <app-stat-card label="Mesas disponibles" [value]="mesasDisponiblesLabel" />
-      <app-stat-card label="Pedidos activos" [value]="resumen.pedidosActivos" />
-      <app-stat-card label="Pedidos entregados hoy" [value]="resumen.pedidosEntregadosHoy" />
-      <app-stat-card label="Ventas de hoy" [value]="resumen.totalVentasHoy | precio" />
-      <app-stat-card label="Reservas de hoy" [value]="resumen.reservasHoy" />
-    </div>
+    @if (resumen(); as resumen) {
+      <div class="dashboard-page__stats">
+        <app-stat-card label="Productos activos" [value]="resumen.productosActivos" />
+        <app-stat-card label="Mesas disponibles" [value]="mesasDisponiblesLabel" />
+        <app-stat-card label="Pedidos activos" [value]="resumen.pedidosActivos" />
+        <app-stat-card label="Pedidos entregados hoy" [value]="resumen.pedidosEntregadosHoy" />
+        <app-stat-card label="Ventas de hoy" [value]="resumen.totalVentasHoy | precio" />
+        <app-stat-card label="Reservas de hoy" [value]="resumen.reservasHoy" />
+      </div>
 
-    <div class="dashboard-page__bottom">
-      <app-pedidos-recientes [pedidos]="pedidosRecientes" />
-      <app-mesas-board [mesas]="mesas" />
-    </div>
+      <div class="dashboard-page__bottom">
+        <app-pedidos-recientes [pedidos]="pedidosRecientes()" />
+        <app-mesas-board [mesas]="mesas()" />
+      </div>
+    } @else {
+      <app-estado-carga [cargando]="cargando()" [error]="error()" (reintentar)="cargar()" />
+    }
   </div>
 </app-dashboard-layout>

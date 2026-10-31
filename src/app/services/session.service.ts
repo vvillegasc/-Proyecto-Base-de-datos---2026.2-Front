@@ -15,8 +15,8 @@ export const INICIO_POR_ROL: Record<RolUsuario, string> = {
 };
 
 /**
- * Usuario que inició sesión y su token. Se guarda en localStorage para que recargar la página no
- * cierre la sesión. Hoy el token es simulado; en la fase 9 lo entrega POST /api/auth/login.
+ * Usuario que inició sesión y su token JWT (lo entrega POST /api/auth/login).
+ * Se guarda en localStorage para que recargar la página no cierre la sesión.
  */
 @Injectable({ providedIn: 'root' })
 export class SessionService {
