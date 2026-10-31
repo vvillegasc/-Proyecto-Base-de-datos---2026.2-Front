@@ -16,6 +16,7 @@ import { ToastService } from '../../services/toast.service';
 import { SessionService } from '../../services/session.service';
 import { ESTADO_MESA } from '../../utils/estados';
 
+import { ErroresCampo, erroresDeCampo } from '../../utils/errores';
 @Component({
   selector: 'app-mesas',
   imports: [DashboardLayout, MesaCard, Modal, FormField, TabFilter, Button, EmptyState, EstadoCarga, ConfirmDialog],
@@ -27,6 +28,8 @@ export class Mesas implements OnInit {
   cargando = signal(true);
   error = signal(false);
   guardando = signal(false);
+  // Errores de validación del back, por campo.
+  errores = signal<ErroresCampo>({});
   tabActivo = signal('');
   modalVisible = signal(false);
   editando = signal<MesaResponseDTO | null>(null);
@@ -80,12 +83,14 @@ export class Mesas implements OnInit {
   abrirCrear(): void {
     this.editando.set(null);
     this.form = { numeroMesa: 1, capacidad: 2, estado: 'DISPONIBLE' };
+    this.errores.set({});
     this.modalVisible.set(true);
   }
 
   abrirEditar(m: MesaResponseDTO): void {
     this.editando.set(m);
     this.form = { numeroMesa: m.numeroMesa, capacidad: m.capacidad, estado: m.estado };
+    this.errores.set({});
     this.modalVisible.set(true);
   }
 
@@ -102,7 +107,10 @@ export class Mesas implements OnInit {
         this.toast.show(editando ? 'Mesa actualizada' : 'Mesa creada', 'success');
         this.cargar();
       },
-      error: () => this.guardando.set(false),
+      error: err => {
+        this.guardando.set(false);
+        this.errores.set(erroresDeCampo(err));
+      },
     });
   }
 

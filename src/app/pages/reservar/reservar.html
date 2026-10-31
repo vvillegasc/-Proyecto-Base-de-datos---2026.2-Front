@@ -66,19 +66,11 @@
             <h2 class="card__title">Tus datos</h2>
             <p class="card__subtitle">No necesitas cuenta. Usaremos tu correo para enviarte la confirmación.</p>
             <div class="card__grid card__grid--2">
-              <app-form-field label="Nombre" id="rNombre" [value]="form.nombre ?? ''" (valueChange)="form.nombre = $event" />
-              <app-form-field label="Apellido" id="rApellido" [value]="form.apellido ?? ''" (valueChange)="form.apellido = $event" />
-              <app-form-field label="Correo electrónico" id="rCorreo" type="email" placeholder="correo@ejemplo.com" [value]="form.correo ?? ''" (valueChange)="form.correo = $event" />
-              <app-form-field label="Teléfono" id="rTel" placeholder="300 000 0000" [value]="form.telefono ?? ''" (valueChange)="form.telefono = $event" />
+              <app-form-field label="Nombre" id="rNombre" [error]="errores()['nombre'] ?? ''" [value]="form.nombre ?? ''" (valueChange)="form.nombre = $event" />
+              <app-form-field label="Apellido" id="rApellido" [error]="errores()['apellido'] ?? ''" [value]="form.apellido ?? ''" (valueChange)="form.apellido = $event" />
+              <app-form-field label="Correo electrónico" id="rCorreo" [error]="errores()['correo'] ?? ''" type="email" placeholder="correo@ejemplo.com" [value]="form.correo ?? ''" (valueChange)="form.correo = $event" />
+              <app-form-field label="Teléfono" id="rTel" [error]="errores()['telefono'] ?? ''" placeholder="300 000 0000" [value]="form.telefono ?? ''" (valueChange)="form.telefono = $event" />
             </div>
-            <app-textarea-field
-              label="Observaciones (opcional)"
-              id="rObs"
-              placeholder="Ej: cerca de la ventana, celebramos un cumpleaños..."
-              [maxLength]="255"
-              [value]="form.observaciones ?? ''"
-              (valueChange)="form.observaciones = $event"
-            />
             @if (error()) {
               <p class="aviso aviso--error">{{ error() }}</p>
             }
@@ -129,9 +121,6 @@
               <div class="resumen__row"><span>Fecha</span><strong>{{ r.fecha + 'T00:00:00' | date: 'EEEE d \'de\' MMMM' }}</strong></div>
               <div class="resumen__row"><span>Hora</span><strong>{{ r.hora.slice(0, 5) }}</strong></div>
               <div class="resumen__row"><span>Personas</span><strong>{{ r.numeroPersonas }}</strong></div>
-              @if (r.observaciones) {
-                <div class="resumen__row"><span>Observaciones</span><strong>{{ r.observaciones }}</strong></div>
-              }
             </div>
 
             <p class="confirmacion__nota">

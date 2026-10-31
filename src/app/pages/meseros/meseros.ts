@@ -17,6 +17,7 @@ import { UsuarioService } from '../../services/usuario.service';
 import { ToastService } from '../../services/toast.service';
 import { ESTADO_USUARIO } from '../../utils/estados';
 
+import { ErroresCampo, erroresDeCampo } from '../../utils/errores';
 @Component({
   selector: 'app-meseros',
   imports: [
@@ -43,6 +44,8 @@ export class Meseros implements OnInit {
   cargando = signal(true);
   error = signal(false);
   guardando = signal(false);
+  // Errores de validación del back, por campo.
+  errores = signal<ErroresCampo>({});
   readonly estados = ESTADO_USUARIO;
   readonly roles: RolUsuario[] = ['MESERO', 'ADMINISTRADOR'];
 
@@ -107,6 +110,7 @@ export class Meseros implements OnInit {
   abrirCrear(): void {
     this.editando.set(null);
     this.form = this.formVacio();
+    this.errores.set({});
     this.modalVisible.set(true);
   }
 
@@ -121,6 +125,7 @@ export class Meseros implements OnInit {
       dosFacHab: u.dosFacHab,
       estado: u.estado,
     };
+    this.errores.set({});
     this.modalVisible.set(true);
   }
 
@@ -137,7 +142,10 @@ export class Meseros implements OnInit {
         this.toast.show(editando ? 'Usuario actualizado' : 'Mesero registrado', 'success');
         this.cargar();
       },
-      error: () => this.guardando.set(false),
+      error: err => {
+        this.guardando.set(false);
+        this.errores.set(erroresDeCampo(err));
+      },
     });
   }
 

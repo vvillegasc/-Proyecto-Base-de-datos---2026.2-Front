@@ -14,4 +14,7 @@
 
 .input:focus { border-color: var(--color-primary); }
 
+.input--invalido,
+.input--invalido:focus { border-color: var(--color-danger); }
+
 .input:disabled { background: #f8fafc; cursor: not-allowed; color: var(--color-text-muted); }

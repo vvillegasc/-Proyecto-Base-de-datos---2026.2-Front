@@ -13,6 +13,7 @@ import { ClienteService } from '../../services/cliente.service';
 import { ToastService } from '../../services/toast.service';
 import { SessionService } from '../../services/session.service';
 
+import { ErroresCampo, erroresDeCampo } from '../../utils/errores';
 @Component({
   selector: 'app-clientes',
   imports: [DashboardLayout, ClienteCard, Modal, ConfirmDialog, FormField, SearchBar, EmptyState, EstadoCarga, Button],
@@ -24,6 +25,8 @@ export class Clientes implements OnInit {
   cargando = signal(true);
   error = signal(false);
   guardando = signal(false);
+  // Errores de validación del back, por campo.
+  errores = signal<ErroresCampo>({});
 
   busqueda = signal('');
   modalVisible = signal(false);
@@ -66,12 +69,14 @@ export class Clientes implements OnInit {
   abrirCrear(): void {
     this.editando.set(null);
     this.form = this.formVacio();
+    this.errores.set({});
     this.modalVisible.set(true);
   }
 
   abrirEditar(c: ClienteResponseDTO): void {
     this.editando.set(c);
     this.form = { nombre: c.nombre, apellido: c.apellido, correo: c.correo, telefono: c.telefono };
+    this.errores.set({});
     this.modalVisible.set(true);
   }
 
@@ -88,7 +93,10 @@ export class Clientes implements OnInit {
         this.toast.show(editando ? 'Cliente actualizado' : 'Cliente registrado', 'success');
         this.cargar();
       },
-      error: () => this.guardando.set(false),
+      error: err => {
+        this.guardando.set(false);
+        this.errores.set(erroresDeCampo(err));
+      },
     });
   }
 

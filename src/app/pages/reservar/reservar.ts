@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import { PublicLayout } from '../../components/templates/public-layout/public-layout';
 import { Stepper } from '../../components/molecules/stepper/stepper';
 import { FormField } from '../../components/molecules/form-field/form-field';
-import { TextareaField } from '../../components/molecules/textarea-field/textarea-field';
 import { Badge } from '../../components/atoms/badge/badge';
 import { Button } from '../../components/atoms/button/button';
 import { MesaResponseDTO, ReservaRequestDTO, ReservaResponseDTO } from '../../models/model';
@@ -22,9 +21,10 @@ const aMinutos = (hora: string) => {
   return h * 60 + m;
 };
 
+import { ErroresCampo, erroresDeCampo } from '../../utils/errores';
 @Component({
   selector: 'app-reservar',
-  imports: [PublicLayout, Stepper, FormField, TextareaField, Badge, Button, DatePipe, RouterLink],
+  imports: [PublicLayout, Stepper, FormField, Badge, Button, DatePipe, RouterLink],
   templateUrl: './reservar.html',
   styleUrl: './reservar.css',
 })
@@ -39,6 +39,8 @@ export class Reservar {
   sinDisponibilidad = signal(false);
   cargando = signal(false);
   error = signal('');
+  // Errores de validación del back, por campo.
+  errores = signal<ErroresCampo>({});
   reserva = signal<ReservaResponseDTO | null>(null);
 
   // Mesas libres en el orden del back (menor capacidad primero). La reserva usa la primera;
@@ -70,7 +72,7 @@ export class Reservar {
     this.error.set('');
   }
 
-  // GET /reservas/disponibles: ya excluye mesas sin capacidad, en mantenimiento o con reserva en ±2 h.
+  // GET /reservas/disponibles: ya excluye mesas sin capacidad, en mantenimiento o con reserva en ±3 h.
   verificarDisponibilidad(): void {
     this.cargando.set(true);
     this.error.set('');
@@ -94,6 +96,7 @@ export class Reservar {
   confirmar(): void {
     this.cargando.set(true);
     this.error.set('');
+    this.errores.set({});
     this.intentarReservar(0);
   }
 
@@ -118,8 +121,10 @@ export class Reservar {
           if (err instanceof HttpErrorResponse && err.status === 409) {
             this.intentarReservar(indice + 1);
           } else {
+            const campos = erroresDeCampo(err);
             this.cargando.set(false);
-            this.error.set(mensajeDeError(err));
+            this.errores.set(campos);
+            this.error.set(Object.keys(campos).length ? 'Revisa los campos marcados en rojo.' : mensajeDeError(err));
           }
         },
       });
@@ -147,7 +152,6 @@ export class Reservar {
       fecha: '',
       hora: '',
       numeroPersonas: 2,
-      observaciones: '',
     };
   }
 }

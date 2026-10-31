@@ -36,10 +36,10 @@
   (close)="modalVisible.set(false)"
 >
   <div class="modal-form">
-    <app-form-field label="Nombre" id="cNombres" [value]="form.nombre" (valueChange)="form.nombre = $event" />
-    <app-form-field label="Apellido" id="cApellidos" [value]="form.apellido" (valueChange)="form.apellido = $event" />
-    <app-form-field label="Correo electrónico" id="cCorreo" type="email" [value]="form.correo" (valueChange)="form.correo = $event" />
-    <app-form-field label="Teléfono" id="cTel" [value]="form.telefono" (valueChange)="form.telefono = $event" />
+    <app-form-field label="Nombre" id="cNombres" [error]="errores()['nombre'] ?? ''" [value]="form.nombre" (valueChange)="form.nombre = $event" />
+    <app-form-field label="Apellido" id="cApellidos" [error]="errores()['apellido'] ?? ''" [value]="form.apellido" (valueChange)="form.apellido = $event" />
+    <app-form-field label="Correo electrónico" id="cCorreo" [error]="errores()['correo'] ?? ''" type="email" [value]="form.correo" (valueChange)="form.correo = $event" />
+    <app-form-field label="Teléfono" id="cTel" [error]="errores()['telefono'] ?? ''" [value]="form.telefono" (valueChange)="form.telefono = $event" />
     <app-button [label]="guardando() ? 'GUARDANDO...' : 'GUARDAR'" [fullWidth]="true" [disabled]="guardando()" (click)="guardar()" />
   </div>
 </app-modal>

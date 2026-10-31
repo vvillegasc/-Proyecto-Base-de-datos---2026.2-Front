@@ -6,6 +6,7 @@
     [placeholder]="placeholder"
     [value]="value"
     [disabled]="disabled"
+    [invalido]="!!error"
     (valueChange)="valueChange.emit($event)"
   />
   @if (error) {

@@ -17,6 +17,7 @@ import { ProductoService } from '../../services/producto.service';
 import { ToastService } from '../../services/toast.service';
 import { ESTADO_CATEGORIA } from '../../utils/estados';
 
+import { ErroresCampo, erroresDeCampo } from '../../utils/errores';
 @Component({
   selector: 'app-categorias',
   imports: [
@@ -44,6 +45,8 @@ export class Categorias implements OnInit {
   cargando = signal(true);
   error = signal(false);
   guardando = signal(false);
+  // Errores de validación del back, por campo.
+  errores = signal<ErroresCampo>({});
 
   tabActivo = signal('');
   modalVisible = signal(false);
@@ -105,12 +108,14 @@ export class Categorias implements OnInit {
   abrirCrear(): void {
     this.editando.set(null);
     this.form = this.formVacio();
+    this.errores.set({});
     this.modalVisible.set(true);
   }
 
   abrirEditar(c: CategoriaResponseDTO): void {
     this.editando.set(c);
     this.form = { nombreCategoria: c.nombreCategoria, estado: c.estado, descripcion: c.descripcion };
+    this.errores.set({});
     this.modalVisible.set(true);
   }
 
@@ -127,7 +132,10 @@ export class Categorias implements OnInit {
         this.toast.show(editando ? 'Categoría actualizada' : 'Categoría creada', 'success');
         this.cargar();
       },
-      error: () => this.guardando.set(false),
+      error: err => {
+        this.guardando.set(false);
+        this.errores.set(erroresDeCampo(err));
+      },
     });
   }
 

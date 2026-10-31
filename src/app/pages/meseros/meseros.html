@@ -73,13 +73,14 @@
 >
   <div class="modal-form">
     <div class="modal-form__row">
-      <app-form-field label="Nombres" id="uNombres" [value]="form.nombres" (valueChange)="form.nombres = $event" />
-      <app-form-field label="Apellidos" id="uApellidos" [value]="form.apellidos ?? ''" (valueChange)="form.apellidos = $event" />
+      <app-form-field label="Nombres" id="uNombres" [error]="errores()['nombres'] ?? ''" [value]="form.nombres" (valueChange)="form.nombres = $event" />
+      <app-form-field label="Apellidos" id="uApellidos" [error]="errores()['apellidos'] ?? ''" [value]="form.apellidos ?? ''" (valueChange)="form.apellidos = $event" />
     </div>
-    <app-form-field label="Correo electrónico" id="uCorreo" type="email" placeholder="nombre@savanacoffee.com" [value]="form.correo" (valueChange)="form.correo = $event" />
+    <app-form-field label="Correo electrónico" id="uCorreo" [error]="errores()['correo'] ?? ''" type="email" placeholder="nombre@savanacoffee.com" [value]="form.correo" (valueChange)="form.correo = $event" />
     <app-form-field
       label="Contraseña"
       id="uPass"
+      [error]="errores()['contrasena'] ?? ''"
       type="password"
       placeholder="mínimo 6 caracteres"
       [value]="form.contrasena"
@@ -96,6 +97,9 @@
             <option [value]="r">{{ r === 'MESERO' ? 'Mesero' : 'Administrador' }}</option>
           }
         </select>
+        @if (errores()['rol']) {
+          <span class="campo-error">{{ errores()['rol'] }}</span>
+        }
       </div>
       <div class="modal-form__field">
         <label class="modal-form__label" for="uEstado">Estado</label>
@@ -103,6 +107,9 @@
           <option value="ACTIVO">Activo</option>
           <option value="INACTIVO">Inactivo</option>
         </select>
+        @if (errores()['estado']) {
+          <span class="campo-error">{{ errores()['estado'] }}</span>
+        }
       </div>
     </div>
     <label class="modal-form__check">

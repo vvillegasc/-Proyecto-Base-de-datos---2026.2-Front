@@ -5,5 +5,7 @@
   [value]="value"
   [disabled]="disabled"
   class="input"
+  [class.input--invalido]="invalido"
+  [attr.aria-invalid]="invalido || null"
   (input)="onInput($event)"
 />

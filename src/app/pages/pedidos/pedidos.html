@@ -84,10 +84,10 @@
       </div>
       @if (clienteNuevo) {
         <div class="modal-form__cliente-nuevo">
-          <app-form-field label="Nombre" id="ncNombre" [value]="nuevoCliente.nombre" (valueChange)="nuevoCliente.nombre = $event" />
-          <app-form-field label="Apellido" id="ncApellido" [value]="nuevoCliente.apellido" (valueChange)="nuevoCliente.apellido = $event" />
-          <app-form-field label="Correo" id="ncCorreo" type="email" [value]="nuevoCliente.correo" (valueChange)="nuevoCliente.correo = $event" />
-          <app-form-field label="Teléfono" id="ncTel" [value]="nuevoCliente.telefono" (valueChange)="nuevoCliente.telefono = $event" />
+          <app-form-field label="Nombre" id="ncNombre" [error]="errores()['nombre'] ?? ''" [value]="nuevoCliente.nombre" (valueChange)="nuevoCliente.nombre = $event" />
+          <app-form-field label="Apellido" id="ncApellido" [error]="errores()['apellido'] ?? ''" [value]="nuevoCliente.apellido" (valueChange)="nuevoCliente.apellido = $event" />
+          <app-form-field label="Correo" id="ncCorreo" [error]="errores()['correo'] ?? ''" type="email" [value]="nuevoCliente.correo" (valueChange)="nuevoCliente.correo = $event" />
+          <app-form-field label="Teléfono" id="ncTel" [error]="errores()['telefono'] ?? ''" [value]="nuevoCliente.telefono" (valueChange)="nuevoCliente.telefono = $event" />
         </div>
       } @else {
         <app-search-bar placeholder="Buscar por nombre o correo..." [value]="busquedaCliente" (valueChange)="busquedaCliente = $event" />

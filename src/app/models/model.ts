@@ -172,7 +172,6 @@ export interface ReservaRequestDTO {
   fechaHora?: string;
   numeroPersonas: number;
   estado?: EstadoReserva;
-  observaciones?: string;
 }
 
 export interface ReservaResponseDTO {
@@ -187,7 +186,6 @@ export interface ReservaResponseDTO {
   fechaHora: string;
   numeroPersonas: number;
   estado: EstadoReserva;
-  observaciones: string;
 }
 
 export interface ActualizarEstadoReservaRequest {

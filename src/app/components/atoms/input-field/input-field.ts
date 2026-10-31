@@ -15,6 +15,7 @@ export class InputField {
   @Input() placeholder = '';
   @Input() value: string | number = '';
   @Input() disabled = false;
+  @Input() invalido = false;
   @Output() valueChange = new EventEmitter<string>();
 
   onInput(event: Event): void {

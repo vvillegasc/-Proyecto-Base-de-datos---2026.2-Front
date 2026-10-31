@@ -94,7 +94,6 @@
       <div class="detalle__row"><span>Hora</span><span>{{ r.hora.slice(0, 5) }}</span></div>
       <div class="detalle__row"><span>Mesa</span><span>{{ r.numeroMesa }}</span></div>
       <div class="detalle__row"><span>Personas</span><span>{{ r.numeroPersonas }}</span></div>
-      <div class="detalle__row"><span>Observaciones</span><span>{{ r.observaciones || '—' }}</span></div>
 
       @if (sesion.esMesero() && (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA')) {
         <div class="detalle__actions">

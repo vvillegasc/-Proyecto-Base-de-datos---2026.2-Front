@@ -40,6 +40,7 @@ import { ToastService } from '../../services/toast.service';
 import { SessionService } from '../../services/session.service';
 import { ESTADO_PEDIDO } from '../../utils/estados';
 
+import { ErroresCampo, erroresDeCampo } from '../../utils/errores';
 @Component({
   selector: 'app-pedidos',
   imports: [
@@ -74,6 +75,8 @@ export class Pedidos implements OnInit {
   cargando = signal(true);
   error = signal(false);
   guardando = signal(false);
+  // Errores de validación del back, por campo.
+  errores = signal<ErroresCampo>({});
   pagando = signal(false);
 
   // Filtros
@@ -304,6 +307,7 @@ export class Pedidos implements OnInit {
     this.nuevoCliente = this.clienteVacio();
     this.observaciones = '';
     this.detalles = [{ idProducto: 0, cantidad: 1 }];
+    this.errores.set({});
     this.modalVisible.set(true);
   }
 
@@ -342,7 +346,10 @@ export class Pedidos implements OnInit {
           this.toast.show(`Pedido #${pedido.idPedido} creado para la mesa ${pedido.numeroMesa}`, 'success');
           this.cargar();
         },
-        error: () => this.guardando.set(false),
+        error: err => {
+        this.guardando.set(false);
+        this.errores.set(erroresDeCampo(err));
+      },
       });
   }
 

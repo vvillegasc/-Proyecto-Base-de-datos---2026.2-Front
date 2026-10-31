@@ -23,6 +23,9 @@
 .textarea::placeholder { color: var(--color-text-muted); }
 .textarea:focus { border-color: var(--color-primary); }
 
+.textarea--invalido,
+.textarea--invalido:focus { border-color: var(--color-danger); }
+
 .field__counter {
   align-self: flex-end;
   font-size: 11px;

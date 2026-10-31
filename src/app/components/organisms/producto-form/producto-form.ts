@@ -4,6 +4,7 @@ import { FormField } from '../../molecules/form-field/form-field';
 import { TextareaField } from '../../molecules/textarea-field/textarea-field';
 import { Button } from '../../atoms/button/button';
 import { CategoriaResponseDTO, ProductoRequestDTO } from '../../../models/model';
+import { ErroresCampo } from '../../../utils/errores';
 
 @Component({
   selector: 'app-producto-form',
@@ -16,6 +17,7 @@ export class ProductoForm {
   @Input() editando = false;
   @Input() guardando = false;
   @Input() categorias: CategoriaResponseDTO[] = [];
+  @Input() errores: ErroresCampo = {};
   @Output() guardar = new EventEmitter<void>();
 
   imagenConError = false;

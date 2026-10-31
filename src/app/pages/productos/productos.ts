@@ -16,6 +16,7 @@ import { CategoriaService } from '../../services/categoria.service';
 import { ToastService } from '../../services/toast.service';
 import { SessionService } from '../../services/session.service';
 
+import { ErroresCampo, erroresDeCampo } from '../../utils/errores';
 @Component({
   selector: 'app-productos',
   imports: [
@@ -39,6 +40,8 @@ export class Productos implements OnInit {
   cargando = signal(true);
   error = signal(false);
   guardando = signal(false);
+  // Errores de validación del back, por campo.
+  errores = signal<ErroresCampo>({});
 
   busqueda = signal('');
   categoriaActiva = signal('');
@@ -98,6 +101,7 @@ export class Productos implements OnInit {
   abrirCrear(): void {
     this.editando.set(null);
     this.form = this.formVacio();
+    this.errores.set({});
     this.modalVisible.set(true);
   }
 
@@ -112,6 +116,7 @@ export class Productos implements OnInit {
       imagenUrl: p.imagenUrl,
       nombreCategoria: p.nombreCategoria,
     };
+    this.errores.set({});
     this.modalVisible.set(true);
   }
 
@@ -128,7 +133,10 @@ export class Productos implements OnInit {
         this.toast.show(editando ? 'Producto actualizado' : 'Producto creado', 'success');
         this.cargar();
       },
-      error: () => this.guardando.set(false),
+      error: err => {
+        this.guardando.set(false);
+        this.errores.set(erroresDeCampo(err));
+      },
     });
   }
 

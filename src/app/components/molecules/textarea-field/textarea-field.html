@@ -5,6 +5,8 @@
   <textarea
     [id]="id"
     class="textarea"
+    [class.textarea--invalido]="!!error"
+    [attr.aria-invalid]="!!error || null"
     [rows]="rows"
     [placeholder]="placeholder"
     [value]="value"

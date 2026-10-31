@@ -49,6 +49,7 @@
     <app-form-field
       label="Nombre"
       id="catNombre"
+      [error]="errores()['nombreCategoria'] ?? ''"
       placeholder="Ej: Cafés Filtrados"
       [value]="form.nombreCategoria"
       [disabled]="!!editando()"
@@ -60,6 +61,7 @@
     <app-textarea-field
       label="Descripción"
       id="catDesc"
+      [error]="errores()['descripcion'] ?? ''"
       placeholder="¿Qué productos incluye?"
       [maxLength]="150"
       [value]="form.descripcion ?? ''"
@@ -71,6 +73,9 @@
         <option value="ACTIVA">Activa (visible en el menú)</option>
         <option value="INACTIVA">Inactiva (oculta en el menú)</option>
       </select>
+      @if (errores()['estado']) {
+        <span class="campo-error">{{ errores()['estado'] }}</span>
+      }
     </div>
     <app-button
       [label]="guardando() ? 'GUARDANDO...' : editando() ? 'ACTUALIZAR' : 'CREAR CATEGORÍA'"

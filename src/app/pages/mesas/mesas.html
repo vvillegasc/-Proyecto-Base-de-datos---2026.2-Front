@@ -44,8 +44,8 @@
   (close)="modalVisible.set(false)"
 >
   <div class="modal-form">
-    <app-form-field label="Número de mesa" id="mNum" type="number" [value]="form.numeroMesa" [disabled]="!!editando()" (valueChange)="form.numeroMesa = +$event" />
-    <app-form-field label="Capacidad" id="mCap" type="number" [value]="form.capacidad" (valueChange)="form.capacidad = +$event" />
+    <app-form-field label="Número de mesa" id="mNum" [error]="errores()['numeroMesa'] ?? ''" type="number" [value]="form.numeroMesa" [disabled]="!!editando()" (valueChange)="form.numeroMesa = +$event" />
+    <app-form-field label="Capacidad" id="mCap" [error]="errores()['capacidad'] ?? ''" type="number" [value]="form.capacidad" (valueChange)="form.capacidad = +$event" />
     <div class="modal-form__field">
       <label class="modal-form__label">Estado</label>
       <select class="modal-form__select" (change)="form.estado = $any($event.target).value">

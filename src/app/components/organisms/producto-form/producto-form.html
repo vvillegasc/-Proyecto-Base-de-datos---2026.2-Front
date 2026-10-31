@@ -2,6 +2,7 @@
   <app-form-field
     label="Nombre"
     id="pNombre"
+    [error]="errores['nombre'] ?? ''"
     [value]="form.nombre"
     (valueChange)="form.nombre = $event"
   />
@@ -9,6 +10,7 @@
   <app-textarea-field
     label="Descripción"
     id="pDesc"
+    [error]="errores['descripcion'] ?? ''"
     placeholder="Notas, ingredientes o preparación..."
     [maxLength]="200"
     [value]="form.descripcion ?? ''"
@@ -19,6 +21,7 @@
     <app-form-field
       label="Precio"
       id="pPrecio"
+      [error]="errores['precio'] ?? ''"
       type="number"
       [value]="form.precio"
       (valueChange)="form.precio = +$event"
@@ -26,6 +29,7 @@
     <app-form-field
       label="Stock"
       id="pStock"
+      [error]="errores['stock'] ?? ''"
       type="number"
       [value]="form.stock"
       (valueChange)="form.stock = +$event"
@@ -42,11 +46,15 @@
         </option>
       }
     </select>
+    @if (errores['nombreCategoria']) {
+      <span class="campo-error">{{ errores['nombreCategoria'] }}</span>
+    }
   </div>
 
   <app-form-field
     label="URL Imagen"
     id="pImg"
+    [error]="errores['imagenUrl'] ?? ''"
     placeholder="https://..."
     [value]="form.imagenUrl"
     (valueChange)="onImagenChange($event)"
