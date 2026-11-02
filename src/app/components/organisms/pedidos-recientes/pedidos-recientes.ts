@@ -12,5 +12,6 @@ import { ESTADO_PEDIDO } from '../../../utils/estados';
 })
 export class PedidosRecientes {
   @Input() pedidos: PedidoResponseDTO[] = [];
+  @Input() cargando = false;
   readonly estados = ESTADO_PEDIDO;
 }

@@ -5,7 +5,6 @@ import { DataTable, TableColumn, TableRow } from '../../components/organisms/dat
 import { Modal } from '../../components/organisms/modal/modal';
 import { FacturaDetalle } from '../../components/organisms/factura-detalle/factura-detalle';
 import { SearchBar } from '../../components/molecules/search-bar/search-bar';
-import { StatCard } from '../../components/molecules/stat-card/stat-card';
 import { DateRangeFilter, RangoFechas } from '../../components/molecules/date-range-filter/date-range-filter';
 import { EstadoCarga } from '../../components/molecules/estado-carga/estado-carga';
 import { Badge } from '../../components/atoms/badge/badge';
@@ -25,7 +24,6 @@ import { ESTADO_FACTURA } from '../../utils/estados';
     Modal,
     FacturaDetalle,
     SearchBar,
-    StatCard,
     DateRangeFilter,
     EstadoCarga,
     Badge,
@@ -52,10 +50,10 @@ export class Facturas implements OnInit {
   readonly columnas: TableColumn[] = [
     { label: 'N° factura' },
     { label: 'Fecha' },
-    { label: 'Pedido', align: 'center' },
     { label: 'Cliente' },
     { label: 'Mesero' },
     { label: 'Pago' },
+    { label: 'Propina', align: 'right' },
     { label: 'Total', align: 'right' },
     { label: 'Estado' },
     { label: '', align: 'right' },
@@ -73,7 +71,8 @@ export class Facturas implements OnInit {
   // El rango de fechas se filtra en el back; la búsqueda por texto, aquí.
   cargar(): void {
     const { desde, hasta } = this.rango();
-    this.cargando.set(true);
+    // El "Cargando…" solo en la primera carga; al refrescar se mantiene la lista visible.
+    if (!this.facturas().length) this.cargando.set(true);
     this.error.set(false);
     this.facturaService.listar(desde, hasta).subscribe({
       next: facturas => {
@@ -96,14 +95,6 @@ export class Facturas implements OnInit {
     const q = this.busqueda().toLowerCase();
     if (!q) return this.facturas();
     return this.facturas().filter(f => `${f.numFactura} ${f.nombreCliente} ${f.correoCliente}`.toLowerCase().includes(q));
-  }
-
-  get totalVendido(): number {
-    return this.facturasFiltradas.reduce((t, f) => t + f.total, 0);
-  }
-
-  get totalPropinas(): number {
-    return this.facturasFiltradas.reduce((t, f) => t + f.propina, 0);
   }
 
   metodos(f: FacturaResponseDTO): string {

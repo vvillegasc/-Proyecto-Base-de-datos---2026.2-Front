@@ -41,9 +41,12 @@
     </div>
 
     <div class="page__grid">
-      @if (cargando() || error()) {
+      @if ((cargando() && !pedidos().length) || error()) {
         <app-estado-carga [cargando]="cargando()" [error]="error()" (reintentar)="cargar()" />
       } @else {
+        @if (cargando()) {
+          <p class="page__cargando-resto">Cargando el resto de pedidos…</p>
+        }
         @for (p of pedidosFiltrados; track p.idPedido) {
           <app-pedido-card
             [pedido]="p"
@@ -65,6 +68,9 @@
 <!-- Nuevo pedido -->
 <app-modal title="Nuevo Pedido" [visible]="modalVisible()" (close)="modalVisible.set(false)">
   <div class="modal-form">
+    @if (cargandoCatalogos()) {
+      <p class="modal-form__cargando">Cargando mesas, clientes y productos…</p>
+    }
     <div class="modal-form__field">
       <label class="modal-form__label">Mesa</label>
       <select class="modal-form__select" (change)="numeroMesa = +$any($event.target).value">
@@ -108,14 +114,11 @@
       @for (d of detalles; track $index) {
         <div class="modal-form__detalle">
           <div class="modal-form__detalle-row">
-            <select class="modal-form__select" (change)="d.idProducto = +$any($event.target).value">
-              <option [value]="0" disabled [selected]="!d.idProducto">Seleccionar producto...</option>
-              @for (p of productos(); track p.idProducto) {
-                <option [value]="p.idProducto" [disabled]="agotado(p)" [selected]="p.idProducto === d.idProducto">
-                  {{ p.nombre }}{{ agotado(p) ? ' (agotado)' : '' }}
-                </option>
-              }
-            </select>
+            <app-producto-selector
+              [productos]="productos()"
+              [seleccionado]="d.idProducto"
+              (seleccionar)="d.idProducto = $event"
+            />
             <app-form-field label="" id="dCant{{ $index }}" type="number" placeholder="Cant." [value]="d.cantidad" (valueChange)="d.cantidad = +$event" />
             <button class="modal-form__remove" type="button" [disabled]="detalles.length === 1" (click)="quitarDetalle($index)">✕</button>
           </div>

@@ -36,7 +36,7 @@
     padding: 6px;
   }
 
-  .dashboard-layout__logo { font-size: 18px; font-weight: 700; color: #fff; }
+  .dashboard-layout__logo { height: 40px; width: auto; }
 
   .dashboard-layout__sidebar {
     position: fixed;

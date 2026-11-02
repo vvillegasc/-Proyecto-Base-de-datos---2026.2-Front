@@ -1,3 +1,6 @@
+/* Contenedor: permite poner el botón del ojo dentro del campo de contraseña. */
+.campo { position: relative; }
+
 .input {
   width: 100%;
   padding: 9px 12px;
@@ -18,3 +21,24 @@
 .input--invalido:focus { border-color: var(--color-danger); }
 
 .input:disabled { background: #f8fafc; cursor: not-allowed; color: var(--color-text-muted); }
+
+.campo--contrasena .input { padding-right: 40px; }
+
+.campo__ojo {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  transition: color 0.15s, background 0.15s;
+}
+
+.campo__ojo:hover:not(:disabled) { color: var(--color-primary); background: var(--color-bg); }
+.campo__ojo:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 1px; }
+.campo__ojo:disabled { cursor: not-allowed; opacity: 0.5; }

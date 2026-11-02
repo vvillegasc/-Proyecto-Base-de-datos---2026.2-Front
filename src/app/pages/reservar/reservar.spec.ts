@@ -58,6 +58,36 @@ describe('Reservar', () => {
     expect(pagina.reserva()?.numeroMesa).toBe(4);
   });
 
+  // Fecha y hora locales (como las escribe el cliente) a partir de un Date.
+  const local = (d: Date) => ({ fecha: d.toLocaleDateString('en-CA'), hora: d.toTimeString().slice(0, 5) });
+  const mesaEn = (numeroMesa: number, capacidad: number, estado: string) => ({ numeroMesa, capacidad, estado });
+
+  it('para una reserva cercana no asigna una mesa que ahora está ocupada', () => {
+    Object.assign(pagina.form, local(new Date(Date.now() + 60 * 60 * 1000))); // dentro de 1 h
+    pagina.verificarDisponibilidad();
+    disponibles([mesaEn(1, 2, 'OCUPADA'), mesaEn(5, 2, 'DISPONIBLE')]);
+
+    pagina.confirmar();
+    expect(backend.expectOne(`${API}/reservas`).request.body.numeroMesa).toBe(5);
+  });
+
+  it('si todas las mesas cercanas están ocupadas ahora, avisa que no hay disponibilidad', () => {
+    Object.assign(pagina.form, local(new Date(Date.now() + 60 * 60 * 1000)));
+    pagina.verificarDisponibilidad();
+    disponibles([mesaEn(1, 2, 'OCUPADA'), mesaEn(2, 4, 'RESERVADA')]);
+    expect(pagina.sinDisponibilidad()).toBe(true);
+    expect(pagina.paso()).toBe(0);
+  });
+
+  it('para una reserva lejana el estado actual de la mesa no importa', () => {
+    Object.assign(pagina.form, local(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))); // en una semana
+    pagina.verificarDisponibilidad();
+    disponibles([mesaEn(1, 2, 'OCUPADA'), mesaEn(5, 2, 'DISPONIBLE')]);
+
+    pagina.confirmar();
+    expect(backend.expectOne(`${API}/reservas`).request.body.numeroMesa).toBe(1);
+  });
+
   it('muestra los errores de validación del back debajo de cada campo', () => {
     pagina.verificarDisponibilidad();
     disponibles([mesa(2, 4)]);

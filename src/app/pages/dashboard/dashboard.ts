@@ -11,6 +11,8 @@ import { PedidoService } from '../../services/pedido.service';
 import { MesaService } from '../../services/mesa.service';
 import { PrecioPipe } from '../../pipes/precio.pipe';
 
+const PEDIDOS_RECIENTES = 15;
+
 @Component({
   selector: 'app-dashboard',
   imports: [DashboardLayout, StatCard, EstadoCarga, PedidosRecientes, MesasBoard, PrecioPipe],
@@ -22,6 +24,7 @@ export class Dashboard implements OnInit {
   pedidosRecientes = signal<PedidoResponseDTO[]>([]);
   mesas = signal<MesaResponseDTO[]>([]);
   cargando = signal(true);
+  cargandoPedidos = signal(true);
   error = signal(false);
 
   constructor(
@@ -37,15 +40,9 @@ export class Dashboard implements OnInit {
   cargar(): void {
     this.cargando.set(true);
     this.error.set(false);
-    forkJoin({
-      resumen: this.dashboardService.resumen(),
-      pedidos: this.pedidoService.listar(),
-      mesas: this.mesaService.listar(),
-    }).subscribe({
-      next: ({ resumen, pedidos, mesas }) => {
+    forkJoin({ resumen: this.dashboardService.resumen(), mesas: this.mesaService.listar() }).subscribe({
+      next: ({ resumen, mesas }) => {
         this.resumen.set(resumen);
-        // Los 3 más recientes primero.
-        this.pedidosRecientes.set([...pedidos].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 3));
         this.mesas.set(mesas);
         this.cargando.set(false);
       },
@@ -53,6 +50,16 @@ export class Dashboard implements OnInit {
         this.error.set(true);
         this.cargando.set(false);
       },
+    });
+    // GET /pedidos es lento con muchos pedidos: va aparte para no demorar los indicadores.
+    this.cargandoPedidos.set(true);
+    this.pedidoService.listar().subscribe({
+      next: pedidos => {
+        // Los más recientes primero; la tarjeta muestra los que quepan y el resto con scroll.
+        this.pedidosRecientes.set([...pedidos].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, PEDIDOS_RECIENTES));
+        this.cargandoPedidos.set(false);
+      },
+      error: () => this.cargandoPedidos.set(false),
     });
   }
 

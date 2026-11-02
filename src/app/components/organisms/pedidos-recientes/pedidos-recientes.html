@@ -1,7 +1,9 @@
 <div class="pedidos-recientes">
   <h3 class="pedidos-recientes__title">Pedidos Recientes</h3>
 
-  @if (pedidos.length === 0) {
+  @if (cargando) {
+    <p class="pedidos-recientes__empty">Cargando pedidos…</p>
+  } @else if (pedidos.length === 0) {
     <p class="pedidos-recientes__empty">Sin pedidos recientes.</p>
   } @else {
     <ul class="pedidos-recientes__list">

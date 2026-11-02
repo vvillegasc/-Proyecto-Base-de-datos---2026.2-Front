@@ -15,6 +15,7 @@ import { TabFilter, Tab } from '../../components/molecules/tab-filter/tab-filter
 import { DateRangeFilter, RangoFechas } from '../../components/molecules/date-range-filter/date-range-filter';
 import { EmptyState } from '../../components/molecules/empty-state/empty-state';
 import { EstadoCarga } from '../../components/molecules/estado-carga/estado-carga';
+import { ProductoSelector } from '../../components/molecules/producto-selector/producto-selector';
 import { Button } from '../../components/atoms/button/button';
 import {
   ClienteRequestDTO,
@@ -38,6 +39,7 @@ import { FacturaService } from '../../services/factura.service';
 import { PrecioPipe } from '../../pipes/precio.pipe';
 import { ToastService } from '../../services/toast.service';
 import { SessionService } from '../../services/session.service';
+import { PropinasService } from '../../services/propinas.service';
 import { ESTADO_PEDIDO } from '../../utils/estados';
 
 import { ErroresCampo, erroresDeCampo } from '../../utils/errores';
@@ -57,6 +59,7 @@ import { ErroresCampo, erroresDeCampo } from '../../utils/errores';
     DateRangeFilter,
     EmptyState,
     EstadoCarga,
+    ProductoSelector,
     Button,
     PrecioPipe,
     DatePipe,
@@ -73,6 +76,7 @@ export class Pedidos implements OnInit {
   productos = signal<ProductoResponseDTO[]>([]);
   metodosPago = signal<TipoMetodoPago[]>([]);
   cargando = signal(true);
+  cargandoCatalogos = signal(true);
   error = signal(false);
   guardando = signal(false);
   // Errores de validación del back, por campo.
@@ -102,9 +106,6 @@ export class Pedidos implements OnInit {
   observaciones = '';
   detalles: DetallePedidoRequestDTO[] = [{ idProducto: 0, cantidad: 1 }];
 
-  // ?cobrar=ID llega desde Mesas: se abre cuando terminan de cargar los pedidos.
-  private cobrarAlCargar = 0;
-
   readonly tabs: Tab[] = [
     { label: 'Todos', value: '' },
     { label: 'Pendiente', value: 'PENDIENTE' },
@@ -124,6 +125,7 @@ export class Pedidos implements OnInit {
     private pagoService: PagoService,
     private facturaService: FacturaService,
     private toast: ToastService,
+    private propinas: PropinasService,
     public sesion: SessionService,
   ) {}
 
@@ -132,44 +134,71 @@ export class Pedidos implements OnInit {
   ngOnInit(): void {
     const params = this.route.snapshot.queryParamMap;
     const mesa = Number(params.get('mesa') ?? 0);
-    if (params.get('cobrar') && this.sesion.esMesero()) {
-      this.cobrarAlCargar = Number(params.get('cobrar'));
+    const cobrar = Number(params.get('cobrar') ?? 0);
+    if (cobrar && this.sesion.esMesero()) {
+      // Solo ese pedido (rápido), sin esperar la lista completa.
+      this.pedidoService.obtener(cobrar).subscribe(p => this.porCobrar.set(p));
     } else if (params.get('nuevo') && this.sesion.esMesero()) {
       this.abrirCrear(mesa);
     } else if (mesa) {
       this.filtroMesa.set(mesa);
     }
+    this.cargarCatalogos();
     this.cargar();
   }
 
+  // GET /pedidos es lento con muchos pedidos (el back consulta cada uno por separado), por eso
+  // la lista carga aparte de los catálogos y solo se pide completa al entrar o al reintentar.
   cargar(): void {
-    this.cargando.set(true);
+    if (!this.pedidos().length) this.cargando.set(true);
     this.error.set(false);
-    forkJoin({
-      pedidos: this.pedidoService.listar(),
-      mesas: this.mesaService.listar(),
-      clientes: this.clienteService.listar(),
-      productos: this.productoService.listar(),
-      metodos: this.metodoPagoService.listar(),
-    }).subscribe({
-      next: ({ pedidos, mesas, clientes, productos, metodos }) => {
-        this.pedidos.set([...pedidos].sort((a, b) => b.fecha.localeCompare(a.fecha)));
-        this.todasLasMesas.set(mesas);
-        this.clientes.set(clientes);
-        this.productos.set(productos);
-        this.metodosPago.set(metodos.map(m => m.tipo));
+    this.pedidoService.listar().subscribe({
+      next: pedidos => {
+        // Lo que se creó o cambió mientras llegaba la lista es más nuevo que la respuesta: prevalece.
+        const servidor = new Map(pedidos.map(p => [p.idPedido, p]));
+        this.cambiosLocales.forEach((p, id) => servidor.set(id, p));
+        this.pedidos.set([...servidor.values()].sort((a, b) => b.fecha.localeCompare(a.fecha)));
+        this.cambiosLocales.clear();
         this.cargando.set(false);
-        if (this.cobrarAlCargar) {
-          const pedido = pedidos.find(p => p.idPedido === this.cobrarAlCargar);
-          if (pedido) this.porCobrar.set(pedido);
-          this.cobrarAlCargar = 0;
-        }
       },
       error: () => {
         this.error.set(true);
         this.cargando.set(false);
       },
     });
+  }
+
+  // Lo que necesita el modal de "Nuevo pedido" y el cobro (responde rápido).
+  private cargarCatalogos(): void {
+    this.cargandoCatalogos.set(true);
+    forkJoin({
+      mesas: this.mesaService.listar(),
+      clientes: this.clienteService.listar(),
+      productos: this.productoService.listar(),
+      metodos: this.metodoPagoService.listar(),
+    }).subscribe({
+      next: ({ mesas, clientes, productos, metodos }) => {
+        this.todasLasMesas.set(mesas);
+        this.clientes.set(clientes);
+        this.productos.set(productos);
+        this.metodosPago.set(metodos.map(m => m.tipo));
+        this.cargandoCatalogos.set(false);
+      },
+      error: () => this.cargandoCatalogos.set(false),
+    });
+  }
+
+  // Pedidos creados o modificados mientras la lista completa sigue cargando.
+  private cambiosLocales = new Map<number, PedidoResponseDTO>();
+
+  // Pone en la lista la versión del pedido que devolvió el back (lo agrega si es nuevo).
+  private actualizarEnLista(pedido: PedidoResponseDTO): void {
+    if (this.cargando()) this.cambiosLocales.set(pedido.idPedido, pedido);
+    this.pedidos.update(lista =>
+      lista.some(x => x.idPedido === pedido.idPedido)
+        ? lista.map(x => (x.idPedido === pedido.idPedido ? pedido : x))
+        : [pedido, ...lista],
+    );
   }
 
   // El mesero no puede leer /usuarios: la lista del filtro sale de los propios pedidos.
@@ -238,7 +267,9 @@ export class Pedidos implements OnInit {
           pedido,
           aviso: `Pago registrado. Factura enviada a ${factura.correoCliente}. Mesa ${pedido.numeroMesa} liberada.`,
         });
-        this.cargar();
+        this.actualizarEnLista({ ...pedido, estado: 'PAGADO' });
+        this.cargarCatalogos(); // la mesa quedó libre
+        this.propinas.actualizar(); // la propina del menú izquierdo
       },
       error: () => this.pagando.set(false),
     });
@@ -259,7 +290,8 @@ export class Pedidos implements OnInit {
 
   private cambiarEstado(p: PedidoResponseDTO, estado: EstadoPedido): void {
     this.pedidoService.cambiarEstado(p.idPedido, estado).subscribe(actualizado => {
-      this.pedidos.update(lista => lista.map(x => (x.idPedido === actualizado.idPedido ? actualizado : x)));
+      this.actualizarEnLista(actualizado);
+      if (estado === 'CANCELADO') this.cargarCatalogos(); // la mesa quedó libre
       this.toast.show(`Pedido #${p.idPedido} → ${ESTADO_PEDIDO[estado].label}`, 'success');
     });
   }
@@ -278,10 +310,6 @@ export class Pedidos implements OnInit {
 
   producto(id: number): ProductoResponseDTO | undefined {
     return this.productos().find(p => p.idProducto === id);
-  }
-
-  agotado(p: ProductoResponseDTO): boolean {
-    return !p.disponibilidad || p.stock <= 0;
   }
 
   subtotalLinea(d: DetallePedidoRequestDTO): number {
@@ -344,7 +372,8 @@ export class Pedidos implements OnInit {
           this.guardando.set(false);
           this.modalVisible.set(false);
           this.toast.show(`Pedido #${pedido.idPedido} creado para la mesa ${pedido.numeroMesa}`, 'success');
-          this.cargar();
+          this.actualizarEnLista(pedido);
+          this.cargarCatalogos(); // mesa ocupada, stock y cliente nuevo
         },
         error: err => {
         this.guardando.set(false);

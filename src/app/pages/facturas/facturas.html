@@ -7,12 +7,6 @@
       </div>
     </div>
 
-    <div class="page__stats">
-      <app-stat-card label="Facturas" [value]="facturasFiltradas.length" />
-      <app-stat-card label="Total vendido" [value]="totalVendido | precio" />
-      <app-stat-card label="Propinas" [value]="totalPropinas | precio" />
-    </div>
-
     <app-search-bar
       placeholder="Buscar por número, cliente o correo..."
       [value]="busqueda()"
@@ -34,17 +28,23 @@
         emptyMessage="Las facturas se generan automáticamente al cobrar un pedido."
       >
         <ng-template [appTableRow]="facturasFiltradas" let-f>
-          <td class="td-strong">{{ f.numFactura }}</td>
-          <td>{{ f.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
-          <td style="text-align: center">#{{ f.idPedido }}</td>
+          <td class="td-nowrap">
+            <span class="td-strong">{{ f.numFactura }}</span>
+            <span class="celda-sub">Pedido #{{ f.idPedido }}</span>
+          </td>
+          <td class="td-nowrap">
+            {{ f.fecha | date: 'dd/MM/yyyy' }}
+            <span class="celda-sub">{{ f.fecha | date: 'HH:mm' }}</span>
+          </td>
           <td>{{ f.nombreCliente }}</td>
           <td class="td-muted">{{ f.nombreUsuario }}</td>
           <td class="td-muted">{{ metodos(f) }}</td>
-          <td class="td-strong" style="text-align: right">{{ f.total | precio }}</td>
+          <td class="td-nowrap td-muted" style="text-align: right">{{ f.propina | precio }}</td>
+          <td class="td-strong td-nowrap" style="text-align: right">{{ f.total | precio }}</td>
           <td><app-badge [label]="estados[f.estado].label" [variant]="estados[f.estado].variant" /></td>
           <td>
             <div class="td-actions">
-              <app-button label="VER FACTURA" variant="secondary" size="sm" (click)="abrir(f)" />
+              <app-button label="VER" variant="secondary" size="sm" (click)="abrir(f)" />
             </div>
           </td>
         </ng-template>

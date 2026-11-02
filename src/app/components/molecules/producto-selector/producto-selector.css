@@ -1,0 +1,73 @@
+.selector { position: relative; }
+
+.selector__lupa {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.selector__input {
+  width: 100%;
+  padding: 9px 12px 9px 32px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.selector__input::placeholder { color: var(--color-text-muted); }
+.selector__input:focus { border-color: var(--color-primary); }
+
+.selector__lista {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 4px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.selector__opcion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.selector__opcion--activa { background: var(--color-primary-light); }
+.selector__opcion--elegida .selector__nombre { font-weight: 600; }
+
+.selector__opcion--agotada { cursor: not-allowed; color: var(--color-text-muted); }
+
+.selector__nombre { display: flex; flex-direction: column; gap: 1px; }
+.selector__nombre small { font-size: 11px; color: var(--color-text-muted); }
+
+.selector__precio { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); white-space: nowrap; }
+
+.selector__agotado {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-danger);
+}
+
+.selector__vacio { padding: 10px; font-size: 13px; color: var(--color-text-muted); }

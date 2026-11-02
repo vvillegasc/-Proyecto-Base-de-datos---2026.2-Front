@@ -44,7 +44,7 @@
         emptyMessage="No hay reservas que coincidan con los filtros."
       >
         <ng-template [appTableRow]="reservasFiltradas" let-r>
-          <td class="td-strong">{{ r.idReservaCompuesta }}</td>
+          <td class="td-strong td-nowrap">{{ r.idReservaCompuesta }}</td>
           <td>
             <div class="cliente">
               <span class="td-strong">{{ r.nombreCliente }}</span>

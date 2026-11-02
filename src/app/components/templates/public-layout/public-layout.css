@@ -14,21 +14,9 @@
   background: var(--color-sidebar-bg);
 }
 
-.public__brand { display: flex; flex-direction: column; }
+.public__brand { display: flex; align-items: center; }
 
-.public__logo {
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.3px;
-}
-
-.public__sub {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--color-sidebar-text);
-  letter-spacing: 0.8px;
-}
+.public__logo { height: 64px; width: auto; }
 
 .public__login {
   padding: 7px 16px;
@@ -58,5 +46,6 @@
 
 @media (max-width: 600px) {
   .public__header { padding: 14px 16px; }
+  .public__logo { height: 48px; }
   .public__main { padding: 24px 16px; }
 }

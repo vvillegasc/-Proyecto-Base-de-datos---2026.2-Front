@@ -2,6 +2,8 @@ import { Component, computed } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { RolUsuario } from '../../../models/model';
 import { SessionService } from '../../../services/session.service';
+import { PropinasService } from '../../../services/propinas.service';
+import { PrecioPipe } from '../../../pipes/precio.pipe';
 
 interface NavItem {
   label: string;
@@ -32,7 +34,7 @@ const MENU: Record<RolUsuario, NavItem[]> = {
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, PrecioPipe],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
@@ -44,11 +46,15 @@ export class Sidebar {
 
   constructor(
     public sesion: SessionService,
+    public propinas: PropinasService,
     private router: Router,
-  ) {}
+  ) {
+    this.propinas.cargarSiHaceFalta();
+  }
 
   cerrarSesion(): void {
     this.sesion.cerrar();
+    this.propinas.actualizar(); // limpia la cifra del usuario anterior
     this.router.navigate(['/login']);
   }
 }

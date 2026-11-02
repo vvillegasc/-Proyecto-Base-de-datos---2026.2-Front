@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 
 @Component({
   selector: 'app-input-field',
@@ -17,6 +17,13 @@ export class InputField {
   @Input() disabled = false;
   @Input() invalido = false;
   @Output() valueChange = new EventEmitter<string>();
+
+  // En los campos de contraseña, el botón del ojo alterna entre ocultarla y mostrarla.
+  contrasenaVisible = signal(false);
+
+  get tipoReal(): string {
+    return this.type === 'password' && this.contrasenaVisible() ? 'text' : this.type;
+  }
 
   onInput(event: Event): void {
     this.valueChange.emit((event.target as HTMLInputElement).value);

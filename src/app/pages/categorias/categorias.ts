@@ -80,7 +80,8 @@ export class Categorias implements OnInit {
   }
 
   cargar(): void {
-    this.cargando.set(true);
+    // El "Cargando…" solo en la primera carga; al refrescar se mantiene la lista visible.
+    if (!this.categorias().length) this.cargando.set(true);
     this.error.set(false);
     forkJoin({ categorias: this.categoriaService.listar(), productos: this.productoService.listar() }).subscribe({
       next: ({ categorias, productos }) => {

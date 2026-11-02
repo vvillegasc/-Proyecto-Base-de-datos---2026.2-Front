@@ -1,6 +1,6 @@
 <nav class="sidebar">
   <div class="sidebar__brand">
-    <span class="sidebar__logo">Savana</span>
+    <img class="sidebar__logo" src="/assets/savana-logo-claro.png" alt="Savana Coffee" width="363" height="268" />
     <span class="sidebar__sub">GESTIÓN DE CAFETERÍA</span>
   </div>
 
@@ -21,6 +21,9 @@
         <div class="sidebar__user-info">
           <span class="sidebar__user-name">{{ usuario.nombres }} {{ usuario.apellidos }}</span>
           <span class="sidebar__user-role">{{ usuario.rol === 'ADMINISTRADOR' ? 'Administrador' : 'Mesero' }}</span>
+          @if (propinas.hoy() !== null) {
+            <span class="sidebar__user-propinas">Propinas hoy: <strong>{{ propinas.hoy() | precio }}</strong></span>
+          }
         </div>
       </div>
     }

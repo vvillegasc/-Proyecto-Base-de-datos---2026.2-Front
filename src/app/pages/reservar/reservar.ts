@@ -16,6 +16,10 @@ import { ESTADO_RESERVA } from '../../utils/estados';
 // el back simplemente no devuelve disponibilidad.
 const MAX_PERSONAS = 10;
 
+// Una reserva que empieza dentro de este margen se cruza con lo que pasa ahora en el salón
+// (es la misma ventana de 3 h con la que el back bloquea las mesas entre reservas).
+const HORAS_MARGEN_ESTADO_ACTUAL = 3;
+
 const aMinutos = (hora: string) => {
   const [h, m] = hora.split(':').map(Number);
   return h * 60 + m;
@@ -79,8 +83,8 @@ export class Reservar {
     this.reservaService.disponibles(this.fechaHora, this.form.numeroPersonas).subscribe({
       next: mesas => {
         this.cargando.set(false);
-        this.mesasDisponibles = mesas;
-        if (mesas.length === 0) {
+        this.mesasDisponibles = this.filtrarPorEstadoActual(mesas);
+        if (this.mesasDisponibles.length === 0) {
           this.sinDisponibilidad.set(true);
           return;
         }
@@ -128,6 +132,15 @@ export class Reservar {
           }
         },
       });
+  }
+
+  // El back no tiene en cuenta si la mesa está ocupada en este momento, pero sí envía su estado.
+  // Para una reserva cercana se descartan las mesas que ahora están ocupadas, reservadas o en
+  // mantenimiento; para una más lejana (u otro día) el estado actual no importa.
+  private filtrarPorEstadoActual(mesas: MesaResponseDTO[]): MesaResponseDTO[] {
+    const faltan = new Date(this.fechaHora).getTime() - Date.now();
+    const cercana = faltan < HORAS_MARGEN_ESTADO_ACTUAL * 60 * 60 * 1000;
+    return cercana ? mesas.filter(m => m.estado === 'DISPONIBLE') : mesas;
   }
 
   private get fechaHora(): string {

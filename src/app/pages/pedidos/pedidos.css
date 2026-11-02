@@ -48,3 +48,5 @@
 .modal-form__resumen-nota { font-size: 11px; color: var(--color-text-secondary); }
 
 .detalle__muted { color: var(--color-text-muted); font-size: 11px; }
+.modal-form__cargando { font-size: 13px; color: var(--color-text-secondary); padding: 8px 12px; background: var(--color-bg); border-radius: var(--radius-md); }
+.page__cargando-resto { grid-column: 1 / -1; font-size: 13px; color: var(--color-text-secondary); }

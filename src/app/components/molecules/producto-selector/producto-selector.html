@@ -1,0 +1,54 @@
+<div class="selector">
+  <svg class="selector__lupa" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+  <input
+    class="selector__input"
+    type="text"
+    role="combobox"
+    autocomplete="off"
+    placeholder="Buscar producto..."
+    aria-label="Producto"
+    aria-autocomplete="list"
+    [attr.aria-expanded]="abierto()"
+    [attr.aria-controls]="idLista"
+    [attr.aria-activedescendant]="abierto() && activo() >= 0 ? idLista + '-' + activo() : null"
+    [value]="valorCampo"
+    (focus)="abrir()"
+    (click)="abrir()"
+    (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
+    (blur)="cerrar()"
+  />
+
+  @if (abierto()) {
+    <ul class="selector__lista" role="listbox" [id]="idLista">
+      @for (p of filtrados(); track p.idProducto; let i = $index) {
+        <li
+          role="option"
+          class="selector__opcion"
+          [id]="idLista + '-' + i"
+          [class.selector__opcion--activa]="i === activo()"
+          [class.selector__opcion--elegida]="p.idProducto === seleccionado"
+          [class.selector__opcion--agotada]="agotado(p)"
+          [attr.aria-selected]="p.idProducto === seleccionado"
+          [attr.aria-disabled]="agotado(p)"
+          (mousedown)="$event.preventDefault(); elegir(p)"
+          (mouseenter)="!agotado(p) && activo.set(i)"
+        >
+          <span class="selector__nombre">
+            {{ p.nombre }}
+            <small>{{ p.nombreCategoria }}</small>
+          </span>
+          @if (agotado(p)) {
+            <span class="selector__agotado">Agotado</span>
+          } @else {
+            <span class="selector__precio">{{ p.precio | precio }}</span>
+          }
+        </li>
+      } @empty {
+        <li class="selector__vacio">Sin resultados para «{{ texto() }}»</li>
+      }
+    </ul>
+  }
+</div>

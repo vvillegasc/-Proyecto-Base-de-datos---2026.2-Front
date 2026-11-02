@@ -44,6 +44,7 @@
 
 .table ::ng-deep .td-muted { color: var(--color-text-muted); }
 .table ::ng-deep .td-strong { font-weight: 600; }
+.table ::ng-deep .td-nowrap { white-space: nowrap; }
 
 @media (max-width: 900px) {
   .table th,

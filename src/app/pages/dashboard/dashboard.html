@@ -16,7 +16,7 @@
       </div>
 
       <div class="dashboard-page__bottom">
-        <app-pedidos-recientes [pedidos]="pedidosRecientes()" />
+        <app-pedidos-recientes [pedidos]="pedidosRecientes()" [cargando]="cargandoPedidos()" />
         <app-mesas-board [mesas]="mesas()" />
       </div>
     } @else {
