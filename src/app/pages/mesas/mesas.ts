@@ -28,7 +28,6 @@ export class Mesas implements OnInit {
   cargando = signal(true);
   error = signal(false);
   guardando = signal(false);
-  // Errores de validación del back, por campo.
   errores = signal<ErroresCampo>({});
   tabActivo = signal('');
   modalVisible = signal(false);
@@ -48,7 +47,6 @@ export class Mesas implements OnInit {
   }
 
   cargar(): void {
-    // El "Cargando…" solo en la primera carga; al refrescar se mantiene la lista visible.
     if (!this.mesas().length) this.cargando.set(true);
     this.error.set(false);
     this.mesaService.listar().subscribe({
@@ -143,7 +141,6 @@ export class Mesas implements OnInit {
     this.router.navigate(['/pedidos'], { queryParams: { mesa: m.numeroMesa } });
   }
 
-  // Solo se cobra un pedido ENTREGADO. El back no filtra por mesa: se busca en la lista de entregados.
   cobrar(m: MesaResponseDTO): void {
     this.pedidoService.listar('ENTREGADO').subscribe(pedidos => {
       const pedido = pedidos.find(p => p.numeroMesa === m.numeroMesa);

@@ -5,7 +5,6 @@ import { environment } from '../../environments/environment';
 import { AuthResponseDTO, LoginRequestDTO, Verificar2FARequestDTO } from '../models/model';
 import { errorManejado } from '../interceptors/http-context';
 
-// Los errores de login los muestra el formulario, por eso no generan toast.
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly url = `${environment.apiUrl}/auth`;
@@ -17,6 +16,8 @@ export class AuthService {
   }
 
   verificar2FA(req: Verificar2FARequestDTO): Observable<AuthResponseDTO> {
-    return this.http.post<AuthResponseDTO>(`${this.url}/verificar-2fa`, req, { context: errorManejado() });
+    return this.http.post<AuthResponseDTO>(`${this.url}/verificar-2fa`, req, {
+      context: errorManejado(),
+    });
   }
 }

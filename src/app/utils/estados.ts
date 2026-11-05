@@ -13,7 +13,6 @@ export interface EstadoVisual {
   variant: BadgeVariant;
 }
 
-// Texto y color del badge para cada estado; usar siempre estos mapas para que todo se vea igual.
 export const ESTADO_MESA: Record<EstadoMesa, EstadoVisual> = {
   DISPONIBLE: { label: 'Disponible', variant: 'success' },
   OCUPADA: { label: 'Ocupada', variant: 'danger' },

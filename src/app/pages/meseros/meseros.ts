@@ -44,7 +44,6 @@ export class Meseros implements OnInit {
   cargando = signal(true);
   error = signal(false);
   guardando = signal(false);
-  // Errores de validación del back, por campo.
   errores = signal<ErroresCampo>({});
   readonly estados = ESTADO_USUARIO;
   readonly roles: RolUsuario[] = ['MESERO', 'ADMINISTRADOR'];
@@ -83,7 +82,6 @@ export class Meseros implements OnInit {
   }
 
   cargar(): void {
-    // El "Cargando…" solo en la primera carga; al refrescar se mantiene la lista visible.
     if (!this.usuarios().length) this.cargando.set(true);
     this.error.set(false);
     this.usuarioService.listar().subscribe({
@@ -150,7 +148,6 @@ export class Meseros implements OnInit {
     });
   }
 
-  // Activar no pide confirmación; desactivar sí, porque le corta el acceso.
   cambiarEstado(u: UsuarioResponseDTO): void {
     if (u.estado === 'ACTIVO') {
       this.porDesactivar.set(u);

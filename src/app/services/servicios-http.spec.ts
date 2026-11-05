@@ -11,7 +11,6 @@ import { UsuarioService } from './usuario.service';
 
 const API = environment.apiUrl;
 
-// Verifica que cada servicio llame a la ruta y con el formato que espera el back.
 describe('servicios HTTP', () => {
   let backend: HttpTestingController;
 

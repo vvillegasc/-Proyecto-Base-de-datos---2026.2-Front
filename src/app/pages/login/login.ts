@@ -20,7 +20,6 @@ export class Login {
   cargando = signal(false);
   error = signal('');
 
-  // Se guardan para verificar el código y para "Reenviar código" (= repetir el login).
   private credenciales: LoginRequestDTO | null = null;
   correo = '';
 
@@ -36,7 +35,7 @@ export class Login {
     this.cargando.set(true);
     this.error.set('');
     this.auth.login(req).subscribe({
-      next: res => {
+      next: (res) => {
         this.cargando.set(false);
         if (res.requiere2FA) {
           this.correo = res.usuario?.correo ?? req.correo;
@@ -45,7 +44,7 @@ export class Login {
           this.entrar(res);
         }
       },
-      error: err => this.fallo(err),
+      error: (err) => this.fallo(err),
     });
   }
 
@@ -53,8 +52,8 @@ export class Login {
     this.cargando.set(true);
     this.error.set('');
     this.auth.verificar2FA({ correo: this.correo, codigoOtp }).subscribe({
-      next: res => this.entrar(res),
-      error: err => this.fallo(err),
+      next: (res) => this.entrar(res),
+      error: (err) => this.fallo(err),
     });
   }
 
@@ -63,7 +62,7 @@ export class Login {
     this.error.set('');
     this.auth.login(this.credenciales).subscribe({
       next: () => this.toast.show(`Te enviamos un código nuevo a ${this.correo}`, 'success'),
-      error: err => this.fallo(err),
+      error: (err) => this.fallo(err),
     });
   }
 

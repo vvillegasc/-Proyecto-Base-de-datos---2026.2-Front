@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { CategoriaRequestDTO, CategoriaResponseDTO } from '../models/model';
 
-// La llave de la categoría es su nombre (puede tener espacios y tildes), por eso se codifica en la URL.
 @Injectable({ providedIn: 'root' })
 export class CategoriaService {
   private readonly url = `${environment.apiUrl}/categorias`;

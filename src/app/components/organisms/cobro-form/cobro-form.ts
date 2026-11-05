@@ -18,9 +18,7 @@ const redondear = (n: number) => Math.round(n * 100) / 100;
 })
 export class CobroForm implements OnInit {
   @Input() pedido!: PedidoResponseDTO;
-  // Métodos de pago del back (GET /metodos-pago).
   @Input() metodos: TipoMetodoPago[] = ['EFECTIVO', 'TARJETA', 'TRANSFERENCIA'];
-  // true mientras se envía el pago.
   @Input() procesando = false;
   @Output() confirmar = new EventEmitter<FacturaRequestDTO>();
   @Output() cancelar = new EventEmitter<void>();
@@ -31,7 +29,6 @@ export class CobroForm implements OnInit {
   pagos: PagoForm[] = [];
 
   ngOnInit(): void {
-    // Arranca con un solo pago en efectivo por el total.
     this.pagos = [{ tipoMetodoPago: 'EFECTIVO', monto: this.total }];
   }
 

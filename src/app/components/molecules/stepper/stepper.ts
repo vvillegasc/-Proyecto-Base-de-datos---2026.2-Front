@@ -8,6 +8,5 @@ import { Component, Input } from '@angular/core';
 })
 export class Stepper {
   @Input() pasos: string[] = [];
-  // Índice del paso actual (0 = primero).
   @Input() actual = 0;
 }

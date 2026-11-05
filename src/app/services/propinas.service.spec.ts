@@ -24,7 +24,7 @@ describe('PropinasService', () => {
   afterEach(() => backend.verify());
 
   it('suma solo las propinas de hoy del mesero que inició sesión', () => {
-    sesion.iniciar('jwt', MESERO); // Carlos Mesero
+    sesion.iniciar('jwt', MESERO);
     propinas.cargarSiHaceFalta();
     const req = backend.expectOne(r => r.url.endsWith('/facturas'));
     const hoy = new Date().toLocaleDateString('en-CA');
@@ -32,7 +32,7 @@ describe('PropinasService', () => {
     req.flush([factura('Carlos Mesero', 2000), factura('Luisa Operativa', 5000), factura('Carlos Mesero', 1500)]);
     expect(propinas.hoy()).toBe(3500);
 
-    propinas.cargarSiHaceFalta(); // mismo usuario: no vuelve a consultar
+    propinas.cargarSiHaceFalta();
     backend.expectNone(r => r.url.endsWith('/facturas'));
   });
 

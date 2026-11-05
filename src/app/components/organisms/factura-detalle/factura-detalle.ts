@@ -20,9 +20,7 @@ const METODO_LABEL: Record<TipoMetodoPago, string> = {
 })
 export class FacturaDetalle {
   @Input() factura!: FacturaResponseDTO;
-  // La factura del back no trae mesa ni productos: si se tiene el pedido, se muestran.
   @Input() pedido: PedidoResponseDTO | null = null;
-  // Mensaje opcional arriba del recibo (ej. justo después de cobrar).
   @Input() aviso = '';
   @Output() imprimir = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();
@@ -33,7 +31,6 @@ export class FacturaDetalle {
     return ESTADO_FACTURA[this.factura.estado];
   }
 
-  // El back no envía el subtotal en la factura: total − IVA − propina.
   get subtotal(): number {
     return this.factura.total - this.factura.impuesto - this.factura.propina;
   }

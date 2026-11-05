@@ -10,7 +10,6 @@ import { LoginRequestDTO } from '../../../models/model';
   styleUrl: './login-form.css',
 })
 export class LoginForm {
-  // Error que devuelve el back (credenciales, cuenta inactiva...).
   @Input() error = '';
   @Input() cargando = false;
   @Output() submitForm = new EventEmitter<LoginRequestDTO>();

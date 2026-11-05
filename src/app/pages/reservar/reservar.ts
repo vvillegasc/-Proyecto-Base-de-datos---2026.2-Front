@@ -12,12 +12,8 @@ import { mensajeDeError } from '../../interceptors/error.interceptor';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ESTADO_RESERVA } from '../../utils/estados';
 
-// El cliente no puede consultar las mesas: si no hay ninguna para ese número de personas,
-// el back simplemente no devuelve disponibilidad.
 const MAX_PERSONAS = 10;
 
-// Una reserva que empieza dentro de este margen se cruza con lo que pasa ahora en el salón
-// (es la misma ventana de 3 h con la que el back bloquea las mesas entre reservas).
 const HORAS_MARGEN_ESTADO_ACTUAL = 3;
 
 const aMinutos = (hora: string) => {
@@ -34,21 +30,17 @@ import { ErroresCampo, erroresDeCampo } from '../../utils/errores';
 })
 export class Reservar {
   readonly pasos = ['Fecha y hora', 'Tus datos'];
-  readonly hoy = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD en hora local
+  readonly hoy = new Date().toLocaleDateString('en-CA');
   readonly opcionesPersonas = Array.from({ length: MAX_PERSONAS }, (_, i) => i + 1);
   readonly estados = ESTADO_RESERVA;
 
-  // 0 = fecha y hora, 1 = datos, 2 = confirmación.
   paso = signal(0);
   sinDisponibilidad = signal(false);
   cargando = signal(false);
   error = signal('');
-  // Errores de validación del back, por campo.
   errores = signal<ErroresCampo>({});
   reserva = signal<ReservaResponseDTO | null>(null);
 
-  // Mesas libres en el orden del back (menor capacidad primero). La reserva usa la primera;
-  // si POST /reservas responde 409 (otro cliente la tomó), se reintenta con la siguiente.
   private mesasDisponibles: MesaResponseDTO[] = [];
 
   constructor(private reservaService: ReservaService) {}
@@ -76,7 +68,6 @@ export class Reservar {
     this.error.set('');
   }
 
-  // GET /reservas/disponibles: ya excluye mesas sin capacidad, en mantenimiento o con reserva en ±3 h.
   verificarDisponibilidad(): void {
     this.cargando.set(true);
     this.error.set('');
@@ -107,7 +98,6 @@ export class Reservar {
   private intentarReservar(indice: number): void {
     const mesa = this.mesasDisponibles[indice];
     if (!mesa) {
-      // Se ocuparon todas mientras el cliente llenaba sus datos.
       this.cargando.set(false);
       this.sinDisponibilidad.set(true);
       this.paso.set(0);
@@ -134,9 +124,6 @@ export class Reservar {
       });
   }
 
-  // El back no tiene en cuenta si la mesa está ocupada en este momento, pero sí envía su estado.
-  // Para una reserva cercana se descartan las mesas que ahora están ocupadas, reservadas o en
-  // mantenimiento; para una más lejana (u otro día) el estado actual no importa.
   private filtrarPorEstadoActual(mesas: MesaResponseDTO[]): MesaResponseDTO[] {
     const faltan = new Date(this.fechaHora).getTime() - Date.now();
     const cercana = faltan < HORAS_MARGEN_ESTADO_ACTUAL * 60 * 60 * 1000;

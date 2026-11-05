@@ -10,7 +10,6 @@ export class PedidoService {
 
   constructor(private http: HttpClient) {}
 
-  // El back solo filtra por estado y cliente; mesa, mesero y fechas se filtran en la pantalla.
   listar(estado?: EstadoPedido): Observable<PedidoResponseDTO[]> {
     return this.http.get<PedidoResponseDTO[]>(this.url, { params: estado ? { estado } : {} });
   }
@@ -23,7 +22,6 @@ export class PedidoService {
     return this.http.post<PedidoResponseDTO>(this.url, req);
   }
 
-  // Solo hacia adelante. Cancelar = CANCELADO (no se borra el pedido).
   cambiarEstado(id: number, nuevoEstado: EstadoPedido): Observable<PedidoResponseDTO> {
     return this.http.patch<PedidoResponseDTO>(`${this.url}/${id}/estado`, { nuevoEstado });
   }

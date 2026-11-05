@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PagoRequestDTO, TipoMetodoPago } from '../../../models/model';
 import { PrecioPipe } from '../../../pipes/precio.pipe';
 
-// "recibido" es solo de pantalla (para calcular el cambio en efectivo); no se envía al back.
 export interface PagoForm extends PagoRequestDTO {
   recibido?: number;
 }

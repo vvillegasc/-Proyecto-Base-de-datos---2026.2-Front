@@ -22,7 +22,7 @@
 
 .auth-layout__brand { text-align: center; }
 
-.auth-layout__logo { width: 180px; height: auto; }
+.auth-layout__logo { width: 260px; max-width: 100%; height: auto; }
 
 .auth-layout__back {
   text-align: center;

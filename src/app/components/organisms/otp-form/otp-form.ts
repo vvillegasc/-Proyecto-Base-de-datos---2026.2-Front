@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, s
 import { Button } from '../../atoms/button/button';
 import { OtpInput } from '../../molecules/otp-input/otp-input';
 
-// El back guarda el código 5 minutos.
 const VIGENCIA_SEGUNDOS = 5 * 60;
 
 @Component({

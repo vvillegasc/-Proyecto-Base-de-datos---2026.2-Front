@@ -40,7 +40,6 @@ export class Productos implements OnInit {
   cargando = signal(true);
   error = signal(false);
   guardando = signal(false);
-  // Errores de validación del back, por campo.
   errores = signal<ErroresCampo>({});
 
   busqueda = signal('');
@@ -63,7 +62,6 @@ export class Productos implements OnInit {
   }
 
   cargar(): void {
-    // El "Cargando…" solo en la primera carga; al refrescar se mantiene la lista visible.
     if (!this.productos().length) this.cargando.set(true);
     this.error.set(false);
     forkJoin({ productos: this.productoService.listar(), categorias: this.categoriaService.listar() }).subscribe({
@@ -79,7 +77,6 @@ export class Productos implements OnInit {
     });
   }
 
-  // El mesero solo ve las categorías activas (las inactivas no están en el menú).
   get tabs(): Tab[] {
     const categorias = this.sesion.esAdmin() ? this.categorias() : this.categorias().filter(c => c.estado === 'ACTIVA');
     return [{ label: 'Todos', value: '' }, ...categorias.map(c => ({ label: c.nombreCategoria, value: c.nombreCategoria }))];

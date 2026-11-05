@@ -16,7 +16,7 @@
 
 .public__brand { display: flex; align-items: center; }
 
-.public__logo { height: 64px; width: auto; }
+.public__logo { height: 56px; width: auto; }
 
 .public__login {
   padding: 7px 16px;
@@ -46,6 +46,6 @@
 
 @media (max-width: 600px) {
   .public__header { padding: 14px 16px; }
-  .public__logo { height: 48px; }
+  .public__logo { height: 34px; }
   .public__main { padding: 24px 16px; }
 }

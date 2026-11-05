@@ -8,7 +8,7 @@ describe('CobroForm', () => {
   beforeEach(() => {
     const fixture = TestBed.createComponent(CobroForm);
     cobro = fixture.componentInstance;
-    cobro.pedido = { ...PEDIDO, estado: 'ENTREGADO' }; // subtotal 21.500
+    cobro.pedido = { ...PEDIDO, estado: 'ENTREGADO' };
     fixture.detectChanges();
   });
 
@@ -20,12 +20,12 @@ describe('CobroForm', () => {
   });
 
   it('la propina sube el total y deja de cuadrar hasta completar el pago', () => {
-    cobro.setPropina(cobro.porcentajePropina(10)); // 2.150
+    cobro.setPropina(cobro.porcentajePropina(10));
     expect(cobro.total).toBe(27735);
     expect(cobro.cuadra).toBe(false);
     expect(cobro.diferencia).toBe(2150);
 
-    cobro.agregarPago(); // segundo método con lo que falta
+    cobro.agregarPago();
     expect(cobro.pagos[1]).toEqual({ tipoMetodoPago: 'TARJETA', monto: 2150 });
     expect(cobro.cuadra).toBe(true);
   });
@@ -33,7 +33,7 @@ describe('CobroForm', () => {
   it('envía al back solo método y monto de cada pago', () => {
     const enviado = vi.fn();
     cobro.confirmar.subscribe(enviado);
-    cobro.pagos[0].recibido = 30000; // solo de pantalla
+    cobro.pagos[0].recibido = 30000;
     cobro.onConfirmar();
     expect(enviado).toHaveBeenCalledWith({
       idPedido: 1,

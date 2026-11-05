@@ -29,7 +29,6 @@ export class MesaCard {
   onEstadoChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     const estado = select.value as EstadoMesa;
-    // El select vuelve al estado actual: el cambio real lo decide la página.
     select.value = this.mesa.estado;
     if (estado !== this.mesa.estado) this.cambiarEstado.emit({ mesa: this.mesa, estado });
   }

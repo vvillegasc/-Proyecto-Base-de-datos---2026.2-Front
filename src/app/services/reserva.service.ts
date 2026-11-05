@@ -15,7 +15,6 @@ export class ReservaService {
     return this.http.get<ReservaResponseDTO[]>(this.url);
   }
 
-  // Público. Devuelve las mesas libres ordenadas de menor a mayor capacidad.
   disponibles(fechaHora: string, numeroPersonas: number): Observable<MesaResponseDTO[]> {
     return this.http.get<MesaResponseDTO[]>(`${this.url}/disponibles`, {
       params: { fechaHora, numeroPersonas },
@@ -23,12 +22,10 @@ export class ReservaService {
     });
   }
 
-  // Público. El error lo maneja la pantalla de reservar (reintenta con otra mesa si hay 409).
   crear(req: ReservaRequestDTO): Observable<ReservaResponseDTO> {
     return this.http.post<ReservaResponseDTO>(this.url, req, { context: errorManejado() });
   }
 
-  // Usa idReserva (número), no idReservaCompuesta.
   cambiarEstado(idReserva: number, nuevoEstado: EstadoReserva): Observable<ReservaResponseDTO> {
     return this.http.patch<ReservaResponseDTO>(`${this.url}/${idReserva}/estado`, { nuevoEstado });
   }

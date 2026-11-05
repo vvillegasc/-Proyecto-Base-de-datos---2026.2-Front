@@ -1,6 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
 
-/** Código de N dígitos en casillas separadas: avanza solo, retrocede con borrar y acepta pegar el código. */
 @Component({
   selector: 'app-otp-input',
   imports: [],

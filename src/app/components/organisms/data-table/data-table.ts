@@ -8,10 +8,6 @@ export interface TableColumn {
   width?: string;
 }
 
-/**
- * Solo sirve para tipar la fila del ng-template (así `let-f` no es `any`).
- * Recibe las mismas filas que la tabla.
- */
 @Directive({ selector: 'ng-template[appTableRow]' })
 export class TableRow<T> {
   @Input() appTableRow: T[] = [];
@@ -21,15 +17,6 @@ export class TableRow<T> {
   }
 }
 
-/**
- * Tabla genérica: define las columnas y pasa las celdas de cada fila con un ng-template.
- *
- * <app-data-table [columns]="columnas" [rows]="facturas">
- *   <ng-template [appTableRow]="facturas" let-f>
- *     <td>{{ f.numFactura }}</td> ...
- *   </ng-template>
- * </app-data-table>
- */
 @Component({
   selector: 'app-data-table',
   imports: [NgTemplateOutlet, EmptyState],

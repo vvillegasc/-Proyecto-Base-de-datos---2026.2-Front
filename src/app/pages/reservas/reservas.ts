@@ -83,7 +83,6 @@ export class Reservas implements OnInit {
   }
 
   cargar(): void {
-    // El "Cargando…" solo en la primera carga; al refrescar se mantiene la lista visible.
     if (!this.reservas().length) this.cargando.set(true);
     this.error.set(false);
     forkJoin({ reservas: this.reservaService.listar(), mesas: this.mesaService.listar() }).subscribe({

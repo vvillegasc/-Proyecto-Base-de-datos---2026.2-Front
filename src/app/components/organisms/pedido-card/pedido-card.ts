@@ -14,7 +14,6 @@ import { PrecioPipe } from '../../../pipes/precio.pipe';
 })
 export class PedidoCard {
   @Input() pedido!: PedidoResponseDTO;
-  // true = sin avanzar, cobrar ni cancelar (vista del admin).
   @Input() soloLectura = false;
   @Output() avanzar = new EventEmitter<{ pedido: PedidoResponseDTO; estado: EstadoPedido }>();
   @Output() cancelar = new EventEmitter<PedidoResponseDTO>();
@@ -26,7 +25,6 @@ export class PedidoCard {
     return ESTADO_PEDIDO[this.pedido.estado];
   }
 
-  // Solo se avanza hacia adelante: PENDIENTE → EN_PREPARACION → ENTREGADO (PAGADO llega al cobrar).
   get siguiente(): { label: string; estado: EstadoPedido } | null {
     const map: Partial<Record<EstadoPedido, { label: string; estado: EstadoPedido }>> = {
       PENDIENTE: { label: 'PASAR A PREPARACIÓN', estado: 'EN_PREPARACION' },

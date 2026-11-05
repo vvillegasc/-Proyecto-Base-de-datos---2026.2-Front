@@ -1,6 +1,5 @@
 import { PedidoResponseDTO, UsuarioResponseDTO } from '../models/model';
 
-// Datos de ejemplo para las pruebas unitarias.
 
 export const MESERO: UsuarioResponseDTO = {
   idUsuario: 2,

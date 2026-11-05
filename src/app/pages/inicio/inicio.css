@@ -11,7 +11,7 @@
   box-shadow: var(--shadow-md);
 }
 
-.hero__logo { width: 220px; height: auto; }
+.hero__logo { width: 320px; max-width: 100%; height: auto; }
 
 .hero__title {
   font-size: 34px;
@@ -35,7 +35,6 @@
   margin-top: 10px;
 }
 
-/* Mismo estilo que app-button, pero como enlace. */
 .hero__btn {
   display: inline-flex;
   align-items: center;
@@ -88,7 +87,7 @@
 @media (max-width: 700px) {
   .hero { padding: 40px 16px; }
   .hero__title { font-size: 26px; }
-  .hero__logo { width: 170px; }
+  .hero__logo { width: 250px; }
   .hero__btn { width: 100%; }
   .pasos { grid-template-columns: 1fr; }
 }

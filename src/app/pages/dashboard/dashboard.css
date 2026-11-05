@@ -30,8 +30,6 @@
   gap: 16px;
 }
 
-/* La altura de la fila la pone "Estado de mesas": "Pedidos recientes" no la estira (contain: size),
-   se ajusta a esa altura y hace scroll por dentro si tiene más pedidos. */
 @media (min-width: 901px) {
   .dashboard-page__bottom app-pedidos-recientes { contain: size; }
 }

@@ -7,5 +7,4 @@
 
 
 
-/* Segunda línea en gris dentro de una celda (pedido bajo el número, hora bajo la fecha). */
 .celda-sub { display: block; font-size: 12px; color: var(--color-text-muted); }

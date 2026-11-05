@@ -8,16 +8,11 @@ interface Sesion {
   usuario: UsuarioResponseDTO;
 }
 
-// Pantalla de inicio de cada rol después de entrar.
 export const INICIO_POR_ROL: Record<RolUsuario, string> = {
   ADMINISTRADOR: '/dashboard',
   MESERO: '/mesas',
 };
 
-/**
- * Usuario que inició sesión y su token JWT (lo entrega POST /api/auth/login).
- * Se guarda en localStorage para que recargar la página no cierre la sesión.
- */
 @Injectable({ providedIn: 'root' })
 export class SessionService {
   private readonly sesion = signal<Sesion | null>(this.leer());
@@ -58,8 +53,6 @@ export class SessionService {
       const s = this.sesion();
       if (s) localStorage.setItem(CLAVE, JSON.stringify(s));
       else localStorage.removeItem(CLAVE);
-    } catch {
-      // Sin almacenamiento (modo privado): la sesión dura solo mientras la pestaña esté abierta.
-    }
+    } catch {}
   }
 }

@@ -3,7 +3,7 @@
     <div class="page__header">
       <div>
         <h1 class="page__title">Pedidos</h1>
-        <span class="page__breadcrumb">Savana / Pedidos</span>
+        <span class="page__breadcrumb">Savana Data Coffee / Pedidos</span>
       </div>
       @if (sesion.esMesero()) {
         <app-button label="+ NUEVO PEDIDO" (click)="abrirCrear()" />
@@ -65,7 +65,6 @@
   </div>
 </app-dashboard-layout>
 
-<!-- Nuevo pedido -->
 <app-modal title="Nuevo Pedido" [visible]="modalVisible()" (close)="modalVisible.set(false)">
   <div class="modal-form">
     @if (cargandoCatalogos()) {
@@ -157,7 +156,6 @@
   </div>
 </app-modal>
 
-<!-- Detalle -->
 <app-modal title="Detalle del Pedido" [visible]="detalleVisible()" (close)="detalleVisible.set(false)">
   @if (pedidoDetalle(); as p) {
     <div class="detalle">
@@ -184,14 +182,12 @@
   }
 </app-modal>
 
-<!-- Cobro -->
 <app-modal title="Cobrar pedido" size="lg" [visible]="!!porCobrar()" (close)="porCobrar.set(null)">
   @if (porCobrar(); as p) {
     <app-cobro-form [pedido]="p" [metodos]="metodosPago()" [procesando]="pagando()" (confirmar)="confirmarPago($event)" (cancelar)="porCobrar.set(null)" />
   }
 </app-modal>
 
-<!-- Factura -->
 <app-modal title="Factura" [visible]="!!factura()" (close)="factura.set(null)">
   @if (factura(); as f) {
     <app-factura-detalle

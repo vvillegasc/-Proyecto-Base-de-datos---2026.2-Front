@@ -30,7 +30,6 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  /* Ocupa el alto disponible de la tarjeta; si hay más pedidos, scroll por dentro. */
   flex: 1;
   min-height: 0;
   overflow-y: auto;

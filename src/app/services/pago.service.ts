@@ -10,7 +10,6 @@ export class PagoService {
 
   constructor(private http: HttpClient) {}
 
-  // Registra el pago y devuelve la factura generada (no existe POST /facturas).
   pagar(req: FacturaRequestDTO): Observable<FacturaResponseDTO> {
     return this.http.post<FacturaResponseDTO>(this.url, req);
   }

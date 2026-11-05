@@ -17,7 +17,6 @@
   --color-danger-hover: #6e2619;
   --color-danger-light: #fdf0ec;
 
-  /* Verde oliva: se distingue del amarillo de "advertencia" y cumple contraste AA (5.5:1). */
   --color-success: #3f6b2e;
   --color-success-light: #eaf3e3;
 
@@ -78,7 +77,6 @@ select {
   font-family: inherit;
 }
 
-/* Impresión de facturas: solo se imprime el recibo (.factura__recibo). */
 @media print {
   body * { visibility: hidden; }
   .factura__recibo,
@@ -92,7 +90,6 @@ select {
   }
 }
 
-/* Error de validación debajo de un <select> (los form-field y textarea-field ya traen el suyo). */
 .campo-error {
   font-size: 12px;
   color: var(--color-danger);

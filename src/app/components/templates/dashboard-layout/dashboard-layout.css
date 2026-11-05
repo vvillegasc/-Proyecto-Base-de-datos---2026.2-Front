@@ -12,7 +12,6 @@
   background: var(--color-bg);
 }
 
-/* Barra superior y fondo oscuro: solo en pantallas angostas. */
 .dashboard-layout__topbar,
 .dashboard-layout__backdrop { display: none; }
 
@@ -36,7 +35,7 @@
     padding: 6px;
   }
 
-  .dashboard-layout__logo { height: 40px; width: auto; }
+  .dashboard-layout__logo { height: 36px; width: auto; }
 
   .dashboard-layout__sidebar {
     position: fixed;

@@ -16,7 +16,17 @@ import { SessionService } from '../../services/session.service';
 import { ErroresCampo, erroresDeCampo } from '../../utils/errores';
 @Component({
   selector: 'app-clientes',
-  imports: [DashboardLayout, ClienteCard, Modal, ConfirmDialog, FormField, SearchBar, EmptyState, EstadoCarga, Button],
+  imports: [
+    DashboardLayout,
+    ClienteCard,
+    Modal,
+    ConfirmDialog,
+    FormField,
+    SearchBar,
+    EmptyState,
+    EstadoCarga,
+    Button,
+  ],
   templateUrl: './clientes.html',
   styleUrl: './clientes.css',
 })
@@ -25,7 +35,6 @@ export class Clientes implements OnInit {
   cargando = signal(true);
   error = signal(false);
   guardando = signal(false);
-  // Errores de validación del back, por campo.
   errores = signal<ErroresCampo>({});
 
   busqueda = signal('');
@@ -46,11 +55,10 @@ export class Clientes implements OnInit {
   }
 
   cargar(): void {
-    // El "Cargando…" solo en la primera carga; al refrescar se mantiene la lista visible.
     if (!this.clientes().length) this.cargando.set(true);
     this.error.set(false);
     this.clienteService.listar().subscribe({
-      next: clientes => {
+      next: (clientes) => {
         this.clientes.set(clientes);
         this.cargando.set(false);
       },
@@ -64,7 +72,9 @@ export class Clientes implements OnInit {
   get clientesFiltrados(): ClienteResponseDTO[] {
     const q = this.busqueda().toLowerCase();
     if (!q) return this.clientes();
-    return this.clientes().filter(c => `${c.nombre} ${c.apellido} ${c.correo}`.toLowerCase().includes(q));
+    return this.clientes().filter((c) =>
+      `${c.nombre} ${c.apellido} ${c.correo}`.toLowerCase().includes(q),
+    );
   }
 
   abrirCrear(): void {
@@ -94,14 +104,13 @@ export class Clientes implements OnInit {
         this.toast.show(editando ? 'Cliente actualizado' : 'Cliente registrado', 'success');
         this.cargar();
       },
-      error: err => {
+      error: (err) => {
         this.guardando.set(false);
         this.errores.set(erroresDeCampo(err));
       },
     });
   }
 
-  // Si el cliente tiene reservas activas, pedidos o facturas, el back responde 409 y el toast lo explica.
   confirmarEliminar(): void {
     const c = this.porEliminar();
     if (!c) return;

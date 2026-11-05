@@ -7,7 +7,6 @@ import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { errorInterceptor } from './interceptors/error.interceptor';
 
-// Fechas en español (ej. "sáb. 25/10/2026") para el DatePipe.
 registerLocaleData(localeEsCo);
 
 export const appConfig: ApplicationConfig = {
@@ -16,5 +15,5 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     { provide: LOCALE_ID, useValue: 'es-CO' },
-  ]
+  ],
 };

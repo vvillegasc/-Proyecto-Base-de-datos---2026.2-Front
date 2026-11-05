@@ -11,8 +11,6 @@ export class FacturaService {
 
   constructor(private http: HttpClient) {}
 
-  // desde / hasta en formato YYYY-MM-DD (se envían como inicio y fin del día).
-  // silencioso: si falla, no muestra el aviso de error (para consultas de fondo).
   listar(desde = '', hasta = '', silencioso = false): Observable<FacturaResponseDTO[]> {
     const params: Record<string, string> = {};
     if (desde) params['fechaInicio'] = `${desde}T00:00:00`;

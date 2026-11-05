@@ -45,7 +45,6 @@ export class Categorias implements OnInit {
   cargando = signal(true);
   error = signal(false);
   guardando = signal(false);
-  // Errores de validación del back, por campo.
   errores = signal<ErroresCampo>({});
 
   tabActivo = signal('');
@@ -80,7 +79,6 @@ export class Categorias implements OnInit {
   }
 
   cargar(): void {
-    // El "Cargando…" solo en la primera carga; al refrescar se mantiene la lista visible.
     if (!this.categorias().length) this.cargando.set(true);
     this.error.set(false);
     forkJoin({ categorias: this.categoriaService.listar(), productos: this.productoService.listar() }).subscribe({
@@ -101,7 +99,6 @@ export class Categorias implements OnInit {
     return estado ? this.categorias().filter(c => c.estado === estado) : this.categorias();
   }
 
-  // El back no da el conteo: se cuenta sobre la lista de productos.
   cantidadProductos(nombre: string): number {
     return this.productos().filter(p => p.nombreCategoria === nombre).length;
   }
@@ -140,7 +137,6 @@ export class Categorias implements OnInit {
     });
   }
 
-  // No hay endpoint de estado: se envía la categoría completa con el otro estado.
   cambiarEstado(c: CategoriaResponseDTO): void {
     const estado = c.estado === 'ACTIVA' ? 'INACTIVA' : 'ACTIVA';
     this.categoriaService.actualizar(c.nombreCategoria, { ...c, estado }).subscribe(() => {

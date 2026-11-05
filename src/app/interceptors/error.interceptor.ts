@@ -8,7 +8,6 @@ import { ToastService } from '../services/toast.service';
 import { ERROR_MANEJADO } from './http-context';
 import { erroresDeCampo } from '../utils/errores';
 
-/** Convierte cualquier error HTTP en un mensaje legible (usa el ErrorResponseDTO del back). */
 export function mensajeDeError(err: unknown): string {
   if (!(err instanceof HttpErrorResponse)) return 'Ocurrió un error inesperado.';
   if (err.status === 0) return 'No se pudo conectar con el servidor. ¿Está corriendo el back?';
@@ -28,12 +27,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((err: unknown) => {
       const esAuth = req.url.includes('/auth/');
       if (err instanceof HttpErrorResponse && err.status === 401 && !esAuth) {
-        // Token vencido o inválido: se cierra la sesión.
         sesion.cerrar();
         router.navigate(['/login']);
         toast.show('Tu sesión expiró. Inicia sesión de nuevo.', 'error');
       } else if (!req.context.get(ERROR_MANEJADO)) {
-        // Si hay errores por campo, el formulario los muestra debajo de cada uno: el aviso solo lo indica.
         const porCampo = Object.keys(erroresDeCampo(err)).length > 0;
         toast.show(porCampo ? 'Revisa los campos marcados en rojo.' : mensajeDeError(err), 'error');
       }

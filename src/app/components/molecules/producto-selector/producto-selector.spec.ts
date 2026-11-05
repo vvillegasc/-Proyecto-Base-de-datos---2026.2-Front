@@ -7,7 +7,7 @@ const producto = (idProducto: number, nombre: string, nombreCategoria: string, s
 });
 const PRODUCTOS = [
   producto(1, 'Café Espresso', 'Bebidas Calientes'),
-  producto(2, 'Cappuccino', 'Bebidas Calientes', 0), // agotado
+  producto(2, 'Cappuccino', 'Bebidas Calientes', 0),
   producto(3, 'Croissant', 'Repostería'),
   producto(4, 'Cafe de olla', 'Bebidas Calientes'),
 ];
@@ -47,8 +47,8 @@ describe('ProductoSelector', () => {
     const { fixture, escribir, tecla } = crear();
     const elegido = vi.fn();
     fixture.componentInstance.seleccionar.subscribe(elegido);
-    escribir('bebidas'); // Café Espresso, Cappuccino (agotado), Cafe de olla
-    tecla('ArrowDown'); // salta el agotado
+    escribir('bebidas');
+    tecla('ArrowDown');
     tecla('Enter');
     expect(elegido).toHaveBeenCalledWith(4);
   });

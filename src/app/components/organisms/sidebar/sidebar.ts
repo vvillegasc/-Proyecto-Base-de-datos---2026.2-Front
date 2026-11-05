@@ -54,7 +54,7 @@ export class Sidebar {
 
   cerrarSesion(): void {
     this.sesion.cerrar();
-    this.propinas.actualizar(); // limpia la cifra del usuario anterior
+    this.propinas.actualizar();
     this.router.navigate(['/login']);
   }
 }

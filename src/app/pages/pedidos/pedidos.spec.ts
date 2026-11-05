@@ -15,13 +15,11 @@ describe('Pedidos', () => {
     const fixture = TestBed.createComponent(Pedidos);
     const pagina = fixture.componentInstance;
     const backend = TestBed.inject(HttpTestingController);
-    fixture.detectChanges(); // ngOnInit: pide la lista (lenta) y los catálogos
+    fixture.detectChanges();
 
-    // Mientras la lista no llega, se crea el pedido #99.
     const nuevo: PedidoResponseDTO = { ...PEDIDO, idPedido: 99, fecha: '2026-11-01T10:00:00' };
     (pagina as unknown as { actualizarEnLista(p: PedidoResponseDTO): void }).actualizarEnLista(nuevo);
 
-    // Llega la lista del back, pedida antes de crear el #99 (no lo incluye).
     backend.expectOne(`${API}/pedidos`).flush([PEDIDO]);
     expect(pagina.pedidos().map(p => p.idPedido)).toEqual([99, 1]);
     expect(pagina.cargando()).toBe(false);

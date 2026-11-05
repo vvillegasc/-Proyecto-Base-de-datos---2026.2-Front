@@ -3,7 +3,7 @@
     <div class="page__header">
       <div>
         <h1 class="page__title">{{ sesion.esAdmin() ? 'Productos' : 'Menú' }}</h1>
-        <span class="page__breadcrumb">Savana / Menú{{ sesion.esAdmin() ? ' / Productos' : '' }}</span>
+        <span class="page__breadcrumb">Savana Data Coffee / Menú{{ sesion.esAdmin() ? ' / Productos' : '' }}</span>
       </div>
       @if (sesion.esAdmin()) {
         <app-button label="+ NUEVO PRODUCTO" (click)="abrirCrear()" />

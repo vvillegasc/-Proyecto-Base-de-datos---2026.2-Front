@@ -79,17 +79,14 @@ export class Pedidos implements OnInit {
   cargandoCatalogos = signal(true);
   error = signal(false);
   guardando = signal(false);
-  // Errores de validación del back, por campo.
   errores = signal<ErroresCampo>({});
   pagando = signal(false);
 
-  // Filtros
   tabActivo = signal('');
   filtroMesa = signal(0);
   filtroMesero = signal(0);
   rango = signal<RangoFechas>({ desde: '', hasta: '' });
 
-  // Modales
   modalVisible = signal(false);
   detalleVisible = signal(false);
   pedidoDetalle = signal<PedidoResponseDTO | null>(null);
@@ -97,7 +94,6 @@ export class Pedidos implements OnInit {
   porCobrar = signal<PedidoResponseDTO | null>(null);
   factura = signal<{ factura: FacturaResponseDTO; pedido: PedidoResponseDTO; aviso: string } | null>(null);
 
-  // Formulario "Nuevo pedido"
   numeroMesa = 0;
   idCliente = 0;
   busquedaCliente = '';
@@ -129,14 +125,11 @@ export class Pedidos implements OnInit {
     public sesion: SessionService,
   ) {}
 
-  // Desde Mesas: ?mesa=N filtra por mesa; ?mesa=N&nuevo=1 abre "Nuevo pedido" con la mesa elegida;
-  // ?cobrar=ID abre el cobro de ese pedido. Cobrar y tomar pedidos es solo del mesero.
   ngOnInit(): void {
     const params = this.route.snapshot.queryParamMap;
     const mesa = Number(params.get('mesa') ?? 0);
     const cobrar = Number(params.get('cobrar') ?? 0);
     if (cobrar && this.sesion.esMesero()) {
-      // Solo ese pedido (rápido), sin esperar la lista completa.
       this.pedidoService.obtener(cobrar).subscribe(p => this.porCobrar.set(p));
     } else if (params.get('nuevo') && this.sesion.esMesero()) {
       this.abrirCrear(mesa);
@@ -147,14 +140,11 @@ export class Pedidos implements OnInit {
     this.cargar();
   }
 
-  // GET /pedidos es lento con muchos pedidos (el back consulta cada uno por separado), por eso
-  // la lista carga aparte de los catálogos y solo se pide completa al entrar o al reintentar.
   cargar(): void {
     if (!this.pedidos().length) this.cargando.set(true);
     this.error.set(false);
     this.pedidoService.listar().subscribe({
       next: pedidos => {
-        // Lo que se creó o cambió mientras llegaba la lista es más nuevo que la respuesta: prevalece.
         const servidor = new Map(pedidos.map(p => [p.idPedido, p]));
         this.cambiosLocales.forEach((p, id) => servidor.set(id, p));
         this.pedidos.set([...servidor.values()].sort((a, b) => b.fecha.localeCompare(a.fecha)));
@@ -168,7 +158,6 @@ export class Pedidos implements OnInit {
     });
   }
 
-  // Lo que necesita el modal de "Nuevo pedido" y el cobro (responde rápido).
   private cargarCatalogos(): void {
     this.cargandoCatalogos.set(true);
     forkJoin({
@@ -188,10 +177,8 @@ export class Pedidos implements OnInit {
     });
   }
 
-  // Pedidos creados o modificados mientras la lista completa sigue cargando.
   private cambiosLocales = new Map<number, PedidoResponseDTO>();
 
-  // Pone en la lista la versión del pedido que devolvió el back (lo agrega si es nuevo).
   private actualizarEnLista(pedido: PedidoResponseDTO): void {
     if (this.cargando()) this.cambiosLocales.set(pedido.idPedido, pedido);
     this.pedidos.update(lista =>
@@ -201,14 +188,12 @@ export class Pedidos implements OnInit {
     );
   }
 
-  // El mesero no puede leer /usuarios: la lista del filtro sale de los propios pedidos.
   get meseros(): { idUsuario: number; nombre: string }[] {
     const vistos = new Map<number, string>();
     this.pedidos().forEach(p => vistos.set(p.idUsuario, p.nombreUsuario));
     return [...vistos].map(([idUsuario, nombre]) => ({ idUsuario, nombre }));
   }
 
-  // El back solo filtra por estado y cliente: mesa, mesero y fechas se filtran aquí.
   get pedidosFiltrados(): PedidoResponseDTO[] {
     const estado = this.tabActivo();
     const mesa = this.filtroMesa();
@@ -237,7 +222,6 @@ export class Pedidos implements OnInit {
     this.rango.set({ desde: '', hasta: '' });
   }
 
-  // --- Acciones de la tarjeta ---
 
   avanzar(e: { pedido: PedidoResponseDTO; estado: EstadoPedido }): void {
     this.cambiarEstado(e.pedido, e.estado);
@@ -253,7 +237,6 @@ export class Pedidos implements OnInit {
     this.porCobrar.set(p);
   }
 
-  // POST /pagos: el back crea la factura, marca el pedido PAGADO y libera la mesa.
   confirmarPago(req: FacturaRequestDTO): void {
     const pedido = this.porCobrar();
     if (!pedido) return;
@@ -268,8 +251,8 @@ export class Pedidos implements OnInit {
           aviso: `Pago registrado. Factura enviada a ${factura.correoCliente}. Mesa ${pedido.numeroMesa} liberada.`,
         });
         this.actualizarEnLista({ ...pedido, estado: 'PAGADO' });
-        this.cargarCatalogos(); // la mesa quedó libre
-        this.propinas.actualizar(); // la propina del menú izquierdo
+        this.cargarCatalogos();
+        this.propinas.actualizar();
       },
       error: () => this.pagando.set(false),
     });
@@ -291,12 +274,11 @@ export class Pedidos implements OnInit {
   private cambiarEstado(p: PedidoResponseDTO, estado: EstadoPedido): void {
     this.pedidoService.cambiarEstado(p.idPedido, estado).subscribe(actualizado => {
       this.actualizarEnLista(actualizado);
-      if (estado === 'CANCELADO') this.cargarCatalogos(); // la mesa quedó libre
+      if (estado === 'CANCELADO') this.cargarCatalogos();
       this.toast.show(`Pedido #${p.idPedido} → ${ESTADO_PEDIDO[estado].label}`, 'success');
     });
   }
 
-  // --- Nuevo pedido ---
 
   get mesasDisponibles(): MesaResponseDTO[] {
     return this.todasLasMesas().filter(m => m.estado === 'DISPONIBLE' || m.numeroMesa === this.numeroMesa);
@@ -347,7 +329,6 @@ export class Pedidos implements OnInit {
     this.detalles = this.detalles.filter((_, idx) => idx !== i);
   }
 
-  // Si el cliente es nuevo, primero se registra (POST /clientes) y con su id se crea el pedido.
   guardar(): void {
     const usuario = this.sesion.usuario();
     if (!usuario || !this.puedeCrear) return;
@@ -373,7 +354,7 @@ export class Pedidos implements OnInit {
           this.modalVisible.set(false);
           this.toast.show(`Pedido #${pedido.idPedido} creado para la mesa ${pedido.numeroMesa}`, 'success');
           this.actualizarEnLista(pedido);
-          this.cargarCatalogos(); // mesa ocupada, stock y cliente nuevo
+          this.cargarCatalogos();
         },
         error: err => {
         this.guardando.set(false);

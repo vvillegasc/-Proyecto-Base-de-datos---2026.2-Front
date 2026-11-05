@@ -2,15 +2,10 @@ import { Component, EventEmitter, Input, Output, computed, signal } from '@angul
 import { ProductoResponseDTO } from '../../../models/model';
 import { PrecioPipe } from '../../../pipes/precio.pipe';
 
-// Sin tildes y en minúsculas, para que "cafe" encuentre "Café".
 const normalizar = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 let siguienteId = 0;
 
-/**
- * Selector de producto con buscador (combobox): se escribe para filtrar por nombre o categoría
- * y se elige con el mouse o el teclado (flechas, Enter, Escape). Los agotados aparecen pero no se pueden elegir.
- */
 @Component({
   selector: 'app-producto-selector',
   imports: [PrecioPipe],
@@ -40,7 +35,6 @@ export class ProductoSelector {
     return !p.disponibilidad || p.stock <= 0;
   }
 
-  // Lo que se ve en el campo: lo que se escribe mientras busca, o el nombre del producto elegido.
   get valorCampo(): string {
     if (this.abierto()) return this.texto();
     return this.lista().find(p => p.idProducto === this.seleccionado)?.nombre ?? '';
@@ -98,7 +92,6 @@ export class ProductoSelector {
     this.cerrar();
   }
 
-  // Siguiente producto no agotado en la dirección indicada (o -1 si no hay).
   private siguienteHabilitado(desde: number, paso: 1 | -1): number {
     const lista = this.filtrados();
     for (let i = desde + paso; i >= 0 && i < lista.length; i += paso) {

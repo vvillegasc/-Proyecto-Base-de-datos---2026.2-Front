@@ -44,7 +44,6 @@ export class Facturas implements OnInit {
   busqueda = signal('');
   rango = signal<RangoFechas>({ desde: '', hasta: '' });
   seleccionada = signal<FacturaResponseDTO | null>(null);
-  // La factura no trae mesa ni productos: se piden al abrirla.
   pedidoSeleccionado = signal<PedidoResponseDTO | null>(null);
 
   readonly columnas: TableColumn[] = [
@@ -68,10 +67,8 @@ export class Facturas implements OnInit {
     this.cargar();
   }
 
-  // El rango de fechas se filtra en el back; la búsqueda por texto, aquí.
   cargar(): void {
     const { desde, hasta } = this.rango();
-    // El "Cargando…" solo en la primera carga; al refrescar se mantiene la lista visible.
     if (!this.facturas().length) this.cargando.set(true);
     this.error.set(false);
     this.facturaService.listar(desde, hasta).subscribe({

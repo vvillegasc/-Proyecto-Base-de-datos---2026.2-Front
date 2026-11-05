@@ -58,12 +58,11 @@ describe('Reservar', () => {
     expect(pagina.reserva()?.numeroMesa).toBe(4);
   });
 
-  // Fecha y hora locales (como las escribe el cliente) a partir de un Date.
   const local = (d: Date) => ({ fecha: d.toLocaleDateString('en-CA'), hora: d.toTimeString().slice(0, 5) });
   const mesaEn = (numeroMesa: number, capacidad: number, estado: string) => ({ numeroMesa, capacidad, estado });
 
   it('para una reserva cercana no asigna una mesa que ahora está ocupada', () => {
-    Object.assign(pagina.form, local(new Date(Date.now() + 60 * 60 * 1000))); // dentro de 1 h
+    Object.assign(pagina.form, local(new Date(Date.now() + 60 * 60 * 1000)));
     pagina.verificarDisponibilidad();
     disponibles([mesaEn(1, 2, 'OCUPADA'), mesaEn(5, 2, 'DISPONIBLE')]);
 
@@ -80,7 +79,7 @@ describe('Reservar', () => {
   });
 
   it('para una reserva lejana el estado actual de la mesa no importa', () => {
-    Object.assign(pagina.form, local(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))); // en una semana
+    Object.assign(pagina.form, local(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)));
     pagina.verificarDisponibilidad();
     disponibles([mesaEn(1, 2, 'OCUPADA'), mesaEn(5, 2, 'DISPONIBLE')]);
 

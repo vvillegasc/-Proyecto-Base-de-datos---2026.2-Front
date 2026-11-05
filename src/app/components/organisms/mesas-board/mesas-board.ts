@@ -11,7 +11,6 @@ import { EstadoMesa, MesaResponseDTO } from '../../../models/model';
 export class MesasBoard {
   @Input() mesas: MesaResponseDTO[] = [];
 
-  // Texto corto para que quepa en la casilla.
   readonly abreviatura: Record<EstadoMesa, string> = {
     DISPONIBLE: 'LIBRE',
     OCUPADA: 'OCUP',
